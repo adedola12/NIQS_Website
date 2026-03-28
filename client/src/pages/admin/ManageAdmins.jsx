@@ -127,7 +127,11 @@ export default function ManageAdmins() {
             fontSize: 11,
             fontWeight: 600,
             background:
-              val === 'main_admin' ? '#C9974A' : val === 'national_admin' ? '#2563EB' : '#059669',
+              val === 'main_admin'     ? '#C9974A'
+              : val === 'national_admin' ? '#2563EB'
+              : val === 'waqsn_admin'    ? '#7c3aed'
+              : val === 'yqsf_admin'     ? '#0891b2'
+              : '#059669',
             color: '#fff',
           }}
         >
@@ -242,7 +246,9 @@ export default function ManageAdmins() {
                 style={inputStyle}
               >
                 <option value="national_admin">National Admin</option>
-                <option value="state_admin">State Admin</option>
+                <option value="state_admin">State Chapter Admin</option>
+                <option value="waqsn_admin">WAQSN Admin</option>
+                <option value="yqsf_admin">YQSF Admin</option>
               </select>
             </FormField>
             {form.role === 'state_admin' && (

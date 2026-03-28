@@ -3,6 +3,12 @@ import { useParams, Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
+const FALLBACK_RELATED = [
+  { _id: '1', slug: 'niqs-annual-conference-2026', title: 'NIQS Annual Conference 2026 Announced', excerpt: 'Conference details for the 34th Annual Conference in Abuja.', image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400', date: '2026-03-15', category: 'Conference' },
+  { _id: '2', slug: 'new-qs-bill-passes-senate', title: 'New QS Bill Passes Second Reading', excerpt: 'Legislative update on the Quantity Surveyors Registration Act.', image: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=400', date: '2026-03-10', category: 'Legislation' },
+  { _id: '3', slug: 'niqs-signs-mou-with-rics', title: 'NIQS Signs MoU with RICS', excerpt: 'International reciprocity partnership expanded.', image: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=400', date: '2026-03-01', category: 'International' },
+];
+
 export default function NewsArticle() {
   const { slug } = useParams();
   const [article, setArticle] = useState(null);
@@ -15,32 +21,26 @@ export default function NewsArticle() {
       .then(res => {
         const data = res.data?.data || res.data;
         setArticle(data);
-        // Fetch related articles
         if (data?.category) {
           API.get(`/news?category=${data.category}&limit=3`)
             .then(r => {
               const d = r.data?.data || r.data;
               if (Array.isArray(d)) setRelated(d.filter(n => n.slug !== slug).slice(0, 3));
             })
-            .catch(() => {});
+            .catch(() => setRelated(FALLBACK_RELATED));
         }
       })
       .catch(() => {
-        // Fallback article
         setArticle({
           title: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
           content: '<p>This article is currently unavailable. Please check back later or browse other news articles.</p>',
           excerpt: 'Article content is loading or unavailable.',
-          image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800',
+          image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1000',
           date: new Date().toISOString(),
           category: 'News',
           author: 'NIQS Communications',
         });
-        setRelated([
-          { _id: '1', slug: 'niqs-annual-conference-2026', title: 'NIQS Annual Conference 2026 Announced', excerpt: 'Conference details for 2026.', image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400', date: '2026-03-15', category: 'Conference' },
-          { _id: '2', slug: 'new-qs-bill-passes-senate', title: 'New QS Bill Passes Second Reading', excerpt: 'Legislative update.', image: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=400', date: '2026-03-10', category: 'Legislation' },
-          { _id: '3', slug: 'niqs-signs-mou-with-rics', title: 'NIQS Signs MoU with RICS', excerpt: 'International partnership.', image: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=400', date: '2026-03-01', category: 'International' },
-        ]);
+        setRelated(FALLBACK_RELATED);
       })
       .finally(() => setLoading(false));
   }, [slug]);
@@ -48,8 +48,12 @@ export default function NewsArticle() {
   if (loading) {
     return (
       <>
-        <PageHero title="Loading..." breadcrumbs={[{ label: 'News', to: '/news' }, { label: '...' }]} />
-        <section className="section"><div className="ct"><p>Loading article...</p></div></section>
+        <PageHero title="Loading…" />
+        <section style={{ background: '#fff' }}>
+          <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
+            <p style={{ color: 'var(--color-txt-3)' }}>Loading article…</p>
+          </div>
+        </section>
       </>
     );
   }
@@ -57,10 +61,10 @@ export default function NewsArticle() {
   if (!article) {
     return (
       <>
-        <PageHero title="Article Not Found" breadcrumbs={[{ label: 'News', to: '/news' }]} />
-        <section className="section">
-          <div className="ct">
-            <p>The requested article could not be found. <Link to="/news">Browse all news</Link></p>
+        <PageHero title="Article Not Found" />
+        <section style={{ background: '#fff' }}>
+          <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
+            <p>The requested article could not be found. <Link to="/news" style={{ color: 'var(--color-gold)', fontWeight: 600 }}>Browse all news →</Link></p>
           </div>
         </section>
       </>
@@ -70,68 +74,103 @@ export default function NewsArticle() {
   return (
     <>
       <PageHero
+        label={article.category || 'News'}
         title={article.title}
-        breadcrumbs={[{ label: 'News', to: '/news' }, { label: article.title }]}
+        backgroundImage={article.image}
       />
 
-      <section className="section">
-        <div className="ct">
-          <div className="article-layout">
-            {/* Main Content */}
-            <article className="article-main">
-              <div className="article-meta" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                <span className="pill">{article.category || 'News'}</span>
-                <span className="article-date">
-                  {new Date(article.date || article.createdAt).toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </span>
-                {article.author && <span className="article-author">By {article.author}</span>}
-              </div>
-
+      <section style={{ background: '#fff' }}>
+        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+          <div className="art-layout">
+            {/* Main article */}
+            <div className="art-body">
               {article.image && (
                 <img
                   src={article.image}
                   alt={article.title}
-                  className="article-hero-img"
-                  style={{ width: '100%', borderRadius: 8, marginBottom: '2rem', maxHeight: 450, objectFit: 'cover' }}
+                  style={{ width: '100%', maxHeight: 440, objectFit: 'cover', display: 'block' }}
                 />
               )}
-
-              {article.content ? (
-                <div className="article-content" dangerouslySetInnerHTML={{ __html: article.content }} />
-              ) : (
-                <div className="article-content">
-                  <p>{article.excerpt || article.description}</p>
+              <div className="art-content">
+                {/* Meta */}
+                <div style={{ display: 'flex', gap: '.8rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '2rem', paddingBottom: '1.2rem', borderBottom: '1px solid var(--color-bdr)' }}>
+                  <span className="card-tag">{article.category || 'News'}</span>
+                  <span style={{ fontSize: '.76rem', color: 'var(--color-txt-3)' }}>
+                    {new Date(article.date || article.createdAt).toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </span>
+                  {article.author && (
+                    <span style={{ fontSize: '.76rem', color: 'var(--color-txt-3)' }}>By {article.author}</span>
+                  )}
                 </div>
-              )}
 
-              {/* Share */}
-              <div className="article-share" style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #eee' }}>
-                <strong>Share this article:</strong>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                  <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">Twitter</a>
-                  <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">Facebook</a>
-                  <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(article.title)}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">LinkedIn</a>
+                {/* Content */}
+                {article.content ? (
+                  <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                ) : (
+                  <p>{article.excerpt || article.description}</p>
+                )}
+
+                {/* Share */}
+                <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--color-bdr)' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.82rem', color: 'var(--color-navy)', marginBottom: '.8rem', letterSpacing: '-.02em' }}>Share this article</div>
+                  <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                      target="_blank" rel="noopener noreferrer" className="btn bo" style={{ padding: '6px 16px', fontSize: '.72rem' }}
+                    >Twitter / X</a>
+                    <a
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                      target="_blank" rel="noopener noreferrer" className="btn bo" style={{ padding: '6px 16px', fontSize: '.72rem' }}
+                    >Facebook</a>
+                    <a
+                      href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&title=${encodeURIComponent(article.title)}`}
+                      target="_blank" rel="noopener noreferrer" className="btn bo" style={{ padding: '6px 16px', fontSize: '.72rem' }}
+                    >LinkedIn</a>
+                  </div>
                 </div>
               </div>
-            </article>
+            </div>
 
             {/* Sidebar */}
-            <aside className="article-sidebar">
-              <h3>Related Articles</h3>
-              {related.map(n => (
-                <Link to={`/news/${n.slug}`} className="sidebar-card" key={n._id}>
-                  <div className="sidebar-card-img" style={{ backgroundImage: `url(${n.image || 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=300'})` }} />
-                  <div className="sidebar-card-body">
-                    <span className="pill pill-sm">{n.category || 'News'}</span>
-                    <h4>{n.title}</h4>
-                    <span className="card-date">
-                      {new Date(n.date || n.createdAt).toLocaleDateString('en-NG', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-              <Link to="/news" className="btn btn-outline btn-sm" style={{ width: '100%', textAlign: 'center', marginTop: '1rem' }}>
-                View All News
+            <aside>
+              <div className="aside-box">
+                <h4>Related Articles</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {related.map(n => (
+                    <Link to={`/news/${n.slug}`} key={n._id} style={{ display: 'flex', gap: '.8rem', alignItems: 'flex-start', textDecoration: 'none' }}>
+                      <img
+                        src={n.image || 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=120'}
+                        alt={n.title}
+                        style={{ width: 72, height: 52, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '1px solid var(--color-bdr)' }}
+                      />
+                      <div>
+                        <span className="card-tag" style={{ fontSize: '.54rem', marginBottom: '.25rem' }}>{n.category || 'News'}</span>
+                        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '.82rem', color: 'var(--color-navy)', lineHeight: 1.3, letterSpacing: '-.02em' }}>{n.title}</div>
+                        <div style={{ fontSize: '.68rem', color: 'var(--color-txt-3)', marginTop: '.2rem' }}>
+                          {new Date(n.date || n.createdAt).toLocaleDateString('en-NG', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="aside-box">
+                <h4>Categories</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+                  {['Conference', 'Legislation', 'International', 'Examinations', 'Chapter News', 'Events'].map(cat => (
+                    <Link key={cat} to={`/news?category=${cat}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '.5rem .6rem', borderRadius: 8, fontSize: '.8rem', color: 'var(--color-txt-2)', transition: 'background .15s' }}
+                      onMouseOver={e => e.currentTarget.style.background = 'var(--color-off)'}
+                      onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {cat} <span style={{ fontSize: '.6rem', color: 'var(--color-txt-3)' }}>→</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <Link to="/news" className="btn bo" style={{ display: 'block', textAlign: 'center', width: '100%' }}>
+                ← All News
               </Link>
             </aside>
           </div>

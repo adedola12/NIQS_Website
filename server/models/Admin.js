@@ -10,7 +10,7 @@ const adminSchema = new mongoose.Schema({
   avatar: { type: String },
   role: {
     type: String,
-    enum: ['main_admin', 'national_admin', 'state_admin'],
+    enum: ['main_admin', 'national_admin', 'state_admin', 'waqsn_admin', 'yqsf_admin'],
     required: true
   },
   // For state_admin — which chapter they manage

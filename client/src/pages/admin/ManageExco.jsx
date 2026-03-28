@@ -172,7 +172,7 @@ export default function ManageExco() {
 
   return (
     <div>
-      <AdminHeader title="Manage Exco Members" breadcrumbs={['Exco Members']} />
+      <AdminHeader title="Manage Exco Members (NEC &amp; NPC)" breadcrumbs={['Exco Members']} />
 
       <div style={{ padding: '24px 28px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>

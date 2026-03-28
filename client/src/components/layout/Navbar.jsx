@@ -108,7 +108,7 @@ const Navbar = () => {
 
             <NavDropdown label="Membership">
               <Link to="/membership" className="ddi">Requirements &amp; Registration</Link>
-              <Link to="/membership" className="ddi">Search QS / QS Firm</Link>
+              <Link to="/search-qs-firms" className="ddi">Search QS / QS Firm</Link>
               <div className="ddi-div"></div>
               <Link to="/login" className="ddi">Member Portal <span className="lock">&#128274;</span></Link>
               <Link to="/login" className="ddi">Induction Letter <span className="lock">&#128274;</span></Link>

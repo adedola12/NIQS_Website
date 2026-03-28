@@ -1,25 +1,128 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
+/* ── Fallback contact blocks ─────────────────────────────── */
+const FALLBACK = {
+  national: {
+    label: 'National Secretariat',
+    phone1: '+234 901 234 5678', phone2: '+234 801 234 5678',
+    email1: 'info@niqs.org.ng', email2: 'secretary@niqs.org.ng',
+    address: 'NIQS House, Plot 759 Cadastral Zone,\nCentral Business District,\nAbuja, FCT, Nigeria',
+    officeHours: 'Monday — Friday: 8:00 AM — 5:00 PM\nSaturday — Sunday: Closed',
+    twitterUrl: '', facebookUrl: '', linkedinUrl: '',
+  },
+  waqsn: {
+    label: 'WAQSN (Women Assoc. of QS Nigeria)',
+    phone1: '', phone2: '',
+    email1: 'waqsn@niqs.org.ng', email2: '',
+    address: 'c/o NIQS National Secretariat,\nAbuja, FCT, Nigeria',
+    officeHours: 'Monday — Friday: 9:00 AM — 4:00 PM',
+    twitterUrl: '', facebookUrl: '', linkedinUrl: '',
+  },
+  yqsf: {
+    label: 'Young QS Forum (YQSF)',
+    phone1: '', phone2: '',
+    email1: 'yqsf@niqs.org.ng', email2: '',
+    address: 'c/o NIQS National Secretariat,\nAbuja, FCT, Nigeria',
+    officeHours: 'Monday — Friday: 9:00 AM — 4:00 PM',
+    twitterUrl: '', facebookUrl: '', linkedinUrl: '',
+  },
+};
+
+const TABS = [
+  { key: 'national', label: 'NIQS National' },
+  { key: 'waqsn',    label: 'WAQSN'         },
+  { key: 'yqsf',     label: 'YQSF'          },
+];
+
+const SUBJECTS = ['General Inquiry', 'Membership', 'Examinations', 'Events', 'Chapters', 'WAQSN', 'YQSF', 'Partnership', 'Complaint', 'Other'];
+
+function ContactBlock({ info }) {
+  if (!info) return null;
+  const rows = [
+    info.phone1 || info.phone2 ? {
+      icon: '📞', title: 'Phone',
+      lines: [info.phone1, info.phone2].filter(Boolean),
+      hrefs: [`tel:${(info.phone1||'').replace(/\s/g,'')}`, `tel:${(info.phone2||'').replace(/\s/g,'')}`],
+    } : null,
+    info.email1 || info.email2 ? {
+      icon: '✉️', title: 'Email',
+      lines: [info.email1, info.email2].filter(Boolean),
+      hrefs: [`mailto:${info.email1}`, `mailto:${info.email2}`],
+    } : null,
+    info.address ? { icon: '📍', title: 'Address', lines: [info.address], plain: true } : null,
+    info.officeHours ? { icon: '🕐', title: 'Office Hours', lines: [info.officeHours], plain: true } : null,
+  ].filter(Boolean);
+
+  const socials = [
+    info.twitterUrl   && { label: 'Twitter / X', href: info.twitterUrl },
+    info.facebookUrl  && { label: 'Facebook',    href: info.facebookUrl },
+    info.linkedinUrl  && { label: 'LinkedIn',    href: info.linkedinUrl },
+    info.instagramUrl && { label: 'Instagram',   href: info.instagramUrl },
+  ].filter(Boolean);
+
+  return (
+    <>
+      {rows.map((row, i) => (
+        <div className="cii" key={i}>
+          <h4>{row.icon} {row.title}</h4>
+          {row.plain ? (
+            <p style={{ whiteSpace: 'pre-line' }}>{row.lines[0]}</p>
+          ) : (
+            row.lines.map((l, j) => (
+              <p key={j}><a href={row.hrefs[j]}>{l}</a></p>
+            ))
+          )}
+        </div>
+      ))}
+      {socials.length > 0 && (
+        <div className="cii">
+          <h4>🌐 Follow Us</h4>
+          <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap', marginTop: '.4rem' }}>
+            {socials.map(s => (
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                className="btn bo" style={{ padding: '5px 14px', fontSize: '.72rem' }}>{s.label}</a>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
-  const [status, setStatus] = useState(null); // 'success' | 'error' | null
-  const [submitting, setSubmitting] = useState(false);
+  const [searchParams] = useSearchParams();
+  const validBodies    = ['national', 'waqsn', 'yqsf'];
+  const initialTab     = validBodies.includes(searchParams.get('body')) ? searchParams.get('body') : 'national';
 
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const [contactData, setContactData] = useState(FALLBACK);
+  const [activeTab, setActiveTab]     = useState(initialTab);
+  const [form, setForm]               = useState({ name: '', email: '', phone: '', subject: '', message: '' });
+  const [status, setStatus]           = useState(null);
+  const [submitting, setSubmitting]   = useState(false);
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    API.get('/contact-info')
+      .then(res => {
+        if (res.data && Object.keys(res.data).length) {
+          setContactData(prev => ({ ...prev, ...res.data }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async e => {
     e.preventDefault();
     setSubmitting(true);
     setStatus(null);
-
     try {
-      await API.post('/contact', formData);
+      await API.post('/contact', { ...form, body: activeTab });
       setStatus('success');
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setForm({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch {
       setStatus('error');
     } finally {
@@ -27,139 +130,98 @@ export default function Contact() {
     }
   };
 
+  const info = contactData[activeTab] || FALLBACK[activeTab];
+
   return (
     <>
       <PageHero
+        label="Get in Touch"
         title="Contact Us"
-        subtitle="Get in touch with the Nigerian Institute of Quantity Surveyors"
-        breadcrumbs={[{ label: 'Contact' }]}
+        titleHighlight="Contact"
+        backgroundImage="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80&fit=crop"
       />
 
-      <section className="section">
-        <div className="ct">
-          <div className="two-col contact-layout">
+      <section style={{ background: '#fff' }}>
+        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+
+          {/* Body Tabs */}
+          <div className="filter-bar" style={{ marginBottom: '3rem' }}>
+            {TABS.map(t => (
+              <button
+                key={t.key}
+                className={`fbtn${activeTab === t.key ? ' on' : ''}`}
+                onClick={() => setActiveTab(t.key)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Active body label */}
+          <div style={{ marginBottom: '2rem' }}>
+            <div className="ey">{info?.label || TABS.find(t => t.key === activeTab)?.label}</div>
+          </div>
+
+          <div className="contlay">
             {/* Contact Info */}
-            <div className="contact-info">
-              <h2 className="sh">Our Office</h2>
-              <div className="contact-details">
-                <div className="info-row">
-                  <span className="info-icon">📍</span>
-                  <div>
-                    <strong>National Secretariat</strong>
-                    <p>NIQS House, Plot 759 Cadastral Zone,<br />
-                    Central Business District,<br />
-                    Abuja, FCT, Nigeria</p>
-                  </div>
-                </div>
-
-                <div className="info-row">
-                  <span className="info-icon">📞</span>
-                  <div>
-                    <strong>Phone</strong>
-                    <p>
-                      <a href="tel:+2349012345678">+234 901 234 5678</a><br />
-                      <a href="tel:+2348012345678">+234 801 234 5678</a>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="info-row">
-                  <span className="info-icon">✉️</span>
-                  <div>
-                    <strong>Email</strong>
-                    <p>
-                      <a href="mailto:info@niqs.org.ng">info@niqs.org.ng</a><br />
-                      <a href="mailto:secretary@niqs.org.ng">secretary@niqs.org.ng</a>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="info-row">
-                  <span className="info-icon">🕐</span>
-                  <div>
-                    <strong>Office Hours</strong>
-                    <p>Monday — Friday: 8:00 AM — 5:00 PM<br />
-                    Saturday — Sunday: Closed</p>
-                  </div>
-                </div>
-
-                <div className="info-row">
-                  <span className="info-icon">🌐</span>
-                  <div>
-                    <strong>Social Media</strong>
-                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                      <a href="https://twitter.com/naborgs" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">Twitter</a>
-                      <a href="https://facebook.com/niaborgs" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">Facebook</a>
-                      <a href="https://linkedin.com/company/niaborgs" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">LinkedIn</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div>
+              <h2 className="sh" style={{ marginBottom: '1.8rem' }}>
+                {activeTab === 'national' && <>Reach <em>NIQS</em></>}
+                {activeTab === 'waqsn'    && <>Reach <em>WAQSN</em></>}
+                {activeTab === 'yqsf'     && <>Reach <em>YQSF</em></>}
+              </h2>
+              <ContactBlock info={info} />
             </div>
 
             {/* Contact Form */}
-            <div className="contact-form-wrap">
-              <h2 className="sh">Send a Message</h2>
+            <div className="cform">
+              <h3>
+                {activeTab === 'national' && 'Send a Message to NIQS'}
+                {activeTab === 'waqsn'    && 'Send a Message to WAQSN'}
+                {activeTab === 'yqsf'     && 'Send a Message to YQSF'}
+              </h3>
 
               {status === 'success' && (
-                <div className="toast toast-success" style={{ marginBottom: '1rem', padding: '1rem', borderRadius: 8, background: '#e8f5e9', color: '#2e7d32' }}>
-                  Your message has been sent successfully. We will get back to you shortly.
+                <div style={{ background: 'rgba(46,125,50,.1)', border: '1px solid rgba(46,125,50,.3)', color: '#2e7d32', borderRadius: 10, padding: '1rem', marginBottom: '1.2rem', fontSize: '.82rem' }}>
+                  ✓ Your message has been sent. We will get back to you shortly.
                 </div>
               )}
               {status === 'error' && (
-                <div className="toast toast-error" style={{ marginBottom: '1rem', padding: '1rem', borderRadius: 8, background: '#fce4ec', color: '#c62828' }}>
-                  Failed to send your message. Please try again or contact us directly.
+                <div style={{ background: 'rgba(198,40,40,.08)', border: '1px solid rgba(198,40,40,.2)', color: '#c62828', borderRadius: 10, padding: '1rem', marginBottom: '1.2rem', fontSize: '.82rem' }}>
+                  ✗ Failed to send. Please try again or contact us directly.
                 </div>
               )}
 
-              <form className="form" onSubmit={handleSubmit}>
-                <div className="form-row" style={{ display: 'flex', gap: '1rem' }}>
-                  <div className="form-group" style={{ flex: 1 }}>
-                    <label>Full Name *</label>
-                    <input type="text" name="name" className="input" placeholder="Your full name" value={formData.name} onChange={handleChange} required />
+              <form onSubmit={handleSubmit}>
+                <div className="fg2">
+                  <div className="fg">
+                    <label className="flbl">Full Name *</label>
+                    <input type="text" name="name" className="fi" placeholder="Your full name" value={form.name} onChange={handleChange} required />
                   </div>
-                  <div className="form-group" style={{ flex: 1 }}>
-                    <label>Email Address *</label>
-                    <input type="email" name="email" className="input" placeholder="your.email@example.com" value={formData.email} onChange={handleChange} required />
+                  <div className="fg">
+                    <label className="flbl">Email Address *</label>
+                    <input type="email" name="email" className="fi" placeholder="your.email@example.com" value={form.email} onChange={handleChange} required />
                   </div>
                 </div>
-
-                <div className="form-row" style={{ display: 'flex', gap: '1rem' }}>
-                  <div className="form-group" style={{ flex: 1 }}>
-                    <label>Phone Number</label>
-                    <input type="tel" name="phone" className="input" placeholder="+234..." value={formData.phone} onChange={handleChange} />
+                <div className="fg2">
+                  <div className="fg">
+                    <label className="flbl">Phone Number</label>
+                    <input type="tel" name="phone" className="fi" placeholder="+234..." value={form.phone} onChange={handleChange} />
                   </div>
-                  <div className="form-group" style={{ flex: 1 }}>
-                    <label>Subject *</label>
-                    <select name="subject" className="input" value={formData.subject} onChange={handleChange} required>
+                  <div className="fg">
+                    <label className="flbl">Subject *</label>
+                    <select name="subject" className="fs" value={form.subject} onChange={handleChange} required>
                       <option value="" disabled>Select subject</option>
-                      <option value="General Inquiry">General Inquiry</option>
-                      <option value="Membership">Membership</option>
-                      <option value="Examinations">Examinations</option>
-                      <option value="Events">Events</option>
-                      <option value="Chapters">Chapters</option>
-                      <option value="Partnership">Partnership</option>
-                      <option value="Complaint">Complaint</option>
-                      <option value="Other">Other</option>
+                      {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
                 </div>
-
-                <div className="form-group">
-                  <label>Message *</label>
-                  <textarea
-                    name="message"
-                    className="input"
-                    placeholder="How can we help you?"
-                    rows={6}
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                  />
+                <div className="fg">
+                  <label className="flbl">Message *</label>
+                  <textarea name="message" className="ft" placeholder="How can we help you?" rows={5} value={form.message} onChange={handleChange} required />
                 </div>
-
-                <button type="submit" className="btn btn-gold" style={{ width: '100%' }} disabled={submitting}>
-                  {submitting ? 'Sending...' : 'Send Message'}
+                <button type="submit" className="bsub" disabled={submitting}>
+                  {submitting ? 'Sending…' : 'Send Message'}
                 </button>
               </form>
             </div>

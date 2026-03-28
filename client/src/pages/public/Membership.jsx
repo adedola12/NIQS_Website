@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 
 const categories = [
   {
     title: 'Probationer',
-    tag: null,
+    type: 'Entry Level',
     price: '₦25,000',
     period: 'Annual Dues',
+    featured: false,
     requirements: [
-      'HND or B.Sc in Quantity Surveying from a recognized institution',
+      'HND or B.Sc in Quantity Surveying from a recognised institution',
       'Must be registered with QSRBN or in the process of registration',
-      'Two passport photographs and valid ID',
+      'Two passport photographs and valid government-issued ID',
       'Completed application form with academic transcripts',
     ],
     benefits: [
@@ -23,10 +24,11 @@ const categories = [
     ],
   },
   {
-    title: 'Graduate Member (MNIQS)',
-    tag: 'Most Popular',
+    title: 'Graduate Member',
+    type: 'MNIQS',
     price: '₦50,000',
     period: 'Annual Dues',
+    featured: true,
     requirements: [
       'Passed the Test of Professional Competence (TPC)',
       'Minimum of 2 years post-qualification experience',
@@ -37,7 +39,7 @@ const categories = [
     benefits: [
       'Full voting rights at AGM and chapter meetings',
       'Use of MNIQS designation',
-      'Eligible to practice as a corporate quantity surveyor',
+      'Eligible to practise as a corporate quantity surveyor',
       'Access to reciprocity agreements with international bodies',
       'Priority access to CPD, conferences, and networking events',
       'Professional indemnity resources and guidance',
@@ -45,10 +47,11 @@ const categories = [
     ],
   },
   {
-    title: 'Fellow (FNIQS)',
-    tag: null,
+    title: 'Fellow',
+    type: 'FNIQS',
     price: '₦100,000',
     period: 'Annual Dues',
+    featured: false,
     requirements: [
       'Minimum of 10 years as MNIQS in good standing',
       'Demonstrated outstanding contribution to the profession',
@@ -68,49 +71,59 @@ const categories = [
   },
 ];
 
+const steps = [
+  { n: '01', title: 'Download the Application Form', desc: 'Obtain the appropriate membership application form from the NIQS secretariat or member portal.' },
+  { n: '02', title: 'Gather Required Documents', desc: 'Prepare your academic certificates, QSRBN registration, passport photographs, and endorsement letters.' },
+  { n: '03', title: 'Submit Application', desc: 'Submit your completed form and documents to the National Secretariat or your nearest state chapter.' },
+  { n: '04', title: 'Pay Application Fee', desc: 'Make payment of the applicable registration and annual dues via the NIQS payment portal.' },
+  { n: '05', title: 'Receive Confirmation', desc: 'Upon approval, you will receive your membership certificate, ID card, and portal access credentials.' },
+];
+
 export default function Membership() {
+  const [searchVal, setSearchVal] = useState('');
+
   return (
     <>
       <PageHero
-        title="Membership"
-        subtitle="Join the largest body of Quantity Surveyors in West Africa"
-        breadcrumbs={[{ label: 'Membership' }]}
+        label="Join NIQS"
+        title="Membership Categories"
+        titleHighlight="Membership"
+        backgroundImage="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1400&q=80&fit=crop"
       />
 
-      {/* Membership Categories */}
-      <section className="section">
-        <div className="ct">
-          <h2 className="sh" style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Membership Categories</h2>
-          <p className="sd" style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 2.5rem' }}>
-            Choose the membership category that matches your professional stage. Each level offers
-            increasing benefits and recognition.
-          </p>
+      {/* Categories */}
+      <section style={{ background: '#fff' }}>
+        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+          <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 3rem' }}>
+            <div className="ey" style={{ justifyContent: 'center' }}>Membership</div>
+            <h2 className="sh">Choose Your <em>Category</em></h2>
+            <p className="sd" style={{ maxWidth: '100%' }}>
+              Choose the membership category that matches your professional stage. Each level
+              offers increasing benefits and recognition within the profession.
+            </p>
+          </div>
 
-          <div className="grid-3">
+          <div className="memcat">
             {categories.map((cat, i) => (
-              <div className={`card pricing-card ${cat.tag ? 'pricing-featured' : ''}`} key={i}>
-                {cat.tag && <div className="pricing-tag">{cat.tag}</div>}
+              <div className={`mcat${cat.featured ? ' ft' : ''}`} key={i}>
+                <div className="mcat-type">{cat.type}</div>
                 <h3>{cat.title}</h3>
-                <div className="pricing-price">
-                  <span className="pricing-amount">{cat.price}</span>
-                  <span className="pricing-period">{cat.period}</span>
-                </div>
+                <p style={{ fontSize: '.82rem', color: 'var(--color-txt-3)', marginBottom: '.5rem' }}>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.5rem', color: 'var(--color-navy)' }}>{cat.price}</span>
+                  {'  '}<span style={{ fontSize: '.76rem' }}>{cat.period}</span>
+                </p>
 
-                <h4>Requirements</h4>
-                <ul className="pricing-list">
-                  {cat.requirements.map((r, j) => (
-                    <li key={j}>{r}</li>
-                  ))}
+                <p style={{ fontSize: '.8rem', color: 'var(--color-txt-2)', marginBottom: '1.2rem', borderBottom: '1px solid var(--color-bdr)', paddingBottom: '1rem' }}>Requirements</p>
+                <ul className="mcat-list" style={{ marginBottom: '1.2rem' }}>
+                  {cat.requirements.map((r, j) => <li key={j}>{r}</li>)}
                 </ul>
 
-                <h4>Benefits</h4>
-                <ul className="pricing-list pricing-list-check">
-                  {cat.benefits.map((b, j) => (
-                    <li key={j}>{b}</li>
-                  ))}
+                <p style={{ fontSize: '.8rem', color: 'var(--color-txt-2)', marginBottom: '1.2rem', borderBottom: '1px solid var(--color-bdr)', paddingBottom: '1rem' }}>Benefits</p>
+                <ul className="mcat-list" style={{ marginBottom: '2rem' }}>
+                  {cat.benefits.map((b, j) => <li key={j}>{b}</li>)}
                 </ul>
 
-                <Link to="/contact" className="btn btn-gold" style={{ width: '100%', textAlign: 'center' }}>
+                <Link to="/contact" className={`btn ${cat.featured ? 'bg' : 'bo'}`} style={{ display: 'block', textAlign: 'center' }}>
                   Apply Now
                 </Link>
               </div>
@@ -119,52 +132,54 @@ export default function Membership() {
         </div>
       </section>
 
-      {/* Registration Info */}
-      <section className="section section-alt">
-        <div className="ct">
-          <div className="two-col">
+      {/* How to Apply + Search */}
+      <section className="section-alt">
+        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+          <div className="tc2">
             <div>
-              <h2 className="sh">How to Apply</h2>
-              <ol className="steps-list">
-                <li>
-                  <strong>Download the Application Form</strong>
-                  <p>Obtain the appropriate membership application form from the NIQS secretariat or member portal.</p>
-                </li>
-                <li>
-                  <strong>Gather Required Documents</strong>
-                  <p>Prepare your academic certificates, QSRBN registration, passport photographs, and endorsement letters.</p>
-                </li>
-                <li>
-                  <strong>Submit Application</strong>
-                  <p>Submit your completed form and documents to the National Secretariat or your state chapter.</p>
-                </li>
-                <li>
-                  <strong>Pay Application Fee</strong>
-                  <p>Make payment of the applicable registration and annual dues via the NIQS payment portal.</p>
-                </li>
-                <li>
-                  <strong>Receive Confirmation</strong>
-                  <p>Upon approval, you will receive your membership certificate, ID card, and portal access credentials.</p>
-                </li>
-              </ol>
+              <div className="ey">Application Process</div>
+              <h2 className="sh">How to <em>Apply</em></h2>
+              <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
+                {steps.map((s, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
+                    <div style={{
+                      width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+                      background: 'var(--color-gold-xl)', border: '1px solid var(--color-bdr-gold)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '.75rem',
+                      color: 'var(--color-gold)',
+                    }}>
+                      {s.n}
+                    </div>
+                    <div>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.95rem', color: 'var(--color-navy)', marginBottom: '.2rem' }}>{s.title}</div>
+                      <p style={{ fontSize: '.8rem', color: 'var(--color-txt-2)', margin: 0, lineHeight: 1.6 }}>{s.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+
             <div>
-              <h2 className="sh">Search QS Register</h2>
-              <p>
+              <div className="ey">QS Register</div>
+              <h2 className="sh">Verify a <em>Member</em></h2>
+              <p style={{ fontSize: '.85rem', color: 'var(--color-txt-2)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
                 Verify a quantity surveyor's membership status and registration with NIQS. Enter
                 the practitioner's name or membership number to search.
               </p>
-              <div className="search-qs-placeholder" style={{ background: '#f5f5f5', borderRadius: 8, padding: '2rem', marginTop: '1rem' }}>
-                <input
-                  type="text"
-                  placeholder="Enter name or membership number..."
-                  className="input"
-                  disabled
-                />
-                <button className="btn btn-gold" style={{ marginTop: '1rem', width: '100%' }} disabled>
-                  Search Register
-                </button>
-                <p style={{ textAlign: 'center', marginTop: '1rem', color: '#888', fontSize: '0.85rem' }}>
+              <div style={{ background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 14, padding: '2rem' }}>
+                <div className="fg">
+                  <label className="flbl">Name or Membership Number</label>
+                  <input
+                    type="text"
+                    className="fi"
+                    placeholder="Enter name or membership number..."
+                    value={searchVal}
+                    onChange={e => setSearchVal(e.target.value)}
+                  />
+                </div>
+                <button className="bsub" disabled style={{ opacity: .5 }}>Search Register</button>
+                <p style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--color-txt-3)', fontSize: '.76rem' }}>
                   This feature will be available soon. Please contact the Secretariat for verification.
                 </p>
               </div>

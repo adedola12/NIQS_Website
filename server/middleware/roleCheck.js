@@ -63,4 +63,25 @@ const deleteCheck = (req, res, next) => {
   next();
 };
 
-module.exports = { roleCheck, chapterScope, deleteCheck };
+// Allows main_admin and national_admin to edit any chapter,
+// but state_admin can only edit their own assigned chapter
+const chapterOwner = (req, res, next) => {
+  if (!req.admin) {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  if (req.admin.role === 'main_admin' || req.admin.role === 'national_admin') {
+    return next();
+  }
+  if (req.admin.role === 'state_admin') {
+    if (!req.admin.assignedChapter) {
+      return res.status(403).json({ message: 'No chapter assigned to this admin' });
+    }
+    if (req.params.id && req.params.id.toString() !== req.admin.assignedChapter.toString()) {
+      return res.status(403).json({ message: 'You can only edit your own chapter' });
+    }
+    return next();
+  }
+  return res.status(403).json({ message: 'Access denied' });
+};
+
+module.exports = { roleCheck, chapterScope, deleteCheck, chapterOwner };

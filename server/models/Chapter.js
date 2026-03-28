@@ -1,18 +1,20 @@
 const mongoose = require('mongoose');
 
 const chapterSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true, trim: true },
-  slug: { type: String, unique: true },
-  state: { type: String, required: true },
-  chairperson: { type: String },
-  secretary: { type: String },
-  address: { type: String },
-  email: { type: String, trim: true },
-  phone: { type: String },
-  about: { type: String },
-  image: { type: String },
+  name:        { type: String, required: true, unique: true, trim: true },
+  slug:        { type: String, unique: true },
+  state:       { type: String, required: true },
+  zone:        { type: String, trim: true, default: '' },       // e.g. "South West"
+  chairperson: { type: String, trim: true, default: '' },
+  secretary:   { type: String, trim: true, default: '' },
+  address:     { type: String, trim: true, default: '' },
+  email:       { type: String, trim: true, default: '' },
+  phone:       { type: String, trim: true, default: '' },
+  website:     { type: String, trim: true, default: '' },
+  about:       { type: String, default: '' },
+  image:       { type: String, default: '' },
   memberCount: { type: Number, default: 0 },
-  isActive: { type: Boolean, default: true }
+  isActive:    { type: Boolean, default: true }
 }, { timestamps: true });
 
 chapterSchema.pre('save', function (next) {

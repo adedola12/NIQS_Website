@@ -23,6 +23,7 @@ import YQSF from './pages/public/YQSF';
 import Reciprocity from './pages/public/Reciprocity';
 import BrandMaterials from './pages/public/BrandMaterials';
 import Membership from './pages/public/Membership';
+import SearchQSFirms from './pages/public/SearchQSFirms';
 import Exams from './pages/public/Exams';
 import Research from './pages/public/Research';
 import News from './pages/public/News';
@@ -56,6 +57,10 @@ import ManagePartners from './pages/admin/ManagePartners';
 import ManageMembers from './pages/admin/ManageMembers';
 import ManageBrandMaterials from './pages/admin/ManageBrandMaterials';
 import ManagePresident from './pages/admin/ManagePresident';
+import ManagePastPresidents from './pages/admin/ManagePastPresidents';
+import ManageSiteSettings from './pages/admin/ManageSiteSettings';
+import ManageContactInfo from './pages/admin/ManageContactInfo';
+import ManageQSFirms from './pages/admin/ManageQSFirms';
 
 // Public layout wrapper
 function PublicLayout({ children }) {
@@ -102,6 +107,7 @@ export default function App() {
         <Route path="/reciprocity" element={<PublicPage element={<Reciprocity />} />} />
         <Route path="/brand-materials" element={<PublicPage element={<BrandMaterials />} />} />
         <Route path="/membership" element={<PublicPage element={<Membership />} />} />
+        <Route path="/search-qs-firms" element={<PublicPage element={<SearchQSFirms />} />} />
         <Route path="/exams" element={<PublicPage element={<Exams />} />} />
         <Route path="/research" element={<PublicPage element={<Research />} />} />
         <Route path="/news" element={<PublicPage element={<News />} />} />
@@ -150,6 +156,10 @@ export default function App() {
           <Route path="admins" element={<ManageAdmins />} />
           <Route path="brand-materials" element={<ManageBrandMaterials />} />
           <Route path="president" element={<ManagePresident />} />
+          <Route path="past-presidents" element={<ManagePastPresidents />} />
+          <Route path="site-settings"  element={<ManageSiteSettings />} />
+          <Route path="contact-info"   element={<ManageContactInfo  />} />
+          <Route path="qs-firms"        element={<ManageQSFirms />} />
         </Route>
 
         {/* ══════ 404 ══════ */}

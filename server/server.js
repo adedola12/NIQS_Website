@@ -38,6 +38,10 @@ app.use("/api/contact", require("./routes/contact"));
 app.use("/api/upload", require("./routes/upload"));
 app.use("/api/brand-materials", require("./routes/brandMaterials"));
 app.use("/api/president", require("./routes/president"));
+app.use("/api/past-presidents", require("./routes/pastPresidents"));
+app.use("/api/site-settings",  require("./routes/siteSettings"));
+app.use("/api/contact-info",   require("./routes/contactInfo"));
+app.use("/api/qs-firms",       require("./routes/qsFirms"));
 
 // Health check
 app.get("/api/health", (req, res) => {

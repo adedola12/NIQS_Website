@@ -1,75 +1,110 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
+import API from '../../api/axios';
 
-const fallbackChapters = [
-  'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
-  'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'FCT Abuja', 'Gombe',
-  'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos',
-  'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers',
-  'Sokoto', 'Taraba', 'Yobe', 'Zamfara',
-].map((name, i) => ({
-  _id: String(i + 1),
-  name: `${name} State Chapter`,
-  slug: name.toLowerCase().replace(/\s+/g, '-'),
-  state: name,
-  memberCount: Math.floor(Math.random() * 300) + 50,
+/* All 37 chapters with geopolitical zones — used as fallback */
+const ALL_STATES = [
+  ['Abia',        'South East'],   ['Adamawa',    'North East'],
+  ['Akwa Ibom',   'South South'],  ['Anambra',    'South East'],
+  ['Bauchi',      'North East'],   ['Bayelsa',    'South South'],
+  ['Benue',       'North Central'],['Borno',      'North East'],
+  ['Cross River', 'South South'],  ['Delta',      'South South'],
+  ['Ebonyi',      'South East'],   ['Edo',        'South South'],
+  ['Ekiti',       'South West'],   ['Enugu',      'South East'],
+  ['FCT',         'North Central'],['Gombe',      'North East'],
+  ['Imo',         'South East'],   ['Jigawa',     'North West'],
+  ['Kaduna',      'North West'],   ['Kano',       'North West'],
+  ['Katsina',     'North West'],   ['Kebbi',      'North West'],
+  ['Kogi',        'North Central'],['Kwara',      'North Central'],
+  ['Lagos',       'South West'],   ['Nasarawa',   'North Central'],
+  ['Niger',       'North Central'],['Ogun',       'South West'],
+  ['Ondo',        'South West'],   ['Osun',       'South West'],
+  ['Oyo',         'South West'],   ['Plateau',    'North Central'],
+  ['Rivers',      'South South'],  ['Sokoto',     'North West'],
+  ['Taraba',      'North East'],   ['Yobe',       'North East'],
+  ['Zamfara',     'North West'],
+];
+
+const FALLBACK = ALL_STATES.map(([state, zone], i) => ({
+  _id:   String(i + 1),
+  name:  `${state} Chapter`,
+  slug:  state.toLowerCase().replace(/\s+/g, '-'),
+  state,
+  zone,
+  memberCount: 0,
 }));
 
 export default function Chapters() {
-  const [chapters, setChapters] = useState(fallbackChapters);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [chapters, setChapters] = useState(FALLBACK);
+  const [search, setSearch]     = useState('');
 
   useEffect(() => {
     API.get('/chapters')
       .then(res => {
-        const data = res.data?.data || res.data;
-        if (Array.isArray(data) && data.length) setChapters(data);
+        const data = res.data?.chapters || res.data?.data || res.data;
+        if (Array.isArray(data) && data.length > 0) setChapters(data);
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
 
   const filtered = chapters.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.state?.toLowerCase().includes(search.toLowerCase())
+    (c.state || '').toLowerCase().includes(search.toLowerCase()) ||
+    (c.zone  || '').toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <>
       <PageHero
+        label="Nationwide"
         title="State Chapters"
-        subtitle="NIQS is represented across all 36 states and the FCT"
-        breadcrumbs={[{ label: 'State Chapters' }]}
+        titleHighlight="Chapters"
+        backgroundImage="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1400&q=80&fit=crop"
       />
 
-      <section className="section">
-        <div className="ct">
-          <div className="search-bar" style={{ maxWidth: 500, margin: '0 auto 2.5rem' }}>
+      <section style={{ background: '#fff' }}>
+        <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
+          <div className="ey">37 Chapters</div>
+          <h2 className="sh">NIQS in Every <em>State</em></h2>
+          <p className="sd" style={{ marginBottom: '2.5rem' }}>
+            NIQS has active chapters in all 36 states of Nigeria and the FCT, bringing
+            professional QS services to every community.
+          </p>
+
+          {/* Search */}
+          <div style={{ maxWidth: 400, marginBottom: '2rem' }}>
             <input
               type="text"
-              placeholder="Search chapters..."
+              placeholder="Search by state or zone…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="input"
+              style={{
+                width: '100%', padding: '10px 16px', border: '1.5px solid var(--color-bdr)',
+                borderRadius: 8, fontSize: 14, color: 'var(--color-txt)', outline: 'none',
+                boxSizing: 'border-box', fontFamily: 'inherit', background: 'var(--color-off)',
+              }}
             />
           </div>
 
-          <div className="grid-4">
+          <div className="chapters-grid">
             {filtered.map(c => (
-              <Link to={`/chapters/${c.slug}`} className="chcard" key={c._id}>
-                <div className="chcard-icon">📍</div>
-                <h3>{c.name}</h3>
-                {c.memberCount && <p className="chcard-count">{c.memberCount} Members</p>}
+              <Link
+                to={`/chapters/${c.slug}`}
+                key={c._id}
+                style={{ textDecoration: 'none' }}
+              >
+                <div className="chcard">
+                  <h4>{c.name}</h4>
+                  <p>{c.zone ? `${c.zone} Zone` : 'Nigeria'}</p>
+                </div>
               </Link>
             ))}
           </div>
 
           {filtered.length === 0 && (
-            <p style={{ textAlign: 'center', color: '#888', marginTop: '2rem' }}>
-              No chapters found matching your search.
+            <p style={{ textAlign: 'center', color: 'var(--color-txt-3)', marginTop: '2rem' }}>
+              No chapters found.
             </p>
           )}
         </div>

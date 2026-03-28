@@ -26,7 +26,7 @@ exports.getExcoById = async (req, res) => {
 
 exports.createExco = async (req, res) => {
   try {
-    if (req.admin.role === 'state_admin' && req.body.scope === 'national') {
+    if (req.admin.role === 'state_admin' && req.body.scope !== 'chapter') {
       return res.status(403).json({ message: 'State admins can only add chapter exco members' });
     }
     const exco = await Exco.create(req.body);

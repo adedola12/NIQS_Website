@@ -3,7 +3,6 @@ import {
   MdPeople,
   MdEvent,
   MdArticle,
-  MdPayment,
   MdSettings,
   MdAdminPanelSettings,
   MdLocationCity,
@@ -13,6 +12,10 @@ import {
   MdGroups,
   MdBrandingWatermark,
   MdAccountCircle,
+  MdHistory,
+  MdLink,
+  MdContactPhone,
+  MdDomain,
 } from 'react-icons/md';
 
 export function canManageAdmins(role) {
@@ -24,12 +27,8 @@ export function canManageNational(role) {
 }
 
 export function canManageChapter(role, adminChapter, targetChapter) {
-  if (role === 'main_admin' || role === 'national_admin') {
-    return true;
-  }
-  if (role === 'state_admin') {
-    return adminChapter === targetChapter;
-  }
+  if (role === 'main_admin' || role === 'national_admin') return true;
+  if (role === 'state_admin') return adminChapter === targetChapter;
   return false;
 }
 
@@ -39,83 +38,64 @@ export function canDelete(role) {
 
 export function getAdminLabel(role) {
   const labels = {
-    main_admin: 'Main Administrator',
+    main_admin:     'Main Administrator',
     national_admin: 'National Administrator',
-    state_admin: 'State Chapter Administrator',
+    state_admin:    'State Chapter Administrator',
+    waqsn_admin:    'WAQSN Administrator',
+    yqsf_admin:     'YQSF Administrator',
   };
   return labels[role] || 'Unknown Role';
 }
 
 export function getAdminSidebarItems(role) {
+  /* ── Base items every admin sees ── */
   const items = [
-    {
-      label: 'Dashboard',
-      path: '/admin/dashboard',
-      icon: MdDashboard,
-    },
-    {
-      label: 'News',
-      path: '/admin/news',
-      icon: MdArticle,
-    },
-    {
-      label: 'Events',
-      path: '/admin/events',
-      icon: MdEvent,
-    },
-    {
-      label: 'Exco Members',
-      path: '/admin/exco',
-      icon: MdGroups,
-    },
-    {
-      label: 'Members',
-      path: '/admin/members',
-      icon: MdPeople,
-    },
-    {
-      label: 'Contact Messages',
-      path: '/admin/messages',
-      icon: MdMail,
-    },
+    { label: 'Dashboard', path: '/admin/dashboard', icon: MdDashboard },
   ];
 
-  if (canManageNational(role)) {
-    items.push(
-      {
-        label: 'Chapters',
-        path: '/admin/chapters',
-        icon: MdLocationCity,
-      },
-      {
-        label: 'Jobs',
-        path: '/admin/jobs',
-        icon: MdWork,
-      },
-      {
-        label: 'Partners',
-        path: '/admin/partners',
-        icon: MdHandshake,
-      },
-      {
-        label: 'Brand Materials',
-        path: '/admin/brand-materials',
-        icon: MdBrandingWatermark,
-      },
-      {
-        label: 'President Profile',
-        path: '/admin/president',
-        icon: MdAccountCircle,
-      }
-    );
+  /* ── WAQSN admin ── */
+  if (role === 'waqsn_admin') {
+    items.push({ label: 'Contact Info', path: '/admin/contact-info', icon: MdContactPhone });
+    return items;
   }
 
+  /* ── YQSF admin ── */
+  if (role === 'yqsf_admin') {
+    items.push({ label: 'Contact Info', path: '/admin/contact-info', icon: MdContactPhone });
+    return items;
+  }
+
+  /* ── State admin ── */
+  if (role === 'state_admin') {
+    items.push(
+      { label: 'Exco Members',     path: '/admin/exco',     icon: MdGroups       },
+      { label: 'Contact Messages', path: '/admin/messages', icon: MdMail         },
+      { label: 'Chapter',          path: '/admin/chapters', icon: MdLocationCity },
+      { label: 'Members',          path: '/admin/members',  icon: MdPeople       },
+    );
+    return items;
+  }
+
+  /* ── National admin + Main admin ── */
+  items.push(
+    { label: 'News',             path: '/admin/news',     icon: MdArticle          },
+    { label: 'Events',           path: '/admin/events',   icon: MdEvent            },
+    { label: 'Exco Members',     path: '/admin/exco',     icon: MdGroups           },
+    { label: 'Members',          path: '/admin/members',  icon: MdPeople           },
+    { label: 'Contact Messages', path: '/admin/messages', icon: MdMail             },
+    { label: 'Chapters',         path: '/admin/chapters', icon: MdLocationCity     },
+    { label: 'Jobs',             path: '/admin/jobs',     icon: MdWork             },
+    { label: 'Partners',         path: '/admin/partners', icon: MdHandshake        },
+    { label: 'Brand Materials',  path: '/admin/brand-materials', icon: MdBrandingWatermark },
+    { label: 'President Profile',path: '/admin/president',       icon: MdAccountCircle     },
+    { label: 'Past Presidents',  path: '/admin/past-presidents', icon: MdHistory           },
+    { label: 'QS Firms',         path: '/admin/qs-firms',        icon: MdDomain            },
+    { label: 'Contact Info',     path: '/admin/contact-info',    icon: MdContactPhone      },
+    { label: 'Site Settings',    path: '/admin/site-settings',   icon: MdLink              },
+  );
+
   if (canManageAdmins(role)) {
-    items.push({
-      label: 'Admin Management',
-      path: '/admin/admins',
-      icon: MdAdminPanelSettings,
-    });
+    items.push({ label: 'Admin Management', path: '/admin/admins', icon: MdAdminPanelSettings });
   }
 
   return items;
