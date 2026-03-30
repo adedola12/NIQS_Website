@@ -38,6 +38,7 @@ const Field = ({ label, name, value, onChange, type = 'text', placeholder = '' }
 );
 
 const EMPTY = {
+  bannerItems: [],
   waqsnUrl: '',
   qsrbnUrl: '',
   pagsUrl: '',
@@ -76,7 +77,11 @@ export default function ManageSiteSettings() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await API.put('/site-settings', form);
+      const payload = {
+        ...form,
+        bannerItems: (form.bannerItems || []).map(s => s.trim()).filter(Boolean),
+      };
+      await API.put('/site-settings', payload);
       toast.success('Settings saved');
     } catch {
       toast.error('Failed to save settings');
@@ -97,6 +102,48 @@ export default function ManageSiteSettings() {
       />
 
       <div style={{ maxWidth: 760, margin: '0 auto', background: '#fff', borderRadius: 14, border: '1px solid var(--color-bdr)', padding: '2.5rem' }}>
+
+        {/* ── Homepage Banner ── */}
+        <SectionLabel>Homepage Live Banner</SectionLabel>
+        <p style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', marginBottom: '1rem', marginTop: '-.6rem', lineHeight: 1.6 }}>
+          Each line becomes one item in the scrolling ticker bar at the top of the homepage.
+          Upcoming events you add will <strong>automatically appear</strong> in the banner until they pass.
+          Leave blank to use the system defaults.
+        </p>
+        <div style={{ marginBottom: '1.2rem' }}>
+          <textarea
+            value={(form.bannerItems || []).join('\n')}
+            onChange={e => {
+              const lines = e.target.value.split('\n');
+              setForm(prev => ({ ...prev, bannerItems: lines }));
+            }}
+            rows={6}
+            placeholder={`BEGM 2025 — Registration now open\n2025 Annual Conference — 14 March, Abuja\nNew CPD modules now available`}
+            style={{
+              width: '100%', padding: '10px 12px', fontSize: '.84rem', borderRadius: 8,
+              border: '1.5px solid var(--color-bdr)', background: 'var(--color-off)',
+              fontFamily: 'var(--font-body)', color: 'var(--color-txt)', resize: 'vertical',
+              lineHeight: 1.7,
+            }}
+            onFocus={e => { e.target.style.borderColor = 'var(--color-navy)'; e.target.style.background = '#fff'; }}
+            onBlur={e => { e.target.style.borderColor = 'var(--color-bdr)'; e.target.style.background = 'var(--color-off)'; }}
+          />
+          <p style={{ fontSize: '.7rem', color: 'var(--color-txt-3)', marginTop: '.4rem' }}>
+            {(form.bannerItems || []).filter(Boolean).length} custom item(s) · Upcoming events auto-appended at runtime
+          </p>
+        </div>
+
+        {/* Preview */}
+        {(form.bannerItems || []).filter(Boolean).length > 0 && (
+          <div style={{ background: 'var(--color-navy)', borderRadius: 8, padding: '10px 16px', marginBottom: '1.5rem', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ background: 'var(--color-gold)', color: '#fff', fontSize: '.55rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4, letterSpacing: '.06em', textTransform: 'uppercase', flexShrink: 0 }}>Live</span>
+              <span style={{ color: 'rgba(255,255,255,.75)', fontSize: '.78rem', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                ◆ {(form.bannerItems || []).filter(Boolean)[0]}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* ── External Links ── */}
         <SectionLabel>External / Partner Links</SectionLabel>

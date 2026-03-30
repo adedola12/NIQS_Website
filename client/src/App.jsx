@@ -1,6 +1,45 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { useEffect, useRef } from 'react';
+
+/* ── Global scroll-reveal observer ── */
+function useScrollReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    // Observe existing + future elements
+    const observe = () => {
+      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    };
+
+    observe();
+    // Re-run on route changes via MutationObserver
+    const mo = new MutationObserver(observe);
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    return () => { observer.disconnect(); mo.disconnect(); };
+  }, []);
+}
+
+/* ── Page fade wrapper ── */
+function PageFade({ children }) {
+  const { pathname } = useLocation();
+  return (
+    <div key={pathname} className="page-transition">
+      {children}
+    </div>
+  );
+}
 
 // Layout
 import Navbar from './components/layout/Navbar';
@@ -77,7 +116,9 @@ function PublicLayout({ children }) {
   return (
     <>
       <Navbar />
-      <main>{children}</main>
+      <main>
+        <PageFade>{children}</PageFade>
+      </main>
       <Footer />
     </>
   );
@@ -89,6 +130,7 @@ function PublicPage({ element }) {
 }
 
 export default function App() {
+  useScrollReveal();
   return (
     <AuthProvider>
       <Toaster

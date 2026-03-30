@@ -39,7 +39,7 @@ const services = [
   { icon: '\u{1F30D}', title: 'International Engagement', desc: 'Through reciprocity agreements with leading QS bodies worldwide, NIQS members enjoy access to global recognition.' },
 ];
 
-const tickerItems = [
+const defaultTickerItems = [
   'BEGM 2025 Notice — Registration now open for qualified members',
   '2025 Professional Examinations — TPC/GDE slated for March 2025',
   'Corporate Financial Members List as at 24th October 2025',
@@ -98,6 +98,7 @@ export default function Home() {
   const [news, setNews] = useState(fallbackNews);
   const [events, setEvents] = useState(fallbackEvents);
   const [platinumPartners, setPlatinumPartners] = useState([]);
+  const [tickerItems, setTickerItems] = useState(defaultTickerItems);
 
   useEffect(() => {
     API.get('/news?limit=3').then(res => {
@@ -106,14 +107,35 @@ export default function Home() {
     }).catch(() => {});
 
     API.get('/events?limit=3&upcoming=true').then(res => {
-      if (res.data?.data?.length) setEvents(res.data.data);
-      else if (res.data?.length) setEvents(res.data);
+      const data = res.data?.data || res.data || [];
+      if (data.length) setEvents(data);
     }).catch(() => {});
 
     API.get('/partners?tier=platinum&limit=3').then(res => {
       const data = res.data?.partners || res.data || [];
       setPlatinumPartners(data.slice(0, 3));
     }).catch(() => {});
+
+    // Load dynamic banner: site settings + upcoming events auto-appended
+    Promise.all([
+      API.get('/site-settings').catch(() => ({ data: {} })),
+      API.get('/events?upcoming=true&limit=10').catch(() => ({ data: [] })),
+    ]).then(([settingsRes, eventsRes]) => {
+      const customItems = settingsRes.data?.bannerItems || [];
+      const upcomingEvts = (eventsRes.data?.data || eventsRes.data || []);
+
+      // Build event ticker entries for future events
+      const eventItems = upcomingEvts
+        .filter(e => e.date && new Date(e.date) >= new Date())
+        .slice(0, 5)
+        .map(e => {
+          const d = new Date(e.date).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
+          return `${e.title} — ${d}${e.location ? ` · ${e.location}` : ''}`;
+        });
+
+      const merged = [...customItems, ...eventItems];
+      if (merged.length > 0) setTickerItems(merged);
+    });
   }, []);
 
   return (
@@ -192,6 +214,7 @@ export default function Home() {
             {principles.map((p, i) => (
               <div
                 key={i}
+                className={`reveal d${i + 1}`}
                 style={{
                   background: i === 1
                     ? 'linear-gradient(145deg, var(--color-navy), var(--color-navy-3, #1a3280))'
@@ -230,7 +253,7 @@ export default function Home() {
           </p>
           <div className="svc-grid">
             {services.map((s, i) => (
-              <div className={`svc${i > 0 ? ` d${i}` : ''}`} key={i}>
+              <div className={`svc reveal${i > 0 ? ` d${i}` : ''}`} key={i}>
                 {s.tag && <span className="svc-tag">{s.tag}</span>}
                 <div className="svc-ico">{s.icon}</div>
                 <div className="svc-t">{s.title}</div>
@@ -255,7 +278,7 @@ export default function Home() {
             {news.map((n, i) => (
               <Link
                 to={`/news/${n.slug}`}
-                className={`card${i > 0 ? ` d${i}` : ''}`}
+                className={`card reveal${i > 0 ? ` d${i}` : ''}`}
                 key={n._id}
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
@@ -292,7 +315,7 @@ export default function Home() {
             {events.map((e, i) => (
               <Link
                 to={`/events/${e.slug}`}
-                className={`erow${i > 0 ? ` d${i}` : ''}`}
+                className={`erow reveal d${i + 1}`}
                 key={e._id}
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >

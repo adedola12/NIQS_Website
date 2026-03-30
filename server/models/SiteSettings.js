@@ -20,6 +20,9 @@ const siteSettingsSchema = new mongoose.Schema({
   yqsfCpdEvents:  { type: String, trim: true, default: '' }, // e.g. "40"
   yqsfTotalAwards:{ type: String, trim: true, default: '' }, // e.g. "10+"
 
+  /* Homepage banner / ticker items — shown in the scrolling ticker bar */
+  bannerItems:    { type: [String], default: [] },
+
   /* Contact overrides (shown in footer / contact page) */
   phone1:         { type: String, trim: true, default: '' },
   phone2:         { type: String, trim: true, default: '' },
