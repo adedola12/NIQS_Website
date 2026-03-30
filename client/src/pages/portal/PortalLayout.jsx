@@ -54,8 +54,12 @@ const PortalLayout = () => {
         {/* NIQS branding + home link */}
         <div className="portal-sidebar-brand">
           <div>
-            <span className="portal-brand-name">NIQS</span>
-            <span className="portal-brand-sub">Member Portal</span>
+            <img
+              src="/NIQS-LOGO-PNG-NAV.png"
+              alt="NIQS Logo"
+              style={{ height: 32, width: 'auto', objectFit: 'contain', display: 'block', filter: 'brightness(0) invert(1)' }}
+            />
+            <span className="portal-brand-sub" style={{ marginTop: 4 }}>Member Portal</span>
           </div>
           <Link to="/" className="portal-home-link" title="Back to main website">
             🏠

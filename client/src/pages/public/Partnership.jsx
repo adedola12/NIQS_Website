@@ -1,22 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
-const GOLD_PARTNERS = [
+const tierColors = {
+  platinum: '#6b7280',
+  gold:     '#C9974A',
+  silver:   '#9ca3af',
+  bronze:   '#b45309',
+  associate:'#2563EB',
+};
+
+const fallbackPlatinum = [
   {
+    _id: null,
     name: 'Julius Berger Nigeria Plc',
-    tier: 'Platinum Partner',
-    desc: 'A leading construction and engineering group operating across Nigeria\'s infrastructure, energy, and building sectors. Proud Platinum Partner of NIQS.',
-    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=260&fit=crop',
-    link: '#',
+    tier: 'platinum',
+    logo: null,
+    industry: 'Construction & Engineering',
+    description: 'A leading construction and engineering group operating across Nigeria\'s infrastructure, energy, and building sectors.',
   },
   {
-    name: 'Dangote Industries Limited',
-    tier: 'Gold Partner',
-    desc: 'One of Nigeria\'s largest conglomerates with significant investments across construction, cement, and real estate development throughout West Africa.',
-    image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&h=260&fit=crop',
-    link: '#',
+    _id: null,
+    name: 'Dangote Construction Ltd',
+    tier: 'platinum',
+    logo: null,
+    industry: 'Infrastructure Development',
+    description: 'One of Nigeria\'s foremost infrastructure conglomerates with significant investments in roads, bridges, and real estate development.',
   },
+  {
+    _id: null,
+    name: 'CCECC Nigeria Ltd',
+    tier: 'platinum',
+    logo: null,
+    industry: 'Civil Engineering & Roads',
+    description: 'A major civil engineering contractor delivering landmark road, rail, and building projects across West Africa.',
+  },
+];
+
+const fallbackOthers = [
+  { _id: null, name: 'AECOM Nigeria', tier: 'gold', logo: null, industry: 'Engineering Consultancy' },
+  { _id: null, name: 'Setraco Nigeria Ltd', tier: 'gold', logo: null, industry: 'Roads & Civil Works' },
+  { _id: null, name: 'Craneburg Construction', tier: 'silver', logo: null, industry: 'Building Construction' },
+  { _id: null, name: 'RMB Nigeria', tier: 'silver', logo: null, industry: 'Project Finance' },
+  { _id: null, name: 'Structon Group', tier: 'bronze', logo: null, industry: 'Structural Engineering' },
+  { _id: null, name: 'QSRBN', tier: 'associate', logo: null, industry: 'Regulatory Body' },
 ];
 
 const tiers = [
@@ -70,13 +98,27 @@ const tiers = [
   },
 ];
 
-const logoNames = [
-  'Julius Berger', 'Dangote Group', 'CCECC Nigeria', 'Setraco',
-  'QSRBN', 'FMW&H', 'BMPIU', 'RICS',
-  'World Bank', 'AfDB',
-];
-
 export default function Partnership() {
+  const [partners, setPartners] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    API.get('/partners')
+      .then(res => {
+        const data = res.data?.partners || res.data || [];
+        setPartners(data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const dbPlatinum = partners.filter(p => p.tier === 'platinum');
+  const dbOthers   = partners.filter(p => p.tier !== 'platinum');
+
+  const platinum        = dbPlatinum.length > 0 ? dbPlatinum : (!loading ? fallbackPlatinum : []);
+  const others          = dbOthers.length   > 0 ? dbOthers   : (!loading ? fallbackOthers   : []);
+  const isPlaceholder   = !loading && partners.length === 0;
+
   return (
     <>
       <PageHero
@@ -119,30 +161,96 @@ export default function Partnership() {
         </div>
       </section>
 
-      {/* Featured Partners */}
-      <section className="section-alt">
-        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-          <div style={{ marginBottom: '2.5rem' }}>
-            <div className="ey">Featured Partners</div>
-            <h2 className="sh">Our <em>Partners</em></h2>
-          </div>
-
-          {GOLD_PARTNERS.map((p, i) => (
-            <div className="gpc" key={i}>
-              <img src={p.image} alt={p.name} className="gpimg" />
+      {/* Featured Partners — Platinum */}
+      {!loading && platinum.length > 0 && (
+        <section className="section-alt">
+          <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+            <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <span className="gpbadge">{p.tier}</span>
-                <h4>{p.name}</h4>
-                <p>{p.desc}</p>
-                <a href={p.link} className="gpl">View profile →</a>
+                <div className="ey">Platinum Partners</div>
+                <h2 className="sh" style={{ marginBottom: 0 }}>Our <em>Premier Partners</em></h2>
               </div>
+              {isPlaceholder && (
+                <span style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', background: 'var(--color-bdr)', padding: '4px 12px', borderRadius: 6, fontWeight: 600 }}>Sample — replaced when admin adds partners</span>
+              )}
             </div>
-          ))}
-        </div>
-      </section>
+
+            {platinum.map((p, idx) => (
+              <div className="gpc" key={p._id || idx} style={{ opacity: isPlaceholder ? 0.7 : 1 }}>
+                {p.logo ? (
+                  <img src={p.logo} alt={p.name} className="gpimg" style={{ objectFit: 'contain', background: '#fff', padding: '1rem' }} />
+                ) : (
+                  <div className="gpimg" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-off-2)' }}>
+                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '2rem', color: 'var(--color-bdr)' }}>{p.name[0]}</span>
+                  </div>
+                )}
+                <div>
+                  <span className="gpbadge">Platinum Partner</span>
+                  <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-navy)', margin: '.5rem 0 .6rem' }}>{p.name}</h4>
+                  {p.description && <p style={{ color: 'var(--color-txt-2)', fontSize: '.92rem', lineHeight: 1.75, marginBottom: '1rem' }}>{p.description}</p>}
+                  {p._id
+                    ? <Link to={`/partnership/${p._id}`} className="gpl">View profile →</Link>
+                    : <span style={{ fontSize: '.82rem', color: 'var(--color-txt-3)', fontStyle: 'italic' }}>Profile available once admin adds details</span>
+                  }
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* All Other Partners */}
+      {!loading && others.length > 0 && (
+        <section style={{ background: '#fff' }}>
+          <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+            <div style={{ marginBottom: '2.5rem' }}>
+              <div className="ey">Our Network</div>
+              <h2 className="sh">All <em>Partner Organisations</em></h2>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.2rem' }}>
+              {others.map((p, idx) => {
+                const tc = tierColors[p.tier] || '#6b7280';
+                const cardContent = (
+                  <div style={{ opacity: isPlaceholder ? 0.7 : 1, textDecoration: 'none', display: 'block', border: '1px solid var(--color-bdr)', borderRadius: 12, overflow: 'hidden', background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.06)', position: 'relative' }}>
+                    {isPlaceholder && (
+                      <span style={{ position: 'absolute', top: 8, right: 8, fontSize: '.55rem', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', background: 'var(--color-bdr)', color: 'var(--color-txt-3)', padding: '2px 6px', borderRadius: 4, zIndex: 1 }}>Sample</span>
+                    )}
+                    {p.logo ? (
+                      <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--color-bdr)', padding: '1rem', background: '#f9fafb' }}>
+                        <img src={p.logo} alt={p.name} style={{ maxHeight: 70, maxWidth: '100%', objectFit: 'contain' }} />
+                      </div>
+                    ) : (
+                      <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-off)', borderBottom: '1px solid var(--color-bdr)' }}>
+                        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '2rem', color: 'var(--color-bdr)' }}>{p.name[0]}</span>
+                      </div>
+                    )}
+                    <div style={{ padding: '1rem' }}>
+                      <span style={{ display: 'inline-block', marginBottom: '.4rem', padding: '2px 10px', borderRadius: 20, fontSize: '.68rem', fontWeight: 700, background: `${tc}18`, color: tc, textTransform: 'capitalize', border: `1px solid ${tc}30` }}>
+                        {p.tier}
+                      </span>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.95rem', color: 'var(--color-navy)', marginBottom: '.3rem' }}>{p.name}</div>
+                      {p.industry && <div style={{ fontSize: '.78rem', color: 'var(--color-txt-3)' }}>{p.industry}</div>}
+                    </div>
+                  </div>
+                );
+                return p._id
+                  ? <Link key={p._id} to={`/partnership/${p._id}`} style={{ textDecoration: 'none' }}>{cardContent}</Link>
+                  : <div key={idx}>{cardContent}</div>;
+              })}
+            </div>
+
+            {isPlaceholder && (
+              <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '.85rem', color: 'var(--color-txt-3)' }}>
+                These are sample entries. Real partner profiles will appear here once added by the admin.
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Tiers */}
-      <section style={{ background: '#fff' }}>
+      <section className="section-alt">
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
           <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto 3rem' }}>
             <div className="ey" style={{ justifyContent: 'center' }}>Partnership Tiers</div>
@@ -177,24 +285,6 @@ export default function Partnership() {
                     </div>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Partner Logos */}
-      <section className="section-alt">
-        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-          <div style={{ textAlign: 'center', maxWidth: 520, margin: '0 auto 2.5rem' }}>
-            <div className="ey" style={{ justifyContent: 'center' }}>Our Network</div>
-            <h2 className="sh">Trusted by <em>Industry Leaders</em></h2>
-          </div>
-
-          <div className="plogos">
-            {logoNames.map((name, i) => (
-              <div className="plogo" key={i} title={name}>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.72rem', color: 'var(--color-txt-2)', padding: '1rem', textAlign: 'center', lineHeight: 1.3 }}>{name}</span>
               </div>
             ))}
           </div>

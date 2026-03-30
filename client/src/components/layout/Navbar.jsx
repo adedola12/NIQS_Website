@@ -223,15 +223,11 @@ const Navbar = () => {
         <div className="ninner">
           {/* Logo */}
           <Link to="/" className="nlogo">
-            <div className="nlogo-sq">
-              <svg width="18" height="18" viewBox="0 0 345 477" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M172.5 0L345 100v277L172.5 477 0 377V100L172.5 0z" fill="currentColor"/>
-              </svg>
-            </div>
-            <div className="nlogo-txt">
-              <strong>NIQS</strong>
-              <span>Nigerian Institute of Quantity Surveyors</span>
-            </div>
+            <img
+              src="/NIQS-LOGO-PNG-NAV.png"
+              alt="NIQS Logo"
+              style={{ height: 48, width: 'auto', display: 'block', objectFit: 'contain' }}
+            />
           </Link>
 
           {/* Desktop Nav */}

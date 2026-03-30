@@ -8,7 +8,11 @@ const Footer = () => {
         <div className="fg4">
           {/* Column 1: Brand */}
           <div>
-            <div className="flogo-txt">NIQS <em>Nigeria</em></div>
+            <img
+              src="/NIQS-LOGO-PNG-NAV.png"
+              alt="NIQS Logo"
+              style={{ height: 52, width: 'auto', objectFit: 'contain', display: 'block', marginBottom: '0.8rem' }}
+            />
             <div className="fdesc">
               The Nigerian Institute of Quantity Surveyors — Nigeria's professional
               construction cost managers since 1969. Committed to sustainable national
@@ -55,6 +59,9 @@ const Footer = () => {
         <div className="fbot">
           <p>&copy; 2025 <span className="fgold">Nigerian Institute of Quantity Surveyors</span>. All rights reserved.</p>
           <p>No. 24, NIQS Crescent, Mabushi District, Abuja, Nigeria.</p>
+          <p style={{ marginTop: '0.4rem', fontSize: '0.72rem', opacity: 0.55 }}>
+            Designed &amp; built by <span style={{ fontWeight: 700, letterSpacing: '.02em' }}>ADLM</span>
+          </p>
         </div>
       </div>
     </footer>

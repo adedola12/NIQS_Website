@@ -20,7 +20,11 @@ const ALLOWED_ORIGINS = [
 ];
 
 if (process.env.CLIENT_URL) {
-  ALLOWED_ORIGINS.push(process.env.CLIENT_URL);
+  // Support comma-separated list e.g. "http://localhost:5173,https://niqs-website.vercel.app"
+  process.env.CLIENT_URL.split(",").forEach((url) => {
+    const trimmed = url.trim();
+    if (trimmed) ALLOWED_ORIGINS.push(trimmed);
+  });
 }
 
 // Middleware

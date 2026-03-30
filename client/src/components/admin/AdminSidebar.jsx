@@ -82,10 +82,12 @@ export default function AdminSidebar() {
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#C9974A' }}>
-                NIQS
-              </h2>
-              <p style={{ margin: '2px 0 0', fontSize: 11, opacity: 0.7, letterSpacing: 1 }}>
+              <img
+                src="/NIQS-LOGO-PNG-NAV.png"
+                alt="NIQS Logo"
+                style={{ height: 36, width: 'auto', objectFit: 'contain', display: 'block', filter: 'brightness(0) invert(1)' }}
+              />
+              <p style={{ margin: '4px 0 0', fontSize: 11, opacity: 0.7, letterSpacing: 1, color: '#fff' }}>
                 ADMIN PANEL
               </p>
             </div>

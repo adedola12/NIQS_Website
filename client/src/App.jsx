@@ -35,6 +35,7 @@ import Jobs from './pages/public/Jobs';
 import Payment from './pages/public/Payment';
 import Contact from './pages/public/Contact';
 import Partnership from './pages/public/Partnership';
+import PartnerDetail from './pages/public/PartnerDetail';
 
 // Auth Pages
 import Login from './pages/auth/Login';
@@ -128,6 +129,7 @@ export default function App() {
         <Route path="/payment" element={<PublicPage element={<Payment />} />} />
         <Route path="/contact" element={<PublicPage element={<Contact />} />} />
         <Route path="/partnership" element={<PublicPage element={<Partnership />} />} />
+        <Route path="/partnership/:id" element={<PublicPage element={<PartnerDetail />} />} />
 
         {/* ══════ AUTH ROUTES ══════ */}
         <Route path="/login" element={<Login />} />

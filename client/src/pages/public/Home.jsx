@@ -67,9 +67,37 @@ function monthYear(d) {
   try { return new Date(d).toLocaleDateString('en-NG', { month: 'short', year: 'numeric' }); } catch { return ''; }
 }
 
+const fallbackPartners = [
+  { _id: null, name: 'Julius Berger Nigeria Plc', industry: 'Construction & Engineering', tier: 'platinum', logo: null },
+  { _id: null, name: 'Dangote Construction Ltd', industry: 'Infrastructure Development', tier: 'platinum', logo: null },
+  { _id: null, name: 'CCECC Nigeria Ltd', industry: 'Civil Engineering & Roads', tier: 'platinum', logo: null },
+];
+
+const principles = [
+  {
+    icon: '👁️',
+    label: 'Our Vision',
+    title: 'A World-Class QS Profession',
+    body: 'To be the foremost professional body driving excellence in quantity surveying and construction cost management across Nigeria and West Africa.',
+  },
+  {
+    icon: '🎯',
+    label: 'Our Mission',
+    title: 'Advancing the Profession',
+    body: 'To promote, regulate, and advance the practice of quantity surveying; protect the public interest; and develop a globally competitive pool of professionals.',
+  },
+  {
+    icon: '⚖️',
+    label: 'Our Values',
+    title: 'Integrity & Excellence',
+    body: 'Integrity, professionalism, innovation, inclusiveness, and service. These are the values that guide every NIQS member and every programme we deliver.',
+  },
+];
+
 export default function Home() {
   const [news, setNews] = useState(fallbackNews);
   const [events, setEvents] = useState(fallbackEvents);
+  const [platinumPartners, setPlatinumPartners] = useState([]);
 
   useEffect(() => {
     API.get('/news?limit=3').then(res => {
@@ -80,6 +108,11 @@ export default function Home() {
     API.get('/events?limit=3&upcoming=true').then(res => {
       if (res.data?.data?.length) setEvents(res.data.data);
       else if (res.data?.length) setEvents(res.data);
+    }).catch(() => {});
+
+    API.get('/partners?tier=platinum&limit=3').then(res => {
+      const data = res.data?.partners || res.data || [];
+      setPlatinumPartners(data.slice(0, 3));
     }).catch(() => {});
   }, []);
 
@@ -148,17 +181,44 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── STATS STRIP ── */}
-      <div className="strip">
-        <div className="ct">
-          <div className="strip-inner">
-            <div className="strip-item"><div className="strip-num">4,000+</div><div className="strip-lbl">Corporate Qualified Practitioners</div></div>
-            <div className="strip-item"><div className="strip-num">1969</div><div className="strip-lbl">Year of Establishment</div></div>
-            <div className="strip-item"><div className="strip-num">37</div><div className="strip-lbl">State Chapters &amp; FCT</div></div>
-            <div className="strip-item"><div className="strip-num">15+</div><div className="strip-lbl">International Reciprocity Agreements</div></div>
+      {/* ── VISION / MISSION / VALUES ── */}
+      <section style={{ background: 'var(--color-off)' }}>
+        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+          <div style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 3rem' }}>
+            <div className="ey" style={{ justifyContent: 'center' }}>Who We Are</div>
+            <h2 className="sh">Principles That <em>Guide Us</em></h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            {principles.map((p, i) => (
+              <div
+                key={i}
+                style={{
+                  background: i === 1
+                    ? 'linear-gradient(145deg, var(--color-navy), var(--color-navy-3, #1a3280))'
+                    : '#fff',
+                  borderRadius: 18,
+                  padding: '2.2rem 2rem',
+                  border: i === 1 ? 'none' : '1px solid var(--color-bdr)',
+                  boxShadow: i === 1 ? '0 12px 40px rgba(11,31,75,.22)' : '0 2px 12px rgba(11,31,75,.06)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* subtle grid texture on navy card */}
+                {i === 1 && (
+                  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px)', backgroundSize: '44px 44px' }} />
+                )}
+                {/* gold accent line on top */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--color-gold), var(--color-gold-2, #D9AB60))', borderRadius: '18px 18px 0 0' }} />
+                <div style={{ fontSize: '2.4rem', marginBottom: '1.2rem', position: 'relative' }}>{p.icon}</div>
+                <div style={{ fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--color-gold)', marginBottom: '.5rem', position: 'relative' }}>{p.label}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.35rem', color: i === 1 ? '#fff' : 'var(--color-navy)', marginBottom: '1rem', letterSpacing: '-.025em', lineHeight: 1.2, position: 'relative' }}>{p.title}</div>
+                <p style={{ fontSize: '1rem', color: i === 1 ? 'rgba(255,255,255,.82)' : 'var(--color-txt-2)', lineHeight: 1.8, margin: 0, position: 'relative' }}>{p.body}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ── SERVICES ── */}
       <section style={{ background: '#fff' }}>
@@ -182,7 +242,7 @@ export default function Home() {
       </section>
 
       {/* ── NEWS ── */}
-      <section style={{ background: 'var(--off)' }}>
+      <section style={{ background: 'var(--color-off)' }}>
         <div className="ct">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
@@ -251,8 +311,56 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── PLATINUM PARTNERS ── */}
+      {(() => {
+        const displayPartners = platinumPartners.length > 0 ? platinumPartners : fallbackPartners;
+        const isPlaceholder = platinumPartners.length === 0;
+        return (
+          <section style={{ background: 'var(--color-off)' }}>
+            <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <div className="ey">Our Network</div>
+                  <h2 className="sh" style={{ marginBottom: 0 }}>Platinum <em>Partners</em></h2>
+                </div>
+                <Link to="/partnership" className="btn bo">All Partners &rarr;</Link>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.2rem' }}>
+                {displayPartners.map((p, idx) => {
+                  const card = (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.8rem', padding: '1.5rem', background: '#fff', borderRadius: 14, border: `1px solid ${isPlaceholder ? 'var(--color-bdr)' : 'var(--color-bdr)'}`, boxShadow: '0 1px 4px rgba(0,0,0,.05)', opacity: isPlaceholder ? 0.65 : 1, position: 'relative' }}>
+                      {isPlaceholder && (
+                        <span style={{ position: 'absolute', top: 10, right: 10, fontSize: '.58rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', background: 'var(--color-bdr)', color: 'var(--color-txt-3)', padding: '2px 7px', borderRadius: 4 }}>Sample</span>
+                      )}
+                      <div style={{ height: 56, width: 56, borderRadius: 10, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-bdr)' }}>
+                        {p.logo
+                          ? <img src={p.logo} alt={p.name} style={{ height: 50, maxWidth: '100%', objectFit: 'contain' }} />
+                          : <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.4rem', color: '#d1d5db' }}>{p.name[0]}</span>
+                        }
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.9rem', color: 'var(--color-navy)' }}>{p.name}</div>
+                        {p.industry && <div style={{ fontSize: '.75rem', color: 'var(--color-txt-3)', marginTop: 2 }}>{p.industry}</div>}
+                      </div>
+                    </div>
+                  );
+                  return p._id
+                    ? <Link key={p._id} to={`/partnership/${p._id}`} style={{ textDecoration: 'none' }}>{card}</Link>
+                    : <div key={idx}>{card}</div>;
+                })}
+              </div>
+              {isPlaceholder && (
+                <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '.8rem', color: 'var(--color-txt-3)' }}>
+                  Partner logos appear here once added by the admin. <Link to="/contact" style={{ color: 'var(--color-gold)', fontWeight: 600 }}>Enquire about partnership →</Link>
+                </p>
+              )}
+            </div>
+          </section>
+        );
+      })()}
+
       {/* ── QUOTE ── */}
-      <section style={{ background: 'var(--off)', padding: '4rem 0' }}>
+      <section style={{ background: '#fff', padding: '4rem 0' }}>
         <div className="ct">
           <div className="qblock">
             <div className="qtext">

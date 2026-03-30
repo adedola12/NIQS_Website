@@ -37,7 +37,11 @@ const ForgotPassword = () => {
       <div className="login-card">
         {/* Logo */}
         <div className="login-logo">
-          <span className="login-logo-text">NIQS</span>
+          <img
+            src="/NIQS-LOGO-PNG-NAV.png"
+            alt="NIQS Logo"
+            style={{ height: 64, width: 'auto', objectFit: 'contain', display: 'block', margin: '0 auto 0.5rem' }}
+          />
           <span className="login-logo-sub">Nigerian Institute of Quantity Surveyors</span>
         </div>
 

@@ -12,11 +12,18 @@ const emptyForm = {
   name: '',
   tier: 'gold',
   logo: '',
+  coverImage: '',
   description: '',
   benefits: '',
-  price: '',
   website: '',
   contactEmail: '',
+  phone: '',
+  address: '',
+  city: '',
+  state: '',
+  country: 'Nigeria',
+  industry: '',
+  founded: '',
   isActive: true,
 };
 
@@ -55,15 +62,22 @@ export default function ManagePartners() {
   const openEdit = (row) => {
     setEditing(row);
     setForm({
-      name: row.name || '',
-      tier: row.tier || 'gold',
-      logo: row.logo || '',
-      description: row.description || '',
+      name:         row.name         || '',
+      tier:         row.tier         || 'gold',
+      logo:         row.logo         || '',
+      coverImage:   row.coverImage   || '',
+      description:  row.description  || '',
       benefits: Array.isArray(row.benefits) ? row.benefits.join('\n') : row.benefits || '',
-      price: row.price || '',
-      website: row.website || '',
+      website:      row.website      || '',
       contactEmail: row.contactEmail || '',
-      isActive: row.isActive !== false,
+      phone:        row.phone        || '',
+      address:      row.address      || '',
+      city:         row.city         || '',
+      state:        row.state        || '',
+      country:      row.country      || 'Nigeria',
+      industry:     row.industry     || '',
+      founded:      row.founded      || '',
+      isActive:     row.isActive !== false,
     });
     setShowModal(true);
   };
@@ -74,7 +88,6 @@ export default function ManagePartners() {
     try {
       const payload = {
         ...form,
-        price: form.price ? Number(form.price) : undefined,
         benefits: form.benefits
           .split('\n')
           .map((b) => b.trim())
@@ -191,26 +204,53 @@ export default function ManagePartners() {
             <FormField label="Description">
               <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
             </FormField>
+            <FormField label="Cover Image URL">
+              <input value={form.coverImage} onChange={(e) => setForm({ ...form, coverImage: e.target.value })} style={inputStyle} placeholder="https://..." />
+            </FormField>
             <FormField label="Benefits (one per line)">
               <textarea value={form.benefits} onChange={(e) => setForm({ ...form, benefits: e.target.value })} rows={4} style={{ ...inputStyle, resize: 'vertical' }} placeholder="Logo on website&#10;Event sponsorship&#10;Member discounts" />
             </FormField>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <FormField label="Price">
-                <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} style={inputStyle} placeholder="Amount in Naira" />
-              </FormField>
               <FormField label="Website">
                 <input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} style={inputStyle} placeholder="https://..." />
               </FormField>
+              <FormField label="Contact Email">
+                <input type="email" value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} style={inputStyle} />
+              </FormField>
             </div>
-            <FormField label="Contact Email">
-              <input type="email" value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} style={inputStyle} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <FormField label="Phone">
+                <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} style={inputStyle} placeholder="+234..." />
+              </FormField>
+              <FormField label="Industry">
+                <input value={form.industry} onChange={(e) => setForm({ ...form, industry: e.target.value })} style={inputStyle} placeholder="e.g. Construction" />
+              </FormField>
+            </div>
+            <FormField label="Address">
+              <input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} style={inputStyle} placeholder="Street address" />
             </FormField>
-            <FormField label="Active">
-              <select value={form.isActive ? 'yes' : 'no'} onChange={(e) => setForm({ ...form, isActive: e.target.value === 'yes' })} style={inputStyle}>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </FormField>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+              <FormField label="City">
+                <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} style={inputStyle} />
+              </FormField>
+              <FormField label="State">
+                <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} style={inputStyle} />
+              </FormField>
+              <FormField label="Country">
+                <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} style={inputStyle} />
+              </FormField>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <FormField label="Founded Year">
+                <input value={form.founded} onChange={(e) => setForm({ ...form, founded: e.target.value })} style={inputStyle} placeholder="e.g. 2005" />
+              </FormField>
+              <FormField label="Active">
+                <select value={form.isActive ? 'yes' : 'no'} onChange={(e) => setForm({ ...form, isActive: e.target.value === 'yes' })} style={inputStyle}>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </FormField>
+            </div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
               <button type="button" onClick={() => setShowModal(false)} style={{ ...btnStyle, background: '#e5e7eb', color: '#374151' }}>Cancel</button>
               <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#C9974A', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
