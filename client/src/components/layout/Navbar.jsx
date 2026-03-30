@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 /* ── helper: closes dropdown when clicking outside ── */
 function useClickOutside(ref, handler) {
@@ -23,14 +24,10 @@ function NavDropdown({ label, children }) {
   const ref = useRef(null);
   useClickOutside(ref, () => setOpen(false));
 
-  // Clone children to inject onClick that closes the dropdown
   const childrenWithClose = React.Children.map(children, (child) => {
     if (!child) return child;
-    // Only inject onClick on Link elements (they have a "to" prop)
     if (child.props && child.props.to !== undefined) {
-      return React.cloneElement(child, {
-        onClick: () => setOpen(false),
-      });
+      return React.cloneElement(child, { onClick: () => setOpen(false) });
     }
     return child;
   });
@@ -51,10 +48,161 @@ function NavDropdown({ label, children }) {
   );
 }
 
+/* ── User avatar chip (shown when logged in) ── */
+function UserChip() {
+  const { admin, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useClickOutside(ref, () => setOpen(false));
+
+  const isAdminUser = !!admin;
+  const firstName = admin?.firstName || user?.firstName || '';
+  const lastName  = admin?.lastName  || user?.lastName  || '';
+  const initials  = `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase() || '?';
+  const fullName  = `${firstName} ${lastName}`.trim() || 'Account';
+  const portalPath = isAdminUser ? '/admin' : '/portal';
+
+  const bgColor = isAdminUser ? '#C9974A' : '#0B1F4B';
+
+  const handleLogout = async () => {
+    setOpen(false);
+    await logout();
+    navigate('/login');
+  };
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          background: 'transparent',
+          border: '1.5px solid rgba(255,255,255,0.25)',
+          borderRadius: 50,
+          padding: '5px 12px 5px 5px',
+          cursor: 'pointer',
+          color: '#fff',
+          fontSize: 13,
+          fontWeight: 600,
+          transition: 'border-color 0.2s',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#C9974A')}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)')}
+      >
+        {/* Avatar circle */}
+        <span
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: '50%',
+            background: bgColor,
+            border: '2px solid rgba(255,255,255,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 11,
+            fontWeight: 700,
+            color: '#fff',
+            flexShrink: 0,
+          }}
+        >
+          {initials}
+        </span>
+        {firstName}
+        <span style={{ fontSize: 10, opacity: 0.7 }}>&#9662;</span>
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 10px)',
+            right: 0,
+            background: '#fff',
+            borderRadius: 10,
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+            minWidth: 200,
+            zIndex: 2000,
+            overflow: 'hidden',
+          }}
+        >
+          {/* Info header */}
+          <div style={{ padding: '14px 16px', borderBottom: '1px solid #f3f4f6', background: '#f9fafb' }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                background: bgColor,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 15,
+                fontWeight: 700,
+                color: '#fff',
+                marginBottom: 8,
+              }}
+            >
+              {initials}
+            </div>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#111827' }}>{fullName}</p>
+            <p style={{ margin: '2px 0 0', fontSize: 11, color: '#9ca3af' }}>
+              {isAdminUser ? (admin?.role?.replace(/_/g, ' ') || 'Admin') : 'Member'}
+            </p>
+          </div>
+
+          {/* Links */}
+          <div style={{ padding: '6px 0' }}>
+            <button
+              onClick={() => { setOpen(false); navigate(portalPath); }}
+              style={menuItemStyle}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#f3f4f6')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              {isAdminUser ? '🛡️  Admin Panel' : '👤  My Portal'}
+            </button>
+            <button
+              onClick={handleLogout}
+              style={{ ...menuItemStyle, color: '#dc2626' }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#fef2f2')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              🚪  Sign Out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const menuItemStyle = {
+  display: 'block',
+  width: '100%',
+  padding: '9px 16px',
+  background: 'transparent',
+  border: 'none',
+  textAlign: 'left',
+  fontSize: 13,
+  fontWeight: 500,
+  color: '#374151',
+  cursor: 'pointer',
+  transition: 'background 0.1s',
+};
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { admin, user, logout } = useAuth();
+
+  const isLoggedIn = !!(admin || user);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -62,7 +210,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
@@ -125,11 +272,11 @@ const Navbar = () => {
             </NavDropdown>
 
             <NavDropdown label="Research &amp; Devt">
-              <Link to="/research" className="ddi">Workshop Certificates</Link>
-              <Link to="/research" className="ddi">Workshop Materials</Link>
-              <Link to="/research" className="ddi">Webinar Series</Link>
-              <Link to="/research" className="ddi">Publications</Link>
-              <Link to="/research" className="ddi">Journal</Link>
+              <Link to="/login"              className="ddi">Workshop Certificates <span className="lock">&#128274;</span></Link>
+              <Link to="/workshop-materials" className="ddi">Workshop Materials</Link>
+              <Link to="/webinars"           className="ddi">Webinar Series</Link>
+              <Link to="/research"           className="ddi">Publications</Link>
+              <Link to="/research#journal"   className="ddi">Journal of QS</Link>
             </NavDropdown>
 
             <NavDropdown label="News">
@@ -142,8 +289,12 @@ const Navbar = () => {
             <Link to="/contact" className={`nl${location.pathname === '/contact' ? ' on' : ''}`}>Contact</Link>
           </div>
 
-          {/* CTA */}
-          <Link to="/login" className="ncta">Member Portal</Link>
+          {/* CTA — swaps to user chip when logged in */}
+          {isLoggedIn ? (
+            <UserChip />
+          ) : (
+            <Link to="/login" className="ncta">Member Portal</Link>
+          )}
 
           {/* Hamburger */}
           <button className={`ham${menuOpen ? ' op' : ''}`} onClick={toggleMenu} aria-label="Toggle navigation">
@@ -170,7 +321,26 @@ const Navbar = () => {
 
         <div className="ml-hd">Membership</div>
         <Link to="/membership" className="ml-sub" onClick={closeMenu}>Requirements &amp; Registration</Link>
-        <Link to="/login" className="ml-sub" onClick={closeMenu}>Member Portal &#128274;</Link>
+        {isLoggedIn ? (
+          <>
+            <button
+              className="ml-sub"
+              style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', padding: 0 }}
+              onClick={() => { closeMenu(); navigate(admin ? '/admin' : '/portal'); }}
+            >
+              {admin ? '🛡️ Admin Panel' : '👤 My Portal'}
+            </button>
+            <button
+              className="ml-sub"
+              style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', padding: 0, color: '#dc2626' }}
+              onClick={async () => { closeMenu(); await logout(); navigate('/login'); }}
+            >
+              🚪 Sign Out
+            </button>
+          </>
+        ) : (
+          <Link to="/login" className="ml-sub" onClick={closeMenu}>Member Portal &#128274;</Link>
+        )}
 
         <div className="ml-hd">Exams</div>
         <Link to="/exams" className="ml-sub" onClick={closeMenu}>Examinations</Link>

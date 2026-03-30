@@ -112,14 +112,83 @@ exports.registerMember = async (req, res) => {
 exports.getMe = async (req, res) => {
   try {
     if (req.admin) {
-      return res.json({ type: 'admin', data: req.admin });
+      // Shape the client expects: { admin: { ... } }
+      return res.json({ admin: req.admin, type: 'admin' });
     }
     if (req.user) {
-      return res.json({ type: 'member', data: req.user });
+      // Shape the client expects: { user: { ... } }
+      return res.json({ user: req.user, type: 'member' });
     }
     res.status(401).json({ message: 'Not authenticated' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ── One-time seed: create the first main_admin ──────────────────────────────
+// Only works when NO admins exist yet. Auto-disables after first use.
+exports.seedAdmin = async (req, res) => {
+  try {
+    const count = await Admin.countDocuments();
+    if (count > 0) {
+      return res.status(403).json({ message: 'Admin account already exists. Seed disabled.' });
+    }
+
+    const { email, password, firstName, lastName } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: 'email and password are required' });
+    }
+
+    const admin = await Admin.create({
+      email,
+      password,
+      firstName: firstName || 'Main',
+      lastName:  lastName  || 'Admin',
+      role:      'main_admin',
+      isActive:  true,
+    });
+
+    const token = generateToken(admin._id, true);
+    setTokenCookie(res, token);
+
+    res.status(201).json({
+      message: 'Main admin created successfully. This endpoint is now disabled.',
+      admin: { id: admin._id, email: admin.email, role: admin.role },
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// ── One-time seed: create a test member account ─────────────────────────────
+exports.seedMember = async (req, res) => {
+  try {
+    const testEmail = 'testmember@niqs.org';
+    const existing = await User.findOne({ email: testEmail });
+    if (existing) {
+      return res.status(200).json({
+        message: 'Test member already exists',
+        credentials: { email: testEmail, password: 'member1' }
+      });
+    }
+
+    await User.create({
+      email:          testEmail,
+      password:       'member1',
+      firstName:      'Tunde',
+      lastName:       'Adeyemi',
+      phone:          '08012345678',
+      membershipType: 'graduate',
+      isVerified:     true,
+    });
+
+    res.status(201).json({
+      message: 'Test member created successfully',
+      credentials: { email: testEmail, password: 'member1' }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 

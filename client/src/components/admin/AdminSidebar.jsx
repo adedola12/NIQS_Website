@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { MdLogout, MdMenu, MdClose } from 'react-icons/md';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { MdLogout, MdMenu, MdClose, MdManageAccounts, MdHome } from 'react-icons/md';
 import { useAuth } from '../../context/AuthContext';
 import { getAdminSidebarItems, getAdminLabel } from '../../utils/roleHelpers';
 
@@ -14,7 +14,7 @@ export default function AdminSidebar() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/admin/login');
+    navigate('/login');
   };
 
   return (
@@ -58,7 +58,7 @@ export default function AdminSidebar() {
       <aside
         style={{
           width: 260,
-          minHeight: '100vh',
+          height: '100vh',
           background: '#0B1F4B',
           color: '#fff',
           display: 'flex',
@@ -68,26 +68,53 @@ export default function AdminSidebar() {
           left: 0,
           zIndex: 1000,
           transition: 'transform 0.3s ease',
+          overflow: 'hidden',
         }}
         className={`admin-sidebar ${collapsed ? 'sidebar-open' : ''}`}
       >
-        {/* Branding */}
+        {/* Branding — clicking logo goes to main website home */}
         <div
           style={{
-            padding: '24px 20px 16px',
+            padding: '20px 20px 14px',
             borderBottom: '1px solid rgba(255,255,255,0.1)',
+            flexShrink: 0,
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#C9974A' }}>
-            NIQS
-          </h2>
-          <p style={{ margin: '4px 0 0', fontSize: 11, opacity: 0.7, letterSpacing: 1 }}>
-            ADMIN PANEL
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#C9974A' }}>
+                NIQS
+              </h2>
+              <p style={{ margin: '2px 0 0', fontSize: 11, opacity: 0.7, letterSpacing: 1 }}>
+                ADMIN PANEL
+              </p>
+            </div>
+            <Link
+              to="/"
+              title="Back to main website"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: 'rgba(255,255,255,0.08)',
+                color: 'rgba(255,255,255,0.6)',
+                textDecoration: 'none',
+                transition: 'all 0.15s',
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,151,74,0.2)'; e.currentTarget.style.color = '#C9974A'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
+            >
+              <MdHome size={18} />
+            </Link>
+          </div>
         </div>
 
-        {/* Nav items */}
-        <nav style={{ flex: 1, padding: '12px 0', overflowY: 'auto' }}>
+        {/* Nav items — scrollable, fills space between header and footer */}
+        <nav style={{ flex: 1, padding: '12px 0', overflowY: 'auto', minHeight: 0 }}>
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -116,14 +143,16 @@ export default function AdminSidebar() {
           })}
         </nav>
 
-        {/* Admin info + Logout */}
+        {/* Admin info + Profile + Logout — always pinned at bottom */}
         <div
           style={{
-            padding: '16px 20px',
+            padding: '14px 20px',
             borderTop: '1px solid rgba(255,255,255,0.1)',
+            flexShrink: 0,
           }}
         >
-          <div style={{ marginBottom: 12 }}>
+          {/* Name + role */}
+          <div style={{ marginBottom: 10 }}>
             <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
               {admin?.firstName} {admin?.lastName}
             </p>
@@ -148,6 +177,35 @@ export default function AdminSidebar() {
               {getAdminLabel(role)}
             </span>
           </div>
+
+          {/* My Profile link */}
+          <NavLink
+            to="/admin/profile"
+            onClick={() => setCollapsed(false)}
+            style={({ isActive }) => ({
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              width: '100%',
+              padding: '9px 12px',
+              marginBottom: 8,
+              background: isActive ? 'rgba(201,151,74,0.15)' : 'rgba(255,255,255,0.06)',
+              color: isActive ? '#C9974A' : 'rgba(255,255,255,0.8)',
+              border: 'none',
+              borderRadius: 6,
+              cursor: 'pointer',
+              fontSize: 13,
+              fontWeight: isActive ? 600 : 400,
+              textDecoration: 'none',
+              transition: 'background 0.15s',
+              boxSizing: 'border-box',
+            })}
+          >
+            <MdManageAccounts size={18} />
+            My Profile
+          </NavLink>
+
+          {/* Logout */}
           <button
             onClick={handleLogout}
             style={{
@@ -155,9 +213,9 @@ export default function AdminSidebar() {
               alignItems: 'center',
               gap: 8,
               width: '100%',
-              padding: '10px 12px',
-              background: 'rgba(255,255,255,0.08)',
-              color: '#fff',
+              padding: '9px 12px',
+              background: 'rgba(255,255,255,0.06)',
+              color: 'rgba(255,255,255,0.8)',
               border: 'none',
               borderRadius: 6,
               cursor: 'pointer',
@@ -165,7 +223,7 @@ export default function AdminSidebar() {
               transition: 'background 0.15s',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
           >
             <MdLogout size={18} />
             Logout

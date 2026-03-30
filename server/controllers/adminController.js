@@ -1,6 +1,61 @@
 const Admin = require('../models/Admin');
 const Chapter = require('../models/Chapter');
 
+// Get own profile
+exports.getProfile = async (req, res) => {
+  try {
+    const admin = await Admin.findById(req.admin._id).populate('assignedChapter', 'name state');
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+    res.json(admin);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Update own profile
+exports.updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, phone } = req.body;
+    const admin = await Admin.findById(req.admin._id);
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+
+    if (firstName) admin.firstName = firstName;
+    if (lastName)  admin.lastName  = lastName;
+    if (phone !== undefined) admin.phone = phone;
+
+    await admin.save();
+    res.json(admin);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Change own password
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Both current and new password are required' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    }
+
+    // Re-fetch with password field (middleware strips it)
+    const admin = await Admin.findById(req.admin._id).select('+password');
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+
+    const isMatch = await admin.comparePassword(currentPassword);
+    if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
+
+    admin.password = newPassword;
+    await admin.save();
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // Get all admins (main_admin only)
 exports.getAllAdmins = async (req, res) => {
   try {
@@ -130,9 +185,15 @@ exports.getDashboardStats = async (req, res) => {
     const upcomingEvents = await Event.find({ ...eventFilter, date: { $gte: new Date() } }).sort('date').limit(5);
 
     res.json({
-      stats: { newsCount, eventCount, memberCount, contactCount, adminCount },
+      stats: {
+        totalNews:      newsCount,
+        upcomingEvents: eventCount,
+        totalMembers:   memberCount,
+        unreadMessages: contactCount,
+        totalAdmins:    adminCount,
+      },
       recentNews,
-      upcomingEvents
+      upcomingEvents,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

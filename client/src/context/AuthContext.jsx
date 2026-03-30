@@ -36,12 +36,21 @@ export function AuthProvider({ children }) {
         setUser(data.user);
         setAdmin(null);
         setIsAdmin(false);
+      } else {
+        // Unexpected response — clear state
+        saveToken(null);
+        setAdmin(null);
+        setUser(null);
+        setIsAdmin(false);
       }
     } catch (err) {
-      saveToken(null);
-      setUser(null);
-      setAdmin(null);
-      setIsAdmin(false);
+      // Only clear auth on explicit 401 — don't wipe state on network errors
+      if (err.response?.status === 401) {
+        saveToken(null);
+        setUser(null);
+        setAdmin(null);
+        setIsAdmin(false);
+      }
     } finally {
       setLoading(false);
     }
@@ -54,7 +63,7 @@ export function AuthProvider({ children }) {
   const login = async (email, password, loginAsAdmin = false) => {
     const endpoint = loginAsAdmin ? '/auth/admin/login' : '/auth/login';
 
-    const { data } = await API.post(endpoint, { email, password });
+    const { data } = await API.post(endpoint, { email: email.trim().toLowerCase(), password });
     saveToken(data.token);
 
     if (loginAsAdmin) {
@@ -98,6 +107,7 @@ export function AuthProvider({ children }) {
   const value = {
     user,
     admin,
+    setAdmin,
     token,
     loading,
     isAdmin,

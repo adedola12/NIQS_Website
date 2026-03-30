@@ -9,7 +9,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     if (!loading && !isAdmin) {
-      navigate('/admin/login', { replace: true });
+      navigate('/login', { replace: true });
     }
   }, [loading, isAdmin, navigate]);
 

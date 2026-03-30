@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
@@ -8,8 +8,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,14 +22,16 @@ const Login = () => {
     setLoading(true);
     try {
       await login(email, password, isAdmin);
-      navigate(isAdmin ? '/admin' : '/portal');
+      // Hard redirect so the app re-mounts with a fresh auth check —
+      // avoids race conditions between React Router navigation and
+      // the AuthContext state update settling.
+      window.location.href = isAdmin ? '/admin' : '/portal';
     } catch (err) {
       const msg =
         err.response?.data?.message ||
         err.response?.data?.error ||
         'Login failed. Please check your credentials.';
       toast.error(msg);
-    } finally {
       setLoading(false);
     }
   };

@@ -1,73 +1,76 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import {
+  MdAdminPanelSettings, MdEdit, MdDelete, MdPersonAdd,
+  MdToggleOn, MdToggleOff, MdShield, MdSearch,
+} from 'react-icons/md';
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
-import { canDelete, getAdminLabel } from '../../utils/roleHelpers';
 import AdminHeader from '../../components/admin/AdminHeader';
-import DataTable from '../../components/admin/DataTable';
+
+/* ── Role config ──────────────────────────────────────── */
+const ROLES = [
+  { value: 'national_admin', label: 'National Admin',      color: '#2563EB', bg: '#eff6ff' },
+  { value: 'state_admin',    label: 'State Chapter Admin', color: '#059669', bg: '#ecfdf5' },
+  { value: 'waqsn_admin',    label: 'WAQSN Admin',         color: '#7c3aed', bg: '#f5f3ff' },
+  { value: 'yqsf_admin',     label: 'YQSF Admin',         color: '#0891b2', bg: '#ecfeff' },
+  { value: 'main_admin',     label: 'Main Admin',          color: '#C9974A', bg: '#fffbeb' },
+];
+const roleInfo = (val) => ROLES.find(r => r.value === val) || { label: val, color: '#6b7280', bg: '#f9fafb' };
 
 const emptyForm = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  role: 'national_admin',
-  chapter: '',
-  isActive: true,
+  firstName: '', lastName: '', email: '', password: '',
+  role: 'national_admin', assignedChapter: '', isActive: true,
 };
 
 export default function ManageAdmins() {
-  const { admin } = useAuth();
-  const role = admin?.role || '';
-  const [admins, setAdmins] = useState([]);
+  const { admin: me } = useAuth();
+  const isMain = me?.role === 'main_admin';
+
+  const [admins,   setAdmins]   = useState([]);
   const [chapters, setChapters] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ ...emptyForm });
-  const [submitting, setSubmitting] = useState(false);
+  const [loading,  setLoading]  = useState(true);
+  const [search,   setSearch]   = useState('');
+
+  /* modal state */
+  const [showModal,     setShowModal]     = useState(false);
+  const [editing,       setEditing]       = useState(null);
+  const [form,          setForm]          = useState({ ...emptyForm });
+  const [submitting,    setSubmitting]    = useState(false);
+
+  /* quick-role panel */
+  const [roleTarget,    setRoleTarget]    = useState(null); // admin object
+  const [quickRole,     setQuickRole]     = useState('');
+
+  /* delete confirm */
   const [confirmDelete, setConfirmDelete] = useState(null);
 
-  useEffect(() => {
-    fetchAdmins();
-    fetchChapters();
-  }, []);
+  useEffect(() => { fetchAdmins(); fetchChapters(); }, []);
 
   const fetchAdmins = async () => {
     try {
       const { data } = await API.get('/admin');
-      setAdmins(data.admins || data || []);
-    } catch (err) {
-      toast.error('Failed to fetch admins');
-    } finally {
-      setLoading(false);
-    }
+      setAdmins(Array.isArray(data) ? data : data.admins || []);
+    } catch { toast.error('Failed to load admins'); }
+    finally { setLoading(false); }
   };
 
   const fetchChapters = async () => {
     try {
       const { data } = await API.get('/chapters');
-      setChapters(data.chapters || data || []);
-    } catch (err) {
-      // silent
-    }
+      setChapters(Array.isArray(data) ? data : data.chapters || []);
+    } catch { /* silent */ }
   };
 
-  const openAdd = () => {
-    setEditing(null);
-    setForm({ ...emptyForm });
-    setShowModal(true);
-  };
-
+  /* ── CRUD ── */
+  const openAdd = () => { setEditing(null); setForm({ ...emptyForm }); setShowModal(true); };
   const openEdit = (row) => {
     setEditing(row);
     setForm({
-      firstName: row.firstName || '',
-      lastName: row.lastName || '',
-      email: row.email || '',
-      password: '',
+      firstName: row.firstName || '', lastName: row.lastName || '',
+      email: row.email || '', password: '',
       role: row.role || 'national_admin',
-      chapter: row.chapter?._id || row.chapter || '',
+      assignedChapter: row.assignedChapter?._id || row.assignedChapter || '',
       isActive: row.isActive !== false,
     });
     setShowModal(true);
@@ -79,8 +82,7 @@ export default function ManageAdmins() {
     try {
       const payload = { ...form };
       if (editing && !payload.password) delete payload.password;
-      if (payload.role !== 'state_admin') delete payload.chapter;
-
+      if (payload.role !== 'state_admin') delete payload.assignedChapter;
       if (editing) {
         await API.put(`/admin/${editing._id}`, payload);
         toast.success('Admin updated');
@@ -91,10 +93,8 @@ export default function ManageAdmins() {
       setShowModal(false);
       fetchAdmins();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to save admin');
-    } finally {
-      setSubmitting(false);
-    }
+      toast.error(err.response?.data?.message || 'Failed to save');
+    } finally { setSubmitting(false); }
   };
 
   const handleDelete = async () => {
@@ -104,301 +104,321 @@ export default function ManageAdmins() {
       toast.success('Admin deleted');
       setConfirmDelete(null);
       fetchAdmins();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to delete admin');
-    }
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to delete'); }
   };
 
-  const columns = [
-    {
-      key: 'firstName',
-      label: 'Name',
-      render: (_, row) => `${row.firstName || ''} ${row.lastName || ''}`.trim(),
-    },
-    { key: 'email', label: 'Email' },
-    {
-      key: 'role',
-      label: 'Role',
-      render: (val) => (
-        <span
-          style={{
-            padding: '2px 8px',
-            borderRadius: 4,
-            fontSize: 11,
-            fontWeight: 600,
-            background:
-              val === 'main_admin'     ? '#C9974A'
-              : val === 'national_admin' ? '#2563EB'
-              : val === 'waqsn_admin'    ? '#7c3aed'
-              : val === 'yqsf_admin'     ? '#0891b2'
-              : '#059669',
-            color: '#fff',
-          }}
-        >
-          {getAdminLabel(val)}
-        </span>
-      ),
-    },
-    {
-      key: 'chapter',
-      label: 'Chapter',
-      render: (val) => (val && typeof val === 'object' ? val.name : val || '--'),
-    },
-    {
-      key: 'isActive',
-      label: 'Status',
-      render: (val) => (
-        <span style={{ color: val !== false ? '#059669' : '#dc2626', fontWeight: 600, fontSize: 13 }}>
-          {val !== false ? 'Active' : 'Inactive'}
-        </span>
-      ),
-    },
-    {
-      key: 'lastLogin',
-      label: 'Last Login',
-      render: (val) => (val ? new Date(val).toLocaleDateString() : 'Never'),
-    },
-  ];
+  /* ── Quick role change ── */
+  const openRolePanel = (row) => { setRoleTarget(row); setQuickRole(row.role); };
+  const applyRoleChange = async () => {
+    if (!roleTarget || quickRole === roleTarget.role) { setRoleTarget(null); return; }
+    try {
+      await API.put(`/admin/${roleTarget._id}`, { role: quickRole });
+      toast.success(`Role updated to ${roleInfo(quickRole).label}`);
+      setRoleTarget(null);
+      fetchAdmins();
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to update role'); }
+  };
+
+  /* ── Toggle active ── */
+  const toggleActive = async (row) => {
+    if (row._id === me?._id) { toast.error("Can't deactivate your own account"); return; }
+    try {
+      await API.put(`/admin/${row._id}`, { isActive: !row.isActive });
+      toast.success(row.isActive ? 'Admin deactivated' : 'Admin activated');
+      fetchAdmins();
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to update status'); }
+  };
+
+  const filtered = admins.filter(a =>
+    `${a.firstName} ${a.lastName} ${a.email} ${a.role}`.toLowerCase().includes(search.toLowerCase())
+  );
+
+  /* ── Summaries ── */
+  const summary = ROLES.map(r => ({ ...r, count: admins.filter(a => a.role === r.value).length }));
 
   return (
     <div>
-      <AdminHeader title="Admin Management (UAC)" breadcrumbs={['Admin Management']} />
+      <AdminHeader title="Admin Management (UAC)" breadcrumbs={['UAC']} />
 
       <div style={{ padding: '24px 28px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-          <h3 style={{ margin: 0, fontSize: 16, color: '#374151' }}>All Administrators</h3>
-          <button
-            onClick={openAdd}
-            style={{
-              padding: '10px 20px',
-              background: '#C9974A',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 6,
-              fontWeight: 600,
-              fontSize: 14,
-              cursor: 'pointer',
-            }}
-          >
-            + Add New Admin
-          </button>
+
+        {/* Summary badges */}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
+          {summary.map(r => (
+            <div key={r.value} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: r.bg, border: `1.5px solid ${r.color}22`, borderRadius: 10 }}>
+              <MdShield size={16} color={r.color} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: r.color }}>{r.count}</span>
+              <span style={{ fontSize: 12, color: '#6b7280' }}>{r.label}</span>
+            </div>
+          ))}
         </div>
 
-        <DataTable
-          columns={columns}
-          data={admins}
-          loading={loading}
-          onEdit={openEdit}
-          onDelete={(row) => setConfirmDelete(row)}
-          canDeleteRows={canDelete(role)}
-        />
+        {/* Toolbar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
+            <MdSearch size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
+            <input
+              type="text" placeholder="Search admins…" value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ width: '100%', padding: '9px 12px 9px 32px', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, boxSizing: 'border-box' }}
+            />
+          </div>
+          {isMain && (
+            <button onClick={openAdd} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#0B1F4B', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
+              <MdPersonAdd size={18} /> Add New Admin
+            </button>
+          )}
+        </div>
+
+        {/* Table */}
+        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, overflow: 'hidden' }}>
+          {loading ? (
+            <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>Loading...</div>
+          ) : filtered.length === 0 ? (
+            <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>No admins found.</div>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                  {['Admin', 'Email', 'Role', 'Chapter', 'Status', 'Last Login', 'Actions'].map(h => (
+                    <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 600, color: '#6b7280', whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(a => {
+                  const ri = roleInfo(a.role);
+                  const isSelf = a._id === me?._id;
+                  return (
+                    <tr key={a._id} style={{ borderBottom: '1px solid #f3f4f6' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#fafafa'}
+                      onMouseLeave={e => e.currentTarget.style.background = ''}>
+
+                      {/* Name */}
+                      <td style={{ padding: '10px 14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 34, height: 34, borderRadius: '50%', background: ri.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 13, flexShrink: 0 }}>
+                            {(a.firstName?.[0] || '?').toUpperCase()}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 600, color: '#111827' }}>{a.firstName} {a.lastName}{isSelf ? ' (You)' : ''}</div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Email */}
+                      <td style={{ padding: '10px 14px', color: '#6b7280' }}>{a.email}</td>
+
+                      {/* Role badge */}
+                      <td style={{ padding: '10px 14px' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 6, background: ri.bg, color: ri.color, fontWeight: 700, fontSize: 11, border: `1px solid ${ri.color}33` }}>
+                          <MdAdminPanelSettings size={13} />{ri.label}
+                        </span>
+                      </td>
+
+                      {/* Chapter */}
+                      <td style={{ padding: '10px 14px', color: '#6b7280', fontSize: 12 }}>
+                        {a.assignedChapter ? (typeof a.assignedChapter === 'object' ? a.assignedChapter.name : a.assignedChapter) : '—'}
+                      </td>
+
+                      {/* Status toggle */}
+                      <td style={{ padding: '10px 14px' }}>
+                        {isMain && !isSelf ? (
+                          <button onClick={() => toggleActive(a)} title={a.isActive ? 'Click to deactivate' : 'Click to activate'}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: a.isActive ? '#059669' : '#dc2626' }}>
+                            {a.isActive ? <MdToggleOn size={22} /> : <MdToggleOff size={22} />}
+                            <span style={{ fontSize: 12, fontWeight: 600 }}>{a.isActive ? 'Active' : 'Inactive'}</span>
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: 12, fontWeight: 600, color: a.isActive ? '#059669' : '#dc2626' }}>
+                            {a.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Last login */}
+                      <td style={{ padding: '10px 14px', color: '#9ca3af', fontSize: 12 }}>
+                        {a.lastLogin ? new Date(a.lastLogin).toLocaleDateString() : 'Never'}
+                      </td>
+
+                      {/* Actions */}
+                      <td style={{ padding: '10px 14px' }}>
+                        {isMain && (
+                          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                            {/* Change Role */}
+                            {!isSelf && (
+                              <button onClick={() => openRolePanel(a)} title="Change Role"
+                                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', background: '#f0f9ff', border: '1px solid #0891b2', borderRadius: 6, color: '#0891b2', fontWeight: 600, fontSize: 11, cursor: 'pointer' }}>
+                                <MdShield size={13} /> Role
+                              </button>
+                            )}
+                            {/* Edit */}
+                            <button onClick={() => openEdit(a)} title="Edit"
+                              style={{ padding: 6, background: '#f3f4f6', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#374151', display: 'flex' }}>
+                              <MdEdit size={15} />
+                            </button>
+                            {/* Delete */}
+                            {!isSelf && (
+                              <button onClick={() => setConfirmDelete(a)} title="Delete"
+                                style={{ padding: 6, background: '#fef2f2', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#dc2626', display: 'flex' }}>
+                                <MdDelete size={15} />
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* ── Add / Edit Modal ── */}
       {showModal && (
-        <ModalOverlay onClose={() => setShowModal(false)}>
-          <h3 style={{ margin: '0 0 20px', color: '#0B1F4B' }}>
-            {editing ? 'Edit Admin' : 'Add New Admin'}
-          </h3>
+        <Modal onClose={() => setShowModal(false)} title={editing ? 'Edit Admin' : 'Add New Admin'}>
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <FormField label="First Name" required>
-                <input
-                  type="text"
-                  value={form.firstName}
-                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                  required
-                  style={inputStyle}
-                />
-              </FormField>
-              <FormField label="Last Name" required>
-                <input
-                  type="text"
-                  value={form.lastName}
-                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                  required
-                  style={inputStyle}
-                />
-              </FormField>
+              <Field label="First Name" required>
+                <input style={iStyle} value={form.firstName} required
+                  onChange={e => setForm({ ...form, firstName: e.target.value })} />
+              </Field>
+              <Field label="Last Name" required>
+                <input style={iStyle} value={form.lastName} required
+                  onChange={e => setForm({ ...form, lastName: e.target.value })} />
+              </Field>
             </div>
-            <FormField label="Email" required>
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                required
-                style={inputStyle}
-              />
-            </FormField>
-            <FormField label={editing ? 'Password (leave blank to keep)' : 'Password'} required={!editing}>
-              <input
-                type="password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
+            <Field label="Email" required>
+              <input style={iStyle} type="email" value={form.email} required
+                onChange={e => setForm({ ...form, email: e.target.value })} />
+            </Field>
+            <Field label={editing ? 'Password (leave blank to keep)' : 'Password'} required={!editing}>
+              <input style={iStyle} type="password" value={form.password}
                 required={!editing}
-                style={inputStyle}
-              />
-            </FormField>
-            <FormField label="Role" required>
-              <select
-                value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-                style={inputStyle}
-              >
-                <option value="national_admin">National Admin</option>
-                <option value="state_admin">State Chapter Admin</option>
-                <option value="waqsn_admin">WAQSN Admin</option>
-                <option value="yqsf_admin">YQSF Admin</option>
+                onChange={e => setForm({ ...form, password: e.target.value })} />
+            </Field>
+            <Field label="Role" required>
+              <select style={iStyle} value={form.role}
+                onChange={e => setForm({ ...form, role: e.target.value })}>
+                {ROLES.filter(r => r.value !== 'main_admin').map(r => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
               </select>
-            </FormField>
+            </Field>
             {form.role === 'state_admin' && (
-              <FormField label="Assigned Chapter" required>
-                <select
-                  value={form.chapter}
-                  onChange={(e) => setForm({ ...form, chapter: e.target.value })}
-                  required
-                  style={inputStyle}
-                >
+              <Field label="Assigned Chapter" required>
+                <select style={iStyle} value={form.assignedChapter} required
+                  onChange={e => setForm({ ...form, assignedChapter: e.target.value })}>
                   <option value="">-- Select Chapter --</option>
-                  {chapters.map((ch) => (
-                    <option key={ch._id} value={ch._id}>
-                      {ch.name}
-                    </option>
+                  {chapters.map(ch => (
+                    <option key={ch._id} value={ch._id}>{ch.name}</option>
                   ))}
                 </select>
-              </FormField>
+              </Field>
             )}
             {editing && (
-              <FormField label="Status">
-                <select
-                  value={form.isActive ? 'active' : 'inactive'}
-                  onChange={(e) => setForm({ ...form, isActive: e.target.value === 'active' })}
-                  style={inputStyle}
-                >
+              <Field label="Status">
+                <select style={iStyle} value={form.isActive ? 'active' : 'inactive'}
+                  onChange={e => setForm({ ...form, isActive: e.target.value === 'active' })}>
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
-              </FormField>
+              </Field>
             )}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                style={{ ...btnStyle, background: '#e5e7eb', color: '#374151' }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                style={{ ...btnStyle, background: '#C9974A', color: '#fff', opacity: submitting ? 0.6 : 1 }}
-              >
-                {submitting ? 'Saving...' : editing ? 'Update' : 'Create'}
-              </button>
+              <Btn onClick={() => setShowModal(false)} style={{ background: '#e5e7eb', color: '#374151' }}>Cancel</Btn>
+              <Btn type="submit" disabled={submitting} style={{ background: '#0B1F4B', color: '#fff', opacity: submitting ? .6 : 1 }}>
+                {submitting ? 'Saving…' : editing ? 'Update' : 'Create Admin'}
+              </Btn>
             </div>
           </form>
-        </ModalOverlay>
+        </Modal>
       )}
 
-      {/* Delete Confirm */}
+      {/* ── Quick Role Change Panel ── */}
+      {roleTarget && (
+        <Modal onClose={() => setRoleTarget(null)} title="Change Admin Role">
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ margin: '0 0 4px', fontSize: 13, color: '#6b7280' }}>Changing role for:</p>
+            <p style={{ margin: 0, fontWeight: 700, color: '#0B1F4B', fontSize: 15 }}>
+              {roleTarget.firstName} {roleTarget.lastName} — {roleTarget.email}
+            </p>
+          </div>
+          <Field label="Select New Role" required>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+              {ROLES.filter(r => r.value !== 'main_admin').map(r => (
+                <label key={r.value} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', border: `2px solid ${quickRole === r.value ? r.color : '#e5e7eb'}`, borderRadius: 8, cursor: 'pointer', background: quickRole === r.value ? r.bg : '#fff', transition: 'all .15s' }}>
+                  <input type="radio" name="role" value={r.value} checked={quickRole === r.value}
+                    onChange={() => setQuickRole(r.value)} style={{ accentColor: r.color }} />
+                  <MdAdminPanelSettings size={16} color={r.color} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: r.color }}>{r.label}</span>
+                </label>
+              ))}
+            </div>
+          </Field>
+          {quickRole === 'state_admin' && (
+            <div style={{ margin: '12px 0', padding: '10px 14px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fbbf24', fontSize: 12, color: '#92400e' }}>
+              ⚠️ Please use the Edit modal to assign a chapter after changing the role.
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
+            <Btn onClick={() => setRoleTarget(null)} style={{ background: '#e5e7eb', color: '#374151' }}>Cancel</Btn>
+            <Btn onClick={applyRoleChange} style={{ background: '#0B1F4B', color: '#fff' }}>Apply Role Change</Btn>
+          </div>
+        </Modal>
+      )}
+
+      {/* ── Delete Confirm ── */}
       {confirmDelete && (
-        <ModalOverlay onClose={() => setConfirmDelete(null)}>
-          <h3 style={{ margin: '0 0 12px', color: '#dc2626' }}>Confirm Delete</h3>
-          <p style={{ color: '#374151', fontSize: 14 }}>
-            Are you sure you want to delete admin{' '}
+        <Modal onClose={() => setConfirmDelete(null)} title="Confirm Delete">
+          <p style={{ color: '#374151', fontSize: 14, marginBottom: 20 }}>
+            Are you sure you want to permanently delete admin{' '}
             <strong>{confirmDelete.firstName} {confirmDelete.lastName}</strong>? This cannot be undone.
           </p>
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
-            <button
-              onClick={() => setConfirmDelete(null)}
-              style={{ ...btnStyle, background: '#e5e7eb', color: '#374151' }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleDelete}
-              style={{ ...btnStyle, background: '#dc2626', color: '#fff' }}
-            >
-              Delete
-            </button>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+            <Btn onClick={() => setConfirmDelete(null)} style={{ background: '#e5e7eb', color: '#374151' }}>Cancel</Btn>
+            <Btn onClick={handleDelete} style={{ background: '#dc2626', color: '#fff' }}>Delete</Btn>
           </div>
-        </ModalOverlay>
+        </Modal>
       )}
     </div>
   );
 }
 
-/* ---- Shared sub-components & styles ---- */
-
-function ModalOverlay({ children, onClose }) {
+/* ── Helpers ────────────────────────────────────── */
+function Modal({ children, onClose, title }) {
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.45)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 2000,
-        padding: 20,
-      }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          background: '#fff',
-          borderRadius: 12,
-          padding: '24px 28px',
-          width: '100%',
-          maxWidth: 520,
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-        }}
-      >
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 20 }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 14, padding: '24px 28px', width: '100%', maxWidth: 520, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,.2)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <h3 style={{ margin: 0, color: '#0B1F4B', fontSize: 17 }}>{title}</h3>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#9ca3af', lineHeight: 1 }}>×</button>
+        </div>
         {children}
       </div>
     </div>
   );
 }
 
-function FormField({ label, required, children }) {
+function Field({ label, required, children }) {
   return (
     <div style={{ marginBottom: 14 }}>
-      <label
-        style={{
-          display: 'block',
-          fontSize: 13,
-          fontWeight: 600,
-          color: '#374151',
-          marginBottom: 4,
-        }}
-      >
-        {label} {required && <span style={{ color: '#dc2626' }}>*</span>}
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.04em' }}>
+        {label}{required && <span style={{ color: '#dc2626' }}> *</span>}
       </label>
       {children}
     </div>
   );
 }
 
-const inputStyle = {
-  width: '100%',
-  padding: '9px 12px',
-  border: '1px solid #d1d5db',
-  borderRadius: 6,
-  fontSize: 14,
-  color: '#111827',
-  outline: 'none',
-  boxSizing: 'border-box',
-};
+function Btn({ children, style, ...props }) {
+  return (
+    <button style={{ padding: '10px 22px', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: 'pointer', ...style }} {...props}>
+      {children}
+    </button>
+  );
+}
 
-const btnStyle = {
-  padding: '10px 22px',
-  border: 'none',
-  borderRadius: 6,
-  fontWeight: 600,
-  fontSize: 14,
-  cursor: 'pointer',
-};
+const iStyle = { width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 8, fontSize: 14, color: '#111827', outline: 'none', boxSizing: 'border-box' };

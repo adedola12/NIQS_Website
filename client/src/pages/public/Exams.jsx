@@ -1,159 +1,268 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
+import API from '../../api/axios';
 
-const exams = [
+/* ── Exam card definitions — matches HTML exactly (4 cards) ── */
+const EXAM_CARDS = [
   {
-    title: 'Test of Professional Competence (TPC)',
+    id: 'tpc',
     tag: 'Corporate Membership',
-    desc: "The TPC is the final professional examination required for admission as a Graduate Member (MNIQS) of the Nigerian Institute of Quantity Surveyors. It assesses candidates' competence in quantity surveying practice, professional ethics, and applied knowledge.",
-    eligibility: [
-      'Must be a registered Probationer member of NIQS',
-      'Minimum of 2 years post-graduation practical experience',
-      'Must hold HND/B.Sc in QS from an accredited institution',
-      'Must be registered with QSRBN or in the process',
-    ],
-    format: [
-      'Written examination: 3 papers covering measurement, cost management, and professional practice',
-      'Oral examination: Interview assessing professional competence and ethics',
-      'Case study presentation: Analysis of a real-world QS project',
-    ],
-    schedule: 'Held twice annually — April and October diets',
+    tagBg: '#0B1F4B',
+    title: 'TPC — Technician Professional Competence',
+    desc: 'Entry-level professional examination for associates progressing toward corporate membership. Covers core QS theory and practice.',
+    heroBg: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=700&q=80&fit=crop',
+    icon: '📝',
+    action: { label: 'Registration Info', to: '/contact', locked: false },
   },
   {
-    title: 'General Development Exam (GDE)',
+    id: 'gde',
     tag: 'Foundation Level',
-    desc: 'The GDE is a preliminary examination for graduates of non-accredited programmes or those seeking to demonstrate foundational competence in quantity surveying. Passing the GDE is a prerequisite for Probationer registration.',
-    eligibility: [
-      'Holders of degrees or diplomas in related disciplines (e.g., Building, Architecture, Engineering)',
-      'Quantity Surveying graduates from non-BQSRB-accredited programmes',
-      'Must submit academic transcripts for evaluation',
-    ],
-    format: [
-      'Written examination: Papers covering principles of QS, construction technology, and economics',
-      'Practical assessment: Measurement and bill of quantities preparation',
-    ],
-    schedule: 'Held annually — usually in June',
+    tagBg: '#C9974A',
+    title: 'GDE — Graduate Development Examination',
+    desc: 'For graduates of accredited degree programmes. Tests applied knowledge in construction economics and procurement.',
+    heroBg: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=700&q=80&fit=crop',
+    icon: '🎓',
+    action: { label: 'Registration Info', to: '/contact', locked: false },
+  },
+  {
+    id: 'interview',
+    tag: 'Professional Stage',
+    tagBg: '#1a5276',
+    title: 'Professional Interview',
+    desc: 'Final stage of the corporate membership pathway — a structured interview assessing competency across key QS practice areas.',
+    heroBg: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=700&q=80&fit=crop',
+    icon: '🤝',
+    action: { label: 'View My Results', to: '/login', locked: true },
+  },
+  {
+    id: 'logbook',
+    tag: 'Work-Based Assessment',
+    tagBg: '#117a65',
+    title: 'Logbook Assessment',
+    desc: 'Work-based assessment requiring candidates to document professional experience across a range of QS activities over a minimum period.',
+    heroBg: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=700&q=80&fit=crop',
+    icon: '📒',
+    action: { label: 'My Logbook', to: '/login', locked: true },
   },
 ];
 
-const scheduleData = [
-  { exam: 'TPC — April Diet', registration: 'Jan 15 — Feb 28', examDate: 'April 20 — 22', results: 'June (expected)' },
-  { exam: 'GDE 2026', registration: 'Feb 1 — April 30', examDate: 'June 15 — 16', results: 'August (expected)' },
-  { exam: 'TPC — October Diet', registration: 'Jul 1 — Aug 31', examDate: 'October 19 — 21', results: 'December (expected)' },
+/* ── Placeholder results (shown until admin populates DB) ── */
+const PLACEHOLDER_RESULTS = [
+  { _id: 'pr1', examType: 'TPC',                   sitting: 'March 2024',     centre: 'Nationwide',  resultsPublished: 'June 2024',      status: 'Published' },
+  { _id: 'pr2', examType: 'GDE',                   sitting: 'March 2024',     centre: 'Nationwide',  resultsPublished: 'June 2024',      status: 'Published' },
+  { _id: 'pr3', examType: 'Professional Interview', sitting: 'July 2024',      centre: 'Abuja/Lagos', resultsPublished: 'September 2024', status: 'Published' },
+  { _id: 'pr4', examType: 'TPC',                   sitting: 'September 2024', centre: 'Nationwide',  resultsPublished: 'December 2024',  status: 'Published' },
+  { _id: 'pr5', examType: 'GDE',                   sitting: 'September 2024', centre: 'Nationwide',  resultsPublished: 'December 2024',  status: 'Published' },
+  { _id: 'pr6', examType: 'TPC/GDE',               sitting: 'March 2025',     centre: 'Nationwide',  resultsPublished: 'June 2025',      status: 'Pending'   },
 ];
 
+const STATUS_COLOR = {
+  Published: '#16a34a',
+  Pending:   '#ca8a04',
+  Upcoming:  '#2563eb',
+};
+
+/* ── Single exam card ── */
+function ExamCard({ card }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      className="ecard"
+      style={{ padding: 0, overflow: 'hidden' }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+    >
+      {/* ── Per-card hero background ── */}
+      <div style={{ position: 'relative', height: 136, overflow: 'hidden' }}>
+        <img
+          src={card.heroBg}
+          alt={card.title}
+          style={{ width: '100%', height: '100%', objectFit: 'cover',
+            transform: hov ? 'scale(1.06)' : 'scale(1)', transition: 'transform .45s ease' }}
+        />
+        <div style={{ position: 'absolute', inset: 0,
+          background: 'linear-gradient(160deg, rgba(11,31,75,.52) 0%, rgba(11,31,75,.85) 100%)' }} />
+        {/* Tag */}
+        <span style={{
+          position: 'absolute', top: 12, left: 14,
+          fontSize: '.56rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase',
+          padding: '3px 10px', borderRadius: 20,
+          background: card.tagBg, color: '#fff', border: '1px solid rgba(255,255,255,.22)',
+        }}>{card.tag}</span>
+        {/* Icon */}
+        <span style={{ position: 'absolute', bottom: 12, left: 16, fontSize: '1.55rem' }}>{card.icon}</span>
+      </div>
+
+      {/* ── Body ── */}
+      <div style={{ padding: '1.4rem 1.6rem 1.7rem' }}>
+        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', fontWeight: 700,
+          color: 'var(--color-navy)', margin: '0 0 .65rem', lineHeight: 1.3 }}>
+          {card.title}
+        </h3>
+        <p style={{ fontSize: '.82rem', color: 'var(--color-txt-2)', lineHeight: 1.75, margin: '0 0 1.4rem' }}>
+          {card.desc}
+        </p>
+        <Link to={card.action.to} className="btn bp"
+          style={{ fontSize: '.78rem', padding: '.6rem 1.4rem', display: 'inline-flex', alignItems: 'center', gap: '.4rem' }}>
+          {card.action.label} {card.action.locked && '🔒'}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/* ── Main page ── */
 export default function Exams() {
+  const [results, setResults]       = useState([]);
+  const [loadingRes, setLoadingRes] = useState(true);
+  const [activeYear, setActiveYear] = useState('all');
+
+  useEffect(() => {
+    API.get('/exam-results')
+      .then(res => setResults(res.data?.results || []))
+      .catch(() => setResults([]))
+      .finally(() => setLoadingRes(false));
+  }, []);
+
+  const isPlaceholder  = results.length === 0;
+  const displayResults = isPlaceholder ? PLACEHOLDER_RESULTS : results;
+
+  /* Unique years for tab filter */
+  const years = [...new Set(
+    displayResults.map(r => r.year || r.sitting?.match(/\d{4}/)?.[0]).filter(Boolean)
+  )].sort((a, b) => b - a);
+
+  const displayed = activeYear === 'all'
+    ? displayResults
+    : displayResults.filter(r => String(r.year || r.sitting?.match(/\d{4}/)?.[0]) === String(activeYear));
+
+  const headingYear = years[0] || new Date().getFullYear();
+
   return (
     <>
+      {/* ══ HERO ══ */}
       <PageHero
-        label="Professional Development"
+        label="Academic"
         title="Professional Examinations"
         titleHighlight="Examinations"
         backgroundImage="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1400&q=80&fit=crop"
       />
 
-      {/* Exam Cards */}
+      {/* ══ EXAM CARDS ══ */}
       <section style={{ background: '#fff' }}>
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-          <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto 3rem' }}>
-            <div className="ey" style={{ justifyContent: 'center' }}>Examinations</div>
-            <h2 className="sh">Pathways to <em>Corporate Membership</em></h2>
-            <p className="sd" style={{ maxWidth: '100%' }}>
-              NIQS administers professional examinations that certify competence and admit
-              candidates into full corporate membership of the Institute.
+
+          <div style={{ marginBottom: '2.5rem' }}>
+            <div className="ey">Pathways</div>
+            <h2 className="sh">Examination <em>Structure</em></h2>
+            <p className="sd" style={{ marginBottom: 0 }}>
+              NIQS administers a range of examinations forming the structured pathway to full corporate membership.
             </p>
           </div>
 
           <div className="exam-grid">
-            {exams.map((exam, i) => (
-              <div className="ecard" key={i}>
-                <span className="card-tag" style={{ marginBottom: '1rem', display: 'inline-block' }}>{exam.tag}</span>
-                <h3>{exam.title}</h3>
-                <p style={{ fontSize: '.82rem', color: 'var(--color-txt-2)', lineHeight: 1.7, marginBottom: '1.5rem' }}>{exam.desc}</p>
-
-                <div style={{ marginBottom: '1.2rem' }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.78rem', color: 'var(--color-navy)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: '.6rem' }}>Eligibility</div>
-                  <ul style={{ display: 'flex', flexDirection: 'column', gap: '.35rem' }}>
-                    {exam.eligibility.map((e, j) => (
-                      <li key={j} style={{ display: 'flex', gap: '.6rem', alignItems: 'flex-start', fontSize: '.8rem', color: 'var(--color-txt-2)', lineHeight: 1.55 }}>
-                        <span style={{ color: 'var(--color-gold)', fontWeight: 800, flexShrink: 0, marginTop: 1 }}>✓</span>
-                        {e}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div style={{ marginBottom: '1.2rem' }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.78rem', color: 'var(--color-navy)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: '.6rem' }}>Exam Format</div>
-                  <ul style={{ display: 'flex', flexDirection: 'column', gap: '.35rem' }}>
-                    {exam.format.map((f, j) => (
-                      <li key={j} style={{ display: 'flex', gap: '.6rem', alignItems: 'flex-start', fontSize: '.8rem', color: 'var(--color-txt-2)', lineHeight: 1.55 }}>
-                        <span style={{ color: 'var(--color-gold)', fontWeight: 800, flexShrink: 0, marginTop: 1 }}>→</span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div style={{ background: 'var(--color-off)', borderRadius: 8, padding: '.75rem 1rem', fontSize: '.78rem', color: 'var(--color-navy)', fontWeight: 600 }}>
-                  📅 {exam.schedule}
-                </div>
-              </div>
-            ))}
+            {EXAM_CARDS.map(card => <ExamCard key={card.id} card={card} />)}
           </div>
         </div>
       </section>
 
-      {/* Schedule Table */}
+      {/* ══ PUBLISHED RESULTS ══ */}
       <section className="section-alt">
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-          <div style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 3rem' }}>
-            <div className="ey" style={{ justifyContent: 'center' }}>2026 Calendar</div>
-            <h2 className="sh">Examination <em>Schedule</em></h2>
+
+          <div style={{ marginBottom: '1.8rem' }}>
+            <div className="ey">Published Results</div>
+            <h2 className="sh">{headingYear} <em>Published Results</em></h2>
+            {isPlaceholder && (
+              <p style={{ fontSize: '.74rem', color: 'var(--color-txt-3)', fontStyle: 'italic', marginTop: '.4rem' }}>
+                Showing sample data — live results will display once the admin publishes them.
+              </p>
+            )}
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Examination</th>
-                  <th>Registration Period</th>
-                  <th>Exam Date</th>
-                  <th>Results</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scheduleData.map((s, i) => (
-                  <tr key={i}>
-                    <td><strong style={{ color: 'var(--color-navy)' }}>{s.exam}</strong></td>
-                    <td>{s.registration}</td>
-                    <td>{s.examDate}</td>
-                    <td><span className="pill">{s.results}</span></td>
+          {/* Year filter tabs — only shown when there are multiple years */}
+          {years.length > 1 && (
+            <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap', marginBottom: '1.4rem' }}>
+              {['all', ...years].map(y => (
+                <button key={y} onClick={() => setActiveYear(y)} style={{
+                  padding: '4px 14px', borderRadius: 20, fontSize: '.74rem', fontWeight: 600,
+                  border: '1.5px solid var(--color-bdr)', cursor: 'pointer', transition: '.15s',
+                  background: String(activeYear) === String(y) ? 'var(--color-navy)' : '#fff',
+                  color:      String(activeYear) === String(y) ? '#fff' : 'var(--color-txt-3)',
+                }}>
+                  {y === 'all' ? 'All Years' : y}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {loadingRes ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-txt-3)' }}>Loading results…</div>
+          ) : (
+            <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid var(--color-bdr)' }}>
+              <table className="result-table" style={{ margin: 0 }}>
+                <thead>
+                  <tr>
+                    <th>Exam Type</th>
+                    <th>Sitting</th>
+                    <th>Centre</th>
+                    <th>Results Published</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {displayed.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-txt-3)' }}>
+                        No results for this period.
+                      </td>
+                    </tr>
+                  ) : displayed.map(r => (
+                    <tr key={r._id}>
+                      <td><strong style={{ color: 'var(--color-navy)' }}>{r.examType}</strong></td>
+                      <td>{r.sitting}</td>
+                      <td>{r.centre}</td>
+                      <td>{r.resultsPublished || '—'}</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>
+                        <span style={{ color: STATUS_COLOR[r.status] || STATUS_COLOR.Pending, fontWeight: 700 }}>
+                          {r.status}
+                        </span>
+                        {r.status === 'Published' && r.resultFileUrl && (
+                          <a href={r.resultFileUrl} target="_blank" rel="noopener noreferrer"
+                            style={{ marginLeft: 8, fontSize: '.68rem', color: 'var(--color-gold)', fontWeight: 700, textDecoration: 'none' }}>
+                            View PDF ↗
+                          </a>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <p style={{ fontSize: '.79rem', color: 'var(--color-txt-3)', marginTop: '.9rem', fontStyle: 'italic' }}>
+            * Personal results require login.{' '}
+            <Link to="/login" style={{ color: 'var(--color-navy)', fontWeight: 700, textDecoration: 'none' }}>
+              View my results →
+            </Link>
+          </p>
         </div>
       </section>
 
-      {/* Published Results */}
+      {/* ══ CTA ══ */}
       <section style={{ background: '#fff' }}>
-        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-          <div style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 2rem' }}>
-            <div className="ey" style={{ justifyContent: 'center' }}>Results</div>
-            <h2 className="sh">Published <em>Results</em></h2>
-            <p className="sd" style={{ maxWidth: '100%' }}>
-              Examination results are published here after ratification by the NEC.
-            </p>
-          </div>
-          <div style={{ background: 'var(--color-off)', border: '1px solid var(--color-bdr)', borderRadius: 14, padding: '3rem 2rem', textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📋</div>
-            <p style={{ color: 'var(--color-txt-3)', fontSize: '.85rem', marginBottom: '1.5rem' }}>
-              No results currently published. Check back after the examination period.
-            </p>
-            <Link to="/contact" className="btn bo">Contact Exams Office</Link>
+        <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
+          <div className="ctaw">
+            <h2>Ready to <em>Register?</em></h2>
+            <p>Contact the Examinations Office for registration forms, timetables, and study resources.</p>
+            <div className="ctarow">
+              <a href="/contact" className="btn bg">Contact Exams Office</a>
+              <a href="/membership" className="btn bo" style={{ color: '#fff', borderColor: 'rgba(255,255,255,.3)' }}>
+                Membership Info
+              </a>
+            </div>
           </div>
         </div>
       </section>

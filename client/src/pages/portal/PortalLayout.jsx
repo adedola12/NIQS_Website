@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const PortalLayout = () => {
@@ -51,6 +51,17 @@ const PortalLayout = () => {
 
       {/* Sidebar */}
       <aside className={`portal-sidebar ${sidebarOpen ? 'open' : ''}`}>
+        {/* NIQS branding + home link */}
+        <div className="portal-sidebar-brand">
+          <div>
+            <span className="portal-brand-name">NIQS</span>
+            <span className="portal-brand-sub">Member Portal</span>
+          </div>
+          <Link to="/" className="portal-home-link" title="Back to main website">
+            🏠
+          </Link>
+        </div>
+
         <div className="portal-sidebar-header">
           <div className="portal-avatar">
             {memberName.charAt(0).toUpperCase()}
@@ -155,6 +166,49 @@ const PortalLayout = () => {
           inset: 0;
           background: rgba(0, 0, 0, 0.4);
           z-index: 199;
+        }
+
+        /* --- Sidebar brand bar --- */
+        .portal-sidebar-brand {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem 1.2rem 0.8rem;
+          border-bottom: 1px solid var(--border);
+          background: var(--navy);
+          flex-shrink: 0;
+        }
+        .portal-brand-name {
+          display: block;
+          font-family: 'Bricolage Grotesque', sans-serif;
+          font-size: 1.15rem;
+          font-weight: 800;
+          color: #C9974A;
+          line-height: 1;
+        }
+        .portal-brand-sub {
+          display: block;
+          font-size: 0.62rem;
+          font-weight: 600;
+          color: rgba(255,255,255,0.5);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin-top: 2px;
+        }
+        .portal-home-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
+          border-radius: 7px;
+          background: rgba(255,255,255,0.1);
+          text-decoration: none;
+          font-size: 0.9rem;
+          transition: background 0.15s;
+        }
+        .portal-home-link:hover {
+          background: rgba(201,151,74,0.25);
         }
 
         /* --- Sidebar --- */

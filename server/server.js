@@ -39,9 +39,14 @@ app.use("/api/upload", require("./routes/upload"));
 app.use("/api/brand-materials", require("./routes/brandMaterials"));
 app.use("/api/president", require("./routes/president"));
 app.use("/api/past-presidents", require("./routes/pastPresidents"));
-app.use("/api/site-settings",  require("./routes/siteSettings"));
-app.use("/api/contact-info",   require("./routes/contactInfo"));
-app.use("/api/qs-firms",       require("./routes/qsFirms"));
+app.use("/api/site-settings", require("./routes/siteSettings"));
+app.use("/api/contact-info", require("./routes/contactInfo"));
+app.use("/api/qs-firms", require("./routes/qsFirms"));
+app.use("/api/exam-results", require("./routes/examResults"));
+app.use("/api/qs-connect", require("./routes/qsConnect"));
+app.use("/api/webinars", require("./routes/webinars"));
+app.use("/api/workshop-materials", require("./routes/workshopMaterials"));
+app.use("/api/journals", require("./routes/journals"));
 
 // Health check
 app.get("/api/health", (req, res) => {

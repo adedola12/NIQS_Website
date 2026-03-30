@@ -1,153 +1,221 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
+import API from '../../api/axios';
 
-const publications = [
+const MAGAZINE_IMG = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&q=80&fit=crop';
+
+const PLACEHOLDER_ISSUES = [
   {
-    title: 'Nigerian Journal of Quantity Surveying',
-    type: 'Journal',
-    frequency: 'Bi-annual',
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80&fit=crop',
-    desc: 'The flagship peer-reviewed journal of NIQS publishing original research in quantity surveying, cost management, and construction economics.',
+    _id: 'ph1', isFeatured: true,
+    title: 'QS Connect Vol. 9.1 — March 2025', issueDate: 'March 2025',
+    description: 'Industry insights, member profiles, policy updates, and CPD opportunities — essential reading for every Nigerian QS professional.',
+    coverImage: MAGAZINE_IMG, fileUrl: '',
   },
-  {
-    title: 'NIQS Standard Method of Measurement',
-    type: 'Standard',
-    frequency: 'Updated periodically',
-    image: 'https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=600&q=80&fit=crop',
-    desc: 'The definitive guide for measurement of building works in Nigeria, aligned with international best practices and RICS SMM.',
-  },
-  {
-    title: 'Construction Cost Index',
-    type: 'Index',
-    frequency: 'Quarterly',
-    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&q=80&fit=crop',
-    desc: "Quarterly publication tracking construction cost trends and material price indices across Nigeria's six geopolitical zones.",
-  },
-  {
-    title: 'QS Practice Guide',
-    type: 'Guide',
-    frequency: 'Updated periodically',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80&fit=crop',
-    desc: 'Practical guide for quantity surveying practitioners covering best practices, templates, and real-world case studies.',
-  },
+  { _id: 'ph2', title: 'QS Connect Vol. 8.2 — Sept 2024', issueDate: 'September 2024', coverImage: MAGAZINE_IMG, fileUrl: '' },
+  { _id: 'ph3', title: 'QS Connect Vol. 8.1 — March 2024', issueDate: 'March 2024',    coverImage: MAGAZINE_IMG, fileUrl: '' },
+  { _id: 'ph4', title: 'QS Connect Vol. 7.2 — Sept 2023', issueDate: 'September 2023', coverImage: MAGAZINE_IMG, fileUrl: '' },
 ];
 
-const webinars = [
-  { title: 'BIM for Quantity Surveyors: Practical Applications', date: '2026-04-15', speaker: 'QS. (Dr.) Adewale Johnson, FNIQS', tag: 'Technology' },
-  { title: 'Sustainable Construction: The QS Perspective', date: '2026-05-20', speaker: 'QS. (Prof.) Ngozi Okafor, FNIQS', tag: 'Sustainability' },
-  { title: 'Dispute Resolution in Construction Contracts', date: '2026-06-10', speaker: 'QS. Barr. Ibrahim Musa, FNIQS', tag: 'Legal' },
-  { title: 'Digital Transformation in QS Practice', date: '2026-07-18', speaker: 'QS. Tunde Afolabi, MNIQS', tag: 'Innovation' },
-];
-
-const cpd = [
-  { label: 'National Conference attendance', points: '10 pts' },
-  { label: 'Chapter workshops and seminars', points: '5 pts each' },
-  { label: 'Webinar participation', points: '2 pts each' },
-  { label: 'Published research paper', points: '10 pts' },
-  { label: 'Mentoring a Probationer', points: '5 pts/year' },
+const RES_CARDS = [
+  {
+    to: '/login', locked: true,
+    img: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=700&q=80&fit=crop',
+    h4: 'Workshop Certificates',
+    p: 'Download your certificates for NIQS-accredited workshops. Login required for personal records.',
+    btnLabel: 'Access Certificates 🔒', btnCls: 'bo',
+  },
+  {
+    to: '/webinars', locked: false,
+    img: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=700&q=80&fit=crop',
+    h4: 'Webinar Series',
+    p: 'Recordings and upcoming sessions from NIQS CPD webinars covering cost management, procurement, sustainability, and professional practice.',
+    btnLabel: 'Browse Webinars', btnCls: 'bp',
+  },
+  {
+    to: '/workshop-materials', locked: false,
+    img: 'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=700&q=80&fit=crop',
+    h4: 'Workshop Materials',
+    p: 'Presentation slides, templates, and reading materials from NIQS workshops — available to all members.',
+    btnLabel: 'Browse Materials', btnCls: 'bp',
+  },
+  {
+    to: '/research#journal', locked: false,
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80&fit=crop',
+    h4: 'Journal of QS',
+    p: "The peer-reviewed Journal of Quantity Surveying — Nigeria's leading academic publication in construction economics.",
+    btnLabel: 'Visit Journal →', btnCls: 'bo',
+  },
 ];
 
 export default function Research() {
+  const [issues,  setIssues]  = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [journals, setJournals] = useState([]);
+
+  useEffect(() => {
+    API.get('/qs-connect')
+      .then(r => setIssues(r.data?.issues || []))
+      .catch(() => setIssues([]))
+      .finally(() => setLoading(false));
+
+    API.get('/journals')
+      .then(r => setJournals(r.data?.journals || []))
+      .catch(() => setJournals([]));
+  }, []);
+
+  const isPlaceholder = issues.length === 0;
+  const display  = isPlaceholder ? PLACEHOLDER_ISSUES : issues;
+  const featured = display.find(i => i.isFeatured) || display[0];
+  const sidebar  = display.filter(i => i._id !== featured?._id).slice(0, 3);
+
   return (
     <>
+      {/* ══ HERO ══ */}
       <PageHero
-        label="Knowledge & Development"
-        title="CPD & Research"
-        titleHighlight="Research"
-        backgroundImage="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&q=80&fit=crop"
+        label="Knowledge Hub"
+        title="Research & Development"
+        titleHighlight="Development"
+        backgroundImage="https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?w=1400&q=80&fit=crop"
       />
 
-      {/* CPD Overview */}
+      {/* ══ QS CONNECT + WORKSHOPS ══ */}
       <section style={{ background: '#fff' }}>
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-          <div className="tc2">
-            <div>
-              <div className="ey">CPD Framework</div>
-              <h2 className="sh">Continuing Professional <em>Development</em></h2>
-              <p className="sd" style={{ marginBottom: '1.2rem' }}>
-                NIQS is committed to the continuous professional development of its members.
-                Through a structured CPD framework, the Institute ensures that quantity surveyors
-                in Nigeria maintain and enhance their knowledge, skills, and competence.
-              </p>
-              <p className="sd" style={{ marginBottom: '1.5rem' }}>
-                Members are required to accumulate a minimum of <strong>20 CPD hours annually</strong> through
-                approved activities. CPD compliance is monitored and forms part of the membership
-                renewal process.
-              </p>
+
+          {/* QS Connect Magazine */}
+          <div className="ey">Publications</div>
+          <h2 className="sh">QS Connect <em>Magazine</em></h2>
+          {isPlaceholder && !loading && (
+            <p style={{ fontSize: '.73rem', color: 'var(--color-txt-3)', fontStyle: 'italic', marginTop: '.35rem' }}>
+              Sample issues shown — live editions will appear once the admin uploads them.
+            </p>
+          )}
+
+          {loading ? (
+            <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-txt-3)', fontSize: '.85rem' }}>
+              Loading…
             </div>
-            <div>
-              <div style={{ background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 14, padding: '1.8rem' }}>
-                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.9rem', color: 'var(--color-navy)', marginBottom: '1.2rem', letterSpacing: '-.02em' }}>CPD Points Guide</div>
-                {cpd.map((c, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '.65rem 0', borderBottom: i < cpd.length - 1 ? '1px solid var(--color-bdr)' : 'none' }}>
-                    <span style={{ fontSize: '.8rem', color: 'var(--color-txt-2)' }}>{c.label}</span>
-                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '.78rem', color: 'var(--color-gold)', flexShrink: 0, marginLeft: '1rem' }}>{c.points}</span>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '1.5rem', marginTop: '2rem' }}>
+
+              {/* Featured */}
+              {featured && (
+                <div className="card" style={{ flexDirection: 'row', gap: 0, alignItems: 'stretch', maxHeight: 280 }}>
+                  <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <img src={featured.coverImage || MAGAZINE_IMG} alt={featured.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ flex: 1.2, padding: '1.8rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <div className="card-tag">Publication — QS Connect</div>
+                    <div className="card-title" style={{ marginTop: '.5rem' }}>{featured.title}</div>
+                    <div className="card-text" style={{ fontSize: '.78rem', marginTop: '.4rem' }}>
+                      {featured.description || 'Industry insights, member profiles, policy updates, and CPD opportunities — essential reading for every Nigerian QS professional.'}
+                    </div>
+                    {featured.fileUrl ? (
+                      <a href={featured.fileUrl} target="_blank" rel="noopener noreferrer"
+                        className="btn bp"
+                        style={{ marginTop: '1rem', padding: '.55rem 1rem', fontSize: '.74rem', display: 'inline-flex', alignItems: 'center', textDecoration: 'none', width: 'fit-content' }}>
+                        Download PDF
+                      </a>
+                    ) : (
+                      <span style={{ marginTop: '1rem', fontSize: '.71rem', color: 'var(--color-txt-3)', fontStyle: 'italic' }}>PDF coming soon</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Sidebar past issues */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '.7rem' }}>
+                {sidebar.map(issue => (
+                  <div key={issue._id} className="card"
+                    style={{ flexDirection: 'row', gap: 0, alignItems: 'center', cursor: issue.fileUrl ? 'pointer' : 'default' }}
+                    onClick={() => issue.fileUrl && window.open(issue.fileUrl, '_blank')}>
+                    <img src={issue.coverImage || MAGAZINE_IMG} alt={issue.title}
+                      style={{ width: 70, height: 64, objectFit: 'cover', flexShrink: 0 }} />
+                    <div style={{ padding: '.9rem' }}>
+                      <div style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--color-navy)' }}>{issue.title}</div>
+                      <div style={{ fontSize: '.68rem', color: 'var(--color-txt-3)', marginTop: 2 }}>{issue.issueDate}</div>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          )}
 
-      {/* Upcoming Webinars */}
-      <section className="section-alt">
-        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-          <div style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 3rem' }}>
-            <div className="ey" style={{ justifyContent: 'center' }}>Upcoming</div>
-            <h2 className="sh">Webinar <em>Series</em></h2>
-            <p className="sd" style={{ maxWidth: '100%' }}>
-              Join NIQS-facilitated webinars led by experts in the field of quantity surveying
-              and the broader built environment.
-            </p>
-          </div>
-
-          <div className="evtl">
-            {webinars.map((w, i) => {
-              const d = new Date(w.date);
-              return (
-                <div className="erow" key={i}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div className="eday">{d.getDate()}</div>
-                    <div className="emon">{d.toLocaleDateString('en-NG', { month: 'short' }).toUpperCase()}</div>
-                  </div>
-                  <div className="einfo">
-                    <h4>{w.title}</h4>
-                    <p>Speaker: {w.speaker}</p>
-                  </div>
-                  <span className="epill">{w.tag}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Publications */}
-      <section style={{ background: '#fff' }}>
-        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-          <div style={{ textAlign: 'center', maxWidth: 580, margin: '0 auto 3rem' }}>
-            <div className="ey" style={{ justifyContent: 'center' }}>Publications</div>
-            <h2 className="sh">Research & <em>Publications</em></h2>
-            <p className="sd" style={{ maxWidth: '100%' }}>
-              NIQS publishes a range of scholarly and professional materials to advance knowledge
-              in quantity surveying and construction economics.
-            </p>
-          </div>
+          {/* Workshops & CPD */}
+          <div className="ey" style={{ marginTop: '4rem' }}>Workshops &amp; CPD</div>
+          <h2 className="sh">Learning <em>Resources</em></h2>
 
           <div className="res-grid">
-            {publications.map((pub, i) => (
+            {RES_CARDS.map((c, i) => (
               <div className="rcard" key={i}>
-                <img src={pub.image} alt={pub.title} />
+                <div className="rcard-img-wrap"><img src={c.img} alt={c.h4} /></div>
                 <div className="rcard-body">
-                  <span className="card-tag" style={{ marginBottom: '.6rem', display: 'inline-block' }}>{pub.type} · {pub.frequency}</span>
-                  <h4>{pub.title}</h4>
-                  <p>{pub.desc}</p>
-                  <a href="/contact" className="btn bog" style={{ marginTop: '.5rem' }}>Request Copy</a>
+                  <h4>{c.h4}</h4>
+                  <p>{c.p}</p>
+                  <Link to={c.to} className={`btn ${c.btnCls}`}>{c.btnLabel}</Link>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ══ JOURNAL OF QS ══ */}
+      <section id="journal" className="section-alt">
+        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+          <div className="ey">Academic</div>
+          <h2 className="sh">Journal of <em>Quantity Surveying</em></h2>
+          <p className="sd" style={{ marginBottom: '2.5rem' }}>
+            Nigeria's leading peer-reviewed academic publication in construction economics, quantity surveying
+            research, and the built environment.
+          </p>
+
+          {journals.length === 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.2rem' }}>
+              {[
+                { vol: 'Vol. 12, Issue 2', year: 2024, title: 'Construction Cost Estimation Using BIM Technologies in Nigeria' },
+                { vol: 'Vol. 12, Issue 1', year: 2024, title: 'Procurement Strategy and Project Success in the Nigerian Public Sector' },
+                { vol: 'Vol. 11, Issue 2', year: 2023, title: 'Sustainable Quantity Surveying: Trends and Future Outlook' },
+              ].map((j, i) => (
+                <div key={i} style={{ background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 12, overflow: 'hidden' }}>
+                  <div style={{ height: 100, background: 'linear-gradient(135deg, var(--color-navy) 60%, #1a3a7a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>📰</div>
+                  <div style={{ padding: '1rem 1.2rem' }}>
+                    <div style={{ fontSize: '.62rem', color: 'var(--color-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '.4rem' }}>{j.vol} · {j.year}</div>
+                    <div style={{ fontSize: '.82rem', fontWeight: 700, color: 'var(--color-navy)', lineHeight: 1.4 }}>{j.title}</div>
+                    <div style={{ fontSize: '.71rem', color: 'var(--color-txt-3)', marginTop: '.5rem', fontStyle: 'italic' }}>Sample — admin will add real editions</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.2rem' }}>
+              {journals.map(j => (
+                <div key={j._id} style={{ background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 12, overflow: 'hidden' }}>
+                  {j.coverImage
+                    ? <img src={j.coverImage} alt={j.title} style={{ width: '100%', height: 110, objectFit: 'cover' }} />
+                    : <div style={{ height: 110, background: 'linear-gradient(135deg, var(--color-navy) 60%, #1a3a7a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>📰</div>
+                  }
+                  <div style={{ padding: '1rem 1.2rem' }}>
+                    {(j.volume || j.year) && (
+                      <div style={{ fontSize: '.62rem', color: 'var(--color-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '.4rem' }}>
+                        {[j.volume && `Vol. ${j.volume}`, j.issue && `Issue ${j.issue}`, j.year].filter(Boolean).join(' · ')}
+                      </div>
+                    )}
+                    <div style={{ fontSize: '.84rem', fontWeight: 700, color: 'var(--color-navy)', lineHeight: 1.4 }}>{j.title}</div>
+                    {j.description && <p style={{ fontSize: '.76rem', color: 'var(--color-txt-2)', marginTop: '.5rem', lineHeight: 1.6 }}>{j.description}</p>}
+                    {j.fileUrl && (
+                      <a href={j.fileUrl} target="_blank" rel="noopener noreferrer" className="btn bp"
+                        style={{ display: 'inline-flex', marginTop: '.8rem', padding: '.5rem 1.2rem', fontSize: '.74rem', textDecoration: 'none' }}>
+                        Download PDF
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </>

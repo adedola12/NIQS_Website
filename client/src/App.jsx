@@ -24,6 +24,8 @@ import Reciprocity from './pages/public/Reciprocity';
 import BrandMaterials from './pages/public/BrandMaterials';
 import Membership from './pages/public/Membership';
 import SearchQSFirms from './pages/public/SearchQSFirms';
+import Webinars from './pages/public/Webinars';
+import WorkshopMaterials from './pages/public/WorkshopMaterials';
 import Exams from './pages/public/Exams';
 import Research from './pages/public/Research';
 import News from './pages/public/News';
@@ -61,6 +63,13 @@ import ManagePastPresidents from './pages/admin/ManagePastPresidents';
 import ManageSiteSettings from './pages/admin/ManageSiteSettings';
 import ManageContactInfo from './pages/admin/ManageContactInfo';
 import ManageQSFirms from './pages/admin/ManageQSFirms';
+import ManageExamResults from './pages/admin/ManageExamResults';
+import ManageQSConnect from './pages/admin/ManageQSConnect';
+import ManageWebinars from './pages/admin/ManageWebinars';
+import ManageWorkshopMaterials from './pages/admin/ManageWorkshopMaterials';
+import ManageJournal from './pages/admin/ManageJournal';
+import ManageMessages from './pages/admin/ManageMessages';
+import ManageProfile from './pages/admin/ManageProfile';
 
 // Public layout wrapper
 function PublicLayout({ children }) {
@@ -107,7 +116,9 @@ export default function App() {
         <Route path="/reciprocity" element={<PublicPage element={<Reciprocity />} />} />
         <Route path="/brand-materials" element={<PublicPage element={<BrandMaterials />} />} />
         <Route path="/membership" element={<PublicPage element={<Membership />} />} />
-        <Route path="/search-qs-firms" element={<PublicPage element={<SearchQSFirms />} />} />
+        <Route path="/search-qs-firms"    element={<PublicPage element={<SearchQSFirms />} />} />
+        <Route path="/webinars"           element={<PublicPage element={<Webinars />} />} />
+        <Route path="/workshop-materials" element={<PublicPage element={<WorkshopMaterials />} />} />
         <Route path="/exams" element={<PublicPage element={<Exams />} />} />
         <Route path="/research" element={<PublicPage element={<Research />} />} />
         <Route path="/news" element={<PublicPage element={<News />} />} />
@@ -160,6 +171,13 @@ export default function App() {
           <Route path="site-settings"  element={<ManageSiteSettings />} />
           <Route path="contact-info"   element={<ManageContactInfo  />} />
           <Route path="qs-firms"        element={<ManageQSFirms />} />
+          <Route path="exam-results"        element={<ManageExamResults />} />
+          <Route path="qs-connect"          element={<ManageQSConnect />} />
+          <Route path="webinars"            element={<ManageWebinars />} />
+          <Route path="workshop-materials"  element={<ManageWorkshopMaterials />} />
+          <Route path="journal"             element={<ManageJournal />} />
+          <Route path="messages"            element={<ManageMessages />} />
+          <Route path="profile"             element={<ManageProfile />} />
         </Route>
 
         {/* ══════ 404 ══════ */}

@@ -52,7 +52,7 @@ const PLACEHOLDERS = [
     logo: '', regNumber: 'QSRBN/174/2012',
     address: '22 Maiduguri Road, GRA', city: 'Kano', state: 'Kano',
     phone: '+234 806 000 0006', email: 'info@pinnacleestimate.ng',
-    description: 'Northern Nigeria's premier cost consultancy serving government and private developers.',
+    description: "Northern Nigeria's premier cost consultancy serving government and private developers.",
   },
 ];
 
