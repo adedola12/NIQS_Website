@@ -38,9 +38,12 @@ const fallbackPlatinum = [
   },
 ];
 
+const fallbackGold = [
+  { _id: null, name: 'AECOM Nigeria', tier: 'gold', logo: null, industry: 'Engineering Consultancy', description: 'A global infrastructure firm providing design, engineering, construction, and management services across Nigeria.' },
+  { _id: null, name: 'Setraco Nigeria Ltd', tier: 'gold', logo: null, industry: 'Roads & Civil Works', description: 'A leading civil engineering contractor specialising in road construction, bridges, and infrastructure development.' },
+];
+
 const fallbackOthers = [
-  { _id: null, name: 'AECOM Nigeria', tier: 'gold', logo: null, industry: 'Engineering Consultancy' },
-  { _id: null, name: 'Setraco Nigeria Ltd', tier: 'gold', logo: null, industry: 'Roads & Civil Works' },
   { _id: null, name: 'Craneburg Construction', tier: 'silver', logo: null, industry: 'Building Construction' },
   { _id: null, name: 'RMB Nigeria', tier: 'silver', logo: null, industry: 'Project Finance' },
   { _id: null, name: 'Structon Group', tier: 'bronze', logo: null, industry: 'Structural Engineering' },
@@ -98,6 +101,20 @@ const tiers = [
   },
 ];
 
+/* ── Reusable logo block ───────────────────────────────── */
+function LogoBlock({ partner, size = 'md' }) {
+  const dim = size === 'lg' ? { h: 120, font: '2.2rem' } : { h: 90, font: '1.8rem' };
+  return partner.logo ? (
+    <div style={{ height: dim.h, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb', padding: '1rem', borderBottom: '1px solid var(--color-bdr)' }}>
+      <img src={partner.logo} alt={partner.name} style={{ maxHeight: dim.h - 24, maxWidth: '100%', objectFit: 'contain' }} />
+    </div>
+  ) : (
+    <div style={{ height: dim.h, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,var(--color-off),var(--color-off-2,#eef2f7))', borderBottom: '1px solid var(--color-bdr)' }}>
+      <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: dim.font, color: 'var(--color-bdr)', opacity: .6 }}>{partner.name[0]}</span>
+    </div>
+  );
+}
+
 export default function Partnership() {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,11 +130,13 @@ export default function Partnership() {
   }, []);
 
   const dbPlatinum = partners.filter(p => p.tier === 'platinum');
-  const dbOthers   = partners.filter(p => p.tier !== 'platinum');
+  const dbGold     = partners.filter(p => p.tier === 'gold');
+  const dbOthers   = partners.filter(p => p.tier !== 'platinum' && p.tier !== 'gold');
 
-  const platinum        = dbPlatinum.length > 0 ? dbPlatinum : (!loading ? fallbackPlatinum : []);
-  const others          = dbOthers.length   > 0 ? dbOthers   : (!loading ? fallbackOthers   : []);
-  const isPlaceholder   = !loading && partners.length === 0;
+  const platinum      = dbPlatinum.length > 0 ? dbPlatinum : (!loading ? fallbackPlatinum : []);
+  const gold          = dbGold.length     > 0 ? dbGold     : (!loading ? fallbackGold     : []);
+  const others        = dbOthers.length   > 0 ? dbOthers   : (!loading ? fallbackOthers   : []);
+  const isPlaceholder = !loading && partners.length === 0;
 
   return (
     <>
@@ -128,11 +147,11 @@ export default function Partnership() {
         backgroundImage="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1400&q=80&fit=crop"
       />
 
-      {/* Intro */}
+      {/* ── Intro ── */}
       <section style={{ background: '#fff' }}>
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
           <div className="tc2">
-            <div>
+            <div className="reveal">
               <div className="ey">Why Partner</div>
               <h2 className="sh">Partner with Nigeria's <em>Leading QS Body</em></h2>
               <p className="sd" style={{ marginBottom: '1.2rem' }}>
@@ -150,7 +169,7 @@ export default function Partnership() {
               </p>
               <Link to="/contact" className="btn bg">Enquire Now</Link>
             </div>
-            <div>
+            <div className="reveal d1">
               <img
                 src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=700&q=80&fit=crop"
                 alt="Partnership handshake"
@@ -161,76 +180,181 @@ export default function Partnership() {
         </div>
       </section>
 
-      {/* Featured Partners — Platinum */}
+      {/* ── Platinum Partners ── */}
       {!loading && platinum.length > 0 && (
         <section className="section-alt">
           <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-            <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
+
+            {/* Section header */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
+              <div className="reveal">
                 <div className="ey">Platinum Partners</div>
                 <h2 className="sh" style={{ marginBottom: 0 }}>Our <em>Premier Partners</em></h2>
               </div>
               {isPlaceholder && (
-                <span style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', background: 'var(--color-bdr)', padding: '4px 12px', borderRadius: 6, fontWeight: 600 }}>Sample — replaced when admin adds partners</span>
+                <span style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', background: 'var(--color-bdr)', padding: '4px 14px', borderRadius: 20, fontWeight: 600 }}>
+                  Sample — replaced when admin adds partners
+                </span>
               )}
             </div>
 
-            {platinum.map((p, idx) => (
-              <div className="gpc" key={p._id || idx} style={{ opacity: isPlaceholder ? 0.7 : 1 }}>
-                {p.logo ? (
-                  <img src={p.logo} alt={p.name} className="gpimg" style={{ objectFit: 'contain', background: '#fff', padding: '1rem' }} />
-                ) : (
-                  <div className="gpimg" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-off-2)' }}>
-                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '2rem', color: 'var(--color-bdr)' }}>{p.name[0]}</span>
+            {/* Platinum cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              {platinum.map((p, idx) => (
+                <div
+                  className={`gpc reveal${idx === 1 ? ' d1' : idx === 2 ? ' d2' : ''}`}
+                  key={p._id || idx}
+                  style={{ opacity: isPlaceholder ? 0.75 : 1, position: 'relative' }}
+                >
+                  {isPlaceholder && (
+                    <span style={{ position: 'absolute', top: 10, right: 12, fontSize: '.55rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', background: 'rgba(201,151,74,.15)', color: 'var(--color-gold)', padding: '3px 8px', borderRadius: 4, zIndex: 1 }}>
+                      Sample
+                    </span>
+                  )}
+                  {/* Logo panel */}
+                  {p.logo ? (
+                    <img src={p.logo} alt={p.name} className="gpimg" style={{ objectFit: 'contain', background: '#fff', padding: '1.5rem' }} />
+                  ) : (
+                    <div className="gpimg" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #f0f4fb, #e8edf6)', flexDirection: 'column', gap: '.5rem' }}>
+                      <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '2.8rem', color: 'var(--color-navy)', opacity: .18 }}>{p.name[0]}</span>
+                      <span style={{ fontSize: '.65rem', fontWeight: 600, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Logo</span>
+                    </div>
+                  )}
+                  {/* Content */}
+                  <div>
+                    <span className="gpbadge">💎 Platinum Partner</span>
+                    <h4>{p.name}</h4>
+                    {p.industry && (
+                      <div style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', fontWeight: 600, marginBottom: '.6rem', letterSpacing: '.02em' }}>{p.industry}</div>
+                    )}
+                    {p.description && <p>{p.description}</p>}
+                    {p._id
+                      ? <Link to={`/partnership/${p._id}`} className="gpl">View full profile →</Link>
+                      : <span style={{ fontSize: '.8rem', color: 'var(--color-txt-3)', fontStyle: 'italic' }}>Profile available once admin adds partner details</span>
+                    }
                   </div>
-                )}
-                <div>
-                  <span className="gpbadge">Platinum Partner</span>
-                  <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-navy)', margin: '.5rem 0 .6rem' }}>{p.name}</h4>
-                  {p.description && <p style={{ color: 'var(--color-txt-2)', fontSize: '.92rem', lineHeight: 1.75, marginBottom: '1rem' }}>{p.description}</p>}
-                  {p._id
-                    ? <Link to={`/partnership/${p._id}`} className="gpl">View profile →</Link>
-                    : <span style={{ fontSize: '.82rem', color: 'var(--color-txt-3)', fontStyle: 'italic' }}>Profile available once admin adds details</span>
-                  }
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
       )}
 
-      {/* All Other Partners */}
-      {!loading && others.length > 0 && (
+      {/* ── Gold Partners ── */}
+      {!loading && gold.length > 0 && (
         <section style={{ background: '#fff' }}>
           <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
-            <div style={{ marginBottom: '2.5rem' }}>
-              <div className="ey">Our Network</div>
-              <h2 className="sh">All <em>Partner Organisations</em></h2>
+
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
+              <div className="reveal">
+                <div className="ey" style={{ color: 'var(--color-gold)' }}>Gold Partners</div>
+                <h2 className="sh" style={{ marginBottom: 0 }}>Gold-Tier <em>Partners</em></h2>
+              </div>
+              {isPlaceholder && (
+                <span style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', background: 'var(--color-bdr)', padding: '4px 14px', borderRadius: 20, fontWeight: 600 }}>
+                  2 slots · Replace when admin adds gold partners
+                </span>
+              )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.2rem' }}>
+            {/* Gold cards — 2-column featured grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.4rem' }}>
+              {gold.map((p, idx) => {
+                const tc = tierColors.gold;
+                const card = (
+                  <div
+                    className="reveal"
+                    style={{
+                      opacity: isPlaceholder ? 0.75 : 1,
+                      border: `1.5px solid ${tc}33`,
+                      borderRadius: 14, overflow: 'hidden', background: '#fff',
+                      boxShadow: '0 2px 8px rgba(0,0,0,.06)',
+                      transition: 'box-shadow .25s, transform .25s',
+                      position: 'relative',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(201,151,74,.18)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)'; e.currentTarget.style.transform = ''; }}
+                  >
+                    {/* Gold top accent bar */}
+                    <div style={{ height: 4, background: `linear-gradient(90deg, ${tc}, #e8c07a)` }} />
+
+                    {isPlaceholder && (
+                      <span style={{ position: 'absolute', top: 14, right: 12, fontSize: '.55rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', background: `${tc}18`, color: tc, padding: '3px 8px', borderRadius: 4, zIndex: 1, border: `1px solid ${tc}30` }}>
+                        Sample
+                      </span>
+                    )}
+
+                    {/* Logo area */}
+                    <LogoBlock partner={p} size="lg" />
+
+                    {/* Body */}
+                    <div style={{ padding: '1.25rem 1.4rem' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 20, fontSize: '.68rem', fontWeight: 700, background: `${tc}15`, color: tc, border: `1px solid ${tc}30`, marginBottom: '.7rem' }}>
+                        🥇 Gold Partner
+                      </span>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.05rem', color: 'var(--color-navy)', marginBottom: '.3rem', letterSpacing: '-.02em' }}>
+                        {p.name}
+                      </div>
+                      {p.industry && (
+                        <div style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', fontWeight: 600, marginBottom: '.8rem' }}>{p.industry}</div>
+                      )}
+                      {p.description && (
+                        <p style={{ fontSize: '.84rem', color: 'var(--color-txt-2)', lineHeight: 1.7, marginBottom: '.9rem' }}>{p.description}</p>
+                      )}
+                      {p._id
+                        ? <span style={{ fontSize: '.8rem', fontWeight: 700, color: tc }}>View profile →</span>
+                        : <span style={{ fontSize: '.8rem', color: 'var(--color-txt-3)', fontStyle: 'italic' }}>Profile available once admin adds partner details</span>
+                      }
+                    </div>
+                  </div>
+                );
+                return p._id
+                  ? <Link key={p._id || idx} to={`/partnership/${p._id}`} style={{ textDecoration: 'none' }}>{card}</Link>
+                  : <div key={idx}>{card}</div>;
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Silver / Bronze / Associate ── */}
+      {!loading && others.length > 0 && (
+        <section className="section-alt">
+          <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+            <div style={{ marginBottom: '2.5rem' }}>
+              <div className="ey reveal">Partner Network</div>
+              <h2 className="sh reveal d1">Silver, Bronze <em>&amp; Associate Partners</em></h2>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.1rem' }}>
               {others.map((p, idx) => {
                 const tc = tierColors[p.tier] || '#6b7280';
                 const cardContent = (
-                  <div style={{ opacity: isPlaceholder ? 0.7 : 1, textDecoration: 'none', display: 'block', border: '1px solid var(--color-bdr)', borderRadius: 12, overflow: 'hidden', background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.06)', position: 'relative' }}>
+                  <div
+                    className="reveal"
+                    style={{
+                      opacity: isPlaceholder ? 0.72 : 1,
+                      border: '1px solid var(--color-bdr)', borderRadius: 12,
+                      overflow: 'hidden', background: '#fff',
+                      boxShadow: '0 1px 4px rgba(0,0,0,.05)',
+                      transition: 'box-shadow .2s, transform .2s',
+                      position: 'relative',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 6px 22px ${tc}22`; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,.05)'; e.currentTarget.style.transform = ''; }}
+                  >
                     {isPlaceholder && (
-                      <span style={{ position: 'absolute', top: 8, right: 8, fontSize: '.55rem', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', background: 'var(--color-bdr)', color: 'var(--color-txt-3)', padding: '2px 6px', borderRadius: 4, zIndex: 1 }}>Sample</span>
+                      <span style={{ position: 'absolute', top: 8, right: 8, fontSize: '.52rem', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', background: 'var(--color-bdr)', color: 'var(--color-txt-3)', padding: '2px 6px', borderRadius: 4, zIndex: 1 }}>
+                        Sample
+                      </span>
                     )}
-                    {p.logo ? (
-                      <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--color-bdr)', padding: '1rem', background: '#f9fafb' }}>
-                        <img src={p.logo} alt={p.name} style={{ maxHeight: 70, maxWidth: '100%', objectFit: 'contain' }} />
-                      </div>
-                    ) : (
-                      <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-off)', borderBottom: '1px solid var(--color-bdr)' }}>
-                        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '2rem', color: 'var(--color-bdr)' }}>{p.name[0]}</span>
-                      </div>
-                    )}
-                    <div style={{ padding: '1rem' }}>
-                      <span style={{ display: 'inline-block', marginBottom: '.4rem', padding: '2px 10px', borderRadius: 20, fontSize: '.68rem', fontWeight: 700, background: `${tc}18`, color: tc, textTransform: 'capitalize', border: `1px solid ${tc}30` }}>
+                    <LogoBlock partner={p} />
+                    <div style={{ padding: '.9rem 1rem' }}>
+                      <span style={{ display: 'inline-block', marginBottom: '.45rem', padding: '2px 10px', borderRadius: 20, fontSize: '.65rem', fontWeight: 700, background: `${tc}15`, color: tc, textTransform: 'capitalize', border: `1px solid ${tc}28` }}>
                         {p.tier}
                       </span>
-                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.95rem', color: 'var(--color-navy)', marginBottom: '.3rem' }}>{p.name}</div>
-                      {p.industry && <div style={{ fontSize: '.78rem', color: 'var(--color-txt-3)' }}>{p.industry}</div>}
+                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.95rem', color: 'var(--color-navy)', marginBottom: '.25rem' }}>{p.name}</div>
+                      {p.industry && <div style={{ fontSize: '.76rem', color: 'var(--color-txt-3)' }}>{p.industry}</div>}
                     </div>
                   </div>
                 );
@@ -241,7 +365,7 @@ export default function Partnership() {
             </div>
 
             {isPlaceholder && (
-              <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '.85rem', color: 'var(--color-txt-3)' }}>
+              <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '.82rem', color: 'var(--color-txt-3)', lineHeight: 1.7 }}>
                 These are sample entries. Real partner profiles will appear here once added by the admin.
               </p>
             )}
@@ -249,13 +373,13 @@ export default function Partnership() {
         </section>
       )}
 
-      {/* Tiers */}
-      <section className="section-alt">
+      {/* ── Partnership Tiers ── */}
+      <section style={{ background: '#fff' }}>
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
           <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto 3rem' }}>
-            <div className="ey" style={{ justifyContent: 'center' }}>Partnership Tiers</div>
-            <h2 className="sh">Choose Your <em>Partnership Level</em></h2>
-            <p className="sd" style={{ maxWidth: '100%' }}>
+            <div className="ey reveal" style={{ justifyContent: 'center' }}>Partnership Tiers</div>
+            <h2 className="sh reveal d1">Choose Your <em>Partnership Level</em></h2>
+            <p className="sd reveal d2" style={{ maxWidth: '100%' }}>
               Choose the tier that aligns with your organisation's goals and budget. All partners
               receive formal certification and exclusive benefits.
             </p>
@@ -263,7 +387,7 @@ export default function Partnership() {
 
           <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {tiers.map((tier, i) => (
-              <div className={`ptcard${tier.platinum ? ' ptplat' : ''}`} key={i}>
+              <div className={`ptcard${tier.platinum ? ' ptplat' : ''} reveal`} key={i} style={{ animationDelay: `${i * .08}s` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.2rem' }}>
                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <div style={{ fontSize: '2rem' }}>{tier.icon}</div>
@@ -291,8 +415,8 @@ export default function Partnership() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{ background: '#fff' }}>
+      {/* ── CTA ── */}
+      <section className="section-alt">
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
           <div className="ctaw">
             <h2>Become a <em>Strategic Partner</em></h2>

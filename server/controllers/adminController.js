@@ -56,10 +56,12 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-// Get all admins (main_admin only)
+// Get all admins (main_admin only — main_admin accounts hidden from non-main_admin callers)
 exports.getAllAdmins = async (req, res) => {
   try {
-    const admins = await Admin.find()
+    // Non-main_admin callers must not see the main_admin account
+    const query = req.admin.role !== 'main_admin' ? { role: { $ne: 'main_admin' } } : {};
+    const admins = await Admin.find(query)
       .populate('assignedChapter', 'name state')
       .populate('createdBy', 'firstName lastName')
       .sort('-createdAt');
@@ -117,6 +119,11 @@ exports.updateAdmin = async (req, res) => {
       return res.status(404).json({ message: 'Admin not found' });
     }
 
+    // Prevent any modification of the main_admin account by non-main_admin callers
+    if (admin.role === 'main_admin' && req.admin.role !== 'main_admin') {
+      return res.status(403).json({ message: 'The main admin account cannot be modified' });
+    }
+
     // Prevent deactivating yourself
     if (req.admin._id.toString() === req.params.id && isActive === false) {
       return res.status(400).json({ message: 'Cannot deactivate your own account' });
@@ -143,11 +150,17 @@ exports.deleteAdmin = async (req, res) => {
       return res.status(400).json({ message: 'Cannot delete your own account' });
     }
 
-    const admin = await Admin.findByIdAndDelete(req.params.id);
-    if (!admin) {
+    const target = await Admin.findById(req.params.id);
+    if (!target) {
       return res.status(404).json({ message: 'Admin not found' });
     }
 
+    // The main admin account is permanent and cannot be deleted by anyone
+    if (target.role === 'main_admin') {
+      return res.status(403).json({ message: 'The main admin account cannot be deleted' });
+    }
+
+    await target.deleteOne();
     res.json({ message: 'Admin deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

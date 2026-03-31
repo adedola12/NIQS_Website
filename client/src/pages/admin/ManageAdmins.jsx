@@ -129,12 +129,17 @@ export default function ManageAdmins() {
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to update status'); }
   };
 
-  const filtered = admins.filter(a =>
-    `${a.firstName} ${a.lastName} ${a.email} ${a.role}`.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = admins
+    // Non-main_admin users must not see the main admin account
+    .filter(a => isMain || a.role !== 'main_admin')
+    .filter(a =>
+      `${a.firstName} ${a.lastName} ${a.email} ${a.role}`.toLowerCase().includes(search.toLowerCase())
+    );
 
-  /* ── Summaries ── */
-  const summary = ROLES.map(r => ({ ...r, count: admins.filter(a => a.role === r.value).length }));
+  /* ── Summaries (hide main_admin row for non-main_admin viewers) ── */
+  const summary = ROLES
+    .filter(r => isMain || r.value !== 'main_admin')
+    .map(r => ({ ...r, count: admins.filter(a => a.role === r.value).length }));
 
   return (
     <div>
@@ -223,7 +228,7 @@ export default function ManageAdmins() {
 
                       {/* Status toggle */}
                       <td style={{ padding: '10px 14px' }}>
-                        {isMain && !isSelf ? (
+                        {isMain && !isSelf && a.role !== 'main_admin' ? (
                           <button onClick={() => toggleActive(a)} title={a.isActive ? 'Click to deactivate' : 'Click to activate'}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: a.isActive ? '#059669' : '#dc2626' }}>
                             {a.isActive ? <MdToggleOn size={22} /> : <MdToggleOff size={22} />}
@@ -245,8 +250,8 @@ export default function ManageAdmins() {
                       <td style={{ padding: '10px 14px' }}>
                         {isMain && (
                           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                            {/* Change Role */}
-                            {!isSelf && (
+                            {/* Change Role — not shown for main_admin or self */}
+                            {!isSelf && a.role !== 'main_admin' && (
                               <button onClick={() => openRolePanel(a)} title="Change Role"
                                 style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', background: '#f0f9ff', border: '1px solid #0891b2', borderRadius: 6, color: '#0891b2', fontWeight: 600, fontSize: 11, cursor: 'pointer' }}>
                                 <MdShield size={13} /> Role
@@ -257,8 +262,8 @@ export default function ManageAdmins() {
                               style={{ padding: 6, background: '#f3f4f6', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#374151', display: 'flex' }}>
                               <MdEdit size={15} />
                             </button>
-                            {/* Delete */}
-                            {!isSelf && (
+                            {/* Delete — never shown for main_admin or self */}
+                            {!isSelf && a.role !== 'main_admin' && (
                               <button onClick={() => setConfirmDelete(a)} title="Delete"
                                 style={{ padding: 6, background: '#fef2f2', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#dc2626', display: 'flex' }}>
                                 <MdDelete size={15} />
