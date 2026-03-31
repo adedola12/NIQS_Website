@@ -129,10 +129,33 @@ function PublicPage({ element }) {
   return <PublicLayout>{element}</PublicLayout>;
 }
 
+/* ── Built-by credit pill (fixed, visible on every page) ── */
+function BuiltByBadge() {
+  return (
+    <div style={{
+      position: 'fixed', bottom: '1rem', left: '1rem', zIndex: 9999,
+      display: 'flex', alignItems: 'center', gap: '0.45rem',
+      background: 'rgba(11,31,75,0.88)', backdropFilter: 'blur(8px)',
+      border: '1px solid rgba(201,151,74,0.35)',
+      borderRadius: 999, padding: '5px 13px 5px 10px',
+      boxShadow: '0 2px 12px rgba(0,0,0,.18)',
+      pointerEvents: 'none', userSelect: 'none',
+    }}>
+      <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-body)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.08em' }}>
+        Built by
+      </span>
+      <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-gold)', fontFamily: 'var(--font-heading)', letterSpacing: '.06em' }}>
+        ADLM
+      </span>
+    </div>
+  );
+}
+
 export default function App() {
   useScrollReveal();
   return (
     <AuthProvider>
+      <BuiltByBadge />
       <Toaster
         position="top-right"
         toastOptions={{

@@ -59,8 +59,10 @@ const Footer = () => {
         <div className="fbot">
           <p>&copy; 2025 <span className="fgold">Nigerian Institute of Quantity Surveyors</span>. All rights reserved.</p>
           <p>No. 24, NIQS Crescent, Mabushi District, Abuja, Nigeria.</p>
-          <p style={{ marginTop: '0.4rem', fontSize: '0.72rem', opacity: 0.55 }}>
-            Designed &amp; built by <span style={{ fontWeight: 700, letterSpacing: '.02em' }}>ADLM</span>
+          <p style={{ marginTop: '0.6rem', fontSize: '0.76rem', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--color-gold)', flexShrink: 0 }} />
+            Designed &amp; built by{' '}
+            <span style={{ fontWeight: 800, color: 'var(--color-gold)', letterSpacing: '.04em' }}>ADLM</span>
           </p>
         </div>
       </div>
