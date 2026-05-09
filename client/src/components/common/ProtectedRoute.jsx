@@ -7,16 +7,18 @@ import LoadingSpinner from './LoadingSpinner';
  * Wrapper that guards routes behind authentication.
  *
  * Props:
- *  - children: node       — the protected content
- *  - adminOnly: boolean   — if true, only admin users may access
- *  - roles: string[]      — if provided, user.role must be in this list
+ *  - children: node          — the protected content
+ *  - adminOnly: boolean      — if true, only admin users may access
+ *  - roles: string[]         — if provided, user.role must be in this list
+ *  - adminRoles: string[]    — if provided, admin.role (e.g. main_admin) must be in this list;
+ *                              used for fine-grained gates inside the /admin section
  *
  * Works with the AuthContext which exposes:
  *  - user / admin   — the logged-in entity (one will be set)
  *  - isAdmin        — boolean shortcut
  *  - loading        — true while the initial auth check runs
  */
-const ProtectedRoute = ({ children, adminOnly = false, roles }) => {
+const ProtectedRoute = ({ children, adminOnly = false, roles, adminRoles }) => {
   const { user, admin, isAdmin, loading } = useAuth();
   const location = useLocation();
 
@@ -39,6 +41,13 @@ const ProtectedRoute = ({ children, adminOnly = false, roles }) => {
     const currentRole = admin ? 'admin' : user?.role;
     if (!currentRole || !roles.includes(currentRole)) {
       return <Navigate to="/" replace />;
+    }
+  }
+
+  // Admin-role gate (checks admin.role specifically — e.g. ['main_admin'])
+  if (adminRoles && adminRoles.length > 0) {
+    if (!admin || !adminRoles.includes(admin.role)) {
+      return <Navigate to="/admin" replace />;
     }
   }
 

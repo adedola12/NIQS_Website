@@ -44,6 +44,7 @@ function PageFade({ children }) {
 // Layout
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import PartnerAdvert from './components/layout/PartnerAdvert';
 
 // Common
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -101,6 +102,7 @@ import ManageBrandMaterials from './pages/admin/ManageBrandMaterials';
 import ManagePresident from './pages/admin/ManagePresident';
 import ManagePastPresidents from './pages/admin/ManagePastPresidents';
 import ManageSiteSettings from './pages/admin/ManageSiteSettings';
+import ManagePartnerAdvert from './pages/admin/ManagePartnerAdvert';
 import ManageContactInfo from './pages/admin/ManageContactInfo';
 import ManageQSFirms from './pages/admin/ManageQSFirms';
 import ManageExamResults from './pages/admin/ManageExamResults';
@@ -120,6 +122,7 @@ function PublicLayout({ children }) {
         <PageFade>{children}</PageFade>
       </main>
       <Footer />
+      <PartnerAdvert />
     </>
   );
 }
@@ -236,6 +239,14 @@ export default function App() {
           <Route path="president" element={<ManagePresident />} />
           <Route path="past-presidents" element={<ManagePastPresidents />} />
           <Route path="site-settings"  element={<ManageSiteSettings />} />
+          <Route
+            path="partner-advert"
+            element={
+              <ProtectedRoute adminRoles={['main_admin']}>
+                <ManagePartnerAdvert />
+              </ProtectedRoute>
+            }
+          />
           <Route path="contact-info"   element={<ManageContactInfo  />} />
           <Route path="qs-firms"        element={<ManageQSFirms />} />
           <Route path="exam-results"        element={<ManageExamResults />} />

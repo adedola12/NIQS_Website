@@ -22,6 +22,7 @@ import {
   MdFolderOpen,
   MdLibraryBooks,
   MdManageAccounts,
+  MdCampaign,
 } from 'react-icons/md';
 
 export function canManageAdmins(role) {
@@ -116,7 +117,10 @@ export function getAdminSidebarItems(role) {
   );
 
   if (canManageAdmins(role)) {
-    items.push({ label: 'Admin Management', path: '/admin/admins', icon: MdAdminPanelSettings });
+    items.push(
+      { label: 'Partner Advert',   path: '/admin/partner-advert', icon: MdCampaign            },
+      { label: 'Admin Management', path: '/admin/admins',         icon: MdAdminPanelSettings  },
+    );
   }
 
   return items;

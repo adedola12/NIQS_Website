@@ -217,6 +217,71 @@
   .ml-sub { @apply block w-full py-2 pl-7 pr-3 text-[.78rem] text-txt-2 cursor-pointer rounded-lg transition-colors duration-100 text-left; font-family: var(--font-body); background: none; border: none; }
   .ml-sub:hover { @apply text-navy bg-off; }
 
+  /* ── PARTNER ADVERT (floating, every page) ── */
+  .padv {
+    @apply fixed z-[995] flex items-center gap-3 cursor-pointer no-underline;
+    bottom: 1.1rem;
+    right: 1.1rem;
+    width: 290px;
+    padding: .65rem .85rem .65rem .65rem;
+    border-radius: 12px;
+    background: linear-gradient(140deg, rgba(11,31,75,.96), rgba(19,38,96,.96));
+    border: 1px solid rgba(201,151,74,.4);
+    box-shadow: 0 10px 30px rgba(11,31,75,.35), 0 0 0 1px rgba(255,255,255,.04) inset;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(14px) translateX(14px);
+    transition: opacity .45s ease, transform .55s cubic-bezier(.22,.61,.36,1), border-color .25s, box-shadow .25s;
+  }
+  .padv-on { opacity: 1; transform: translateY(0) translateX(0); }
+  .padv:hover {
+    border-color: rgba(201,151,74,.7);
+    box-shadow: 0 14px 38px rgba(11,31,75,.45), 0 0 0 1px rgba(255,255,255,.06) inset;
+  }
+  .padv-logo {
+    @apply rounded-[9px] flex items-center justify-center shrink-0 overflow-hidden;
+    width: 46px; height: 46px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.1);
+  }
+  .padv-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+  .padv-logo span { font-family: var(--font-heading); font-weight: 800; font-size: 1.05rem; color: var(--color-gold); }
+  .padv-body { @apply min-w-0 flex-1 leading-tight; }
+  .padv-overline {
+    @apply text-[.55rem] font-bold uppercase;
+    letter-spacing: .14em;
+    color: var(--color-gold);
+    margin-bottom: 2px;
+  }
+  .padv-name {
+    @apply font-heading font-bold text-white;
+    font-size: .85rem;
+    letter-spacing: -.01em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .padv-industry {
+    @apply text-[.62rem];
+    color: rgba(255,255,255,.55);
+    margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .padv-x {
+    @apply absolute top-1.5 right-1.5 cursor-pointer flex items-center justify-center;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.55);
+    font-size: 14px;
+    line-height: 1;
+    transition: background .15s, color .15s;
+  }
+  .padv-x:hover { background: rgba(255,255,255,.18); color: #fff; }
+  @media (max-width: 640px) {
+    .padv { display: none; }
+  }
+
   /* ── TICKER ── */
   .tkbar { @apply sticky top-[68px] z-[990] py-1.5 overflow-hidden flex items-center gap-4; background: var(--color-navy); }
   .tklbl { @apply shrink-0 ml-4 text-[.56rem] font-bold px-2 py-0.5 rounded tracking-wider uppercase; font-family: var(--font-body); background: var(--color-gold); color: #fff; }

@@ -30,6 +30,16 @@ const siteSettingsSchema = new mongoose.Schema({
   email2:         { type: String, trim: true, default: '' },
   address:        { type: String, trim: true, default: '' },
   officeHours:    { type: String, trim: true, default: '' },
+
+  /* Site-wide partner advertisement (floating card on every public page) */
+  /* Editable by main_admin only. */
+  partnerAd: {
+    enabled:     { type: Boolean, default: false },
+    tiers:       { type: [String], default: ['platinum', 'gold'] },
+    rotationMs:  { type: Number, default: 25000 },
+    dismissible: { type: Boolean, default: true },
+    label:       { type: String, trim: true, default: 'Featured Partner' },
+  },
 }, { _id: false, timestamps: true });
 
 module.exports = mongoose.model('SiteSettings', siteSettingsSchema);
