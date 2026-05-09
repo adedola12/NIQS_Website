@@ -225,9 +225,13 @@ const Navbar = () => {
           <Link to="/" className="nlogo">
             <img
               src="/NIQS-LOGO-PNG-NAV.png"
-              alt="NIQS Logo"
+              alt="Nigerian Institute of Quantity Surveyors"
               style={{ height: 48, width: 'auto', display: 'block', objectFit: 'contain' }}
             />
+            <div className="nlogo-txt">
+              <strong>NIQS</strong>
+              <span>Nigerian Institute of <br />Quantity Surveyors</span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}

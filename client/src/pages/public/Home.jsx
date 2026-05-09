@@ -49,11 +49,11 @@ const defaultTickerItems = [
 ];
 
 const heroImages = [
-  { src: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80&fit=crop', alt: 'Construction' },
-  { src: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&q=80&fit=crop', alt: 'Conference' },
-  { src: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=600&q=80&fit=crop', alt: 'Professionals' },
-  { src: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80&fit=crop', alt: 'Infrastructure' },
-  { src: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80&fit=crop', alt: 'QS Practice' },
+  { src: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80&fit=crop', alt: 'Construction site cost survey' },
+  { src: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80&fit=crop', alt: 'Architectural plans & take-off' },
+  { src: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80&fit=crop', alt: 'Quantity surveying practice' },
+  { src: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80&fit=crop', alt: 'Built infrastructure' },
+  { src: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80&fit=crop', alt: 'Cost analysis & estimation' },
 ];
 
 /* ── helpers ── */
@@ -161,13 +161,16 @@ export default function Home() {
         <div className="hc">
           <div className="hc-eyebrow">
             <div className="hc-eyebrow-dot"></div>
-            Est. 1969 &nbsp;&middot;&nbsp; Nigeria's Premier QS Body
+            Est. 1969 &nbsp;&middot;&nbsp; Chartered Professional Body
+          </div>
+          <div className="hc-institute">
+            Nigerian Institute of <em>Quantity Surveyors</em>
           </div>
           <h1 className="hc-title">
             Advancing Nigeria's<br />Built <em>Environment</em>
           </h1>
           <p className="hc-sub">
-            Setting the gold standard for construction cost management and procurement excellence. Connecting 10,000+ professionals across every state in Nigeria.
+            The premier professional body for quantity surveying in Nigeria — setting the gold standard for construction cost management, procurement, and contract administration across 10,000+ professionals in every state.
           </p>
           <div className="hc-btns">
             <Link to="/membership" className="hc-btn-p">
@@ -188,7 +191,7 @@ export default function Home() {
                 alt={img.alt}
                 loading={i < 3 ? 'eager' : 'lazy'}
               />
-              {i === 2 && <div className="hstrip-badge">&#128247; Professionals</div>}
+              {i === 2 && <div className="hstrip-badge">&#128202; Quantity Surveyors</div>}
             </div>
           ))}
         </div>
