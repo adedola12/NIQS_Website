@@ -185,9 +185,16 @@
   .nlogo { @apply flex items-center gap-3 cursor-pointer; }
   .nlogo-sq { @apply w-[34px] h-[34px] rounded-lg flex items-center justify-center shrink-0; background: linear-gradient(135deg, var(--color-navy), var(--color-navy-3)); }
   .nlogo-sq svg { @apply w-[18px] h-[18px]; fill: var(--color-gold); }
-  .nlogo-txt { @apply leading-[1.1] hidden md:block border-l pl-3; border-color: rgba(201,151,74,.35); }
+  .nlogo-txt { @apply leading-[1.15] hidden sm:block border-l pl-3; border-color: rgba(201,151,74,.5); }
   .nlogo-txt strong { @apply font-heading text-[1.05rem] font-extrabold tracking-tight block text-white; letter-spacing: .04em; }
-  .nlogo-txt span { @apply text-[.55rem] tracking-[.14em] uppercase block mt-0.5; color: rgba(255,255,255,.62); line-height: 1.2; }
+  .nlogo-txt span {
+    @apply font-heading font-extrabold uppercase block mt-0.5;
+    color: #fff;
+    font-size: clamp(.66rem, 1.15vw, .8rem);
+    letter-spacing: .12em;
+    line-height: 1.18;
+    text-shadow: 0 1px 1px rgba(0,0,0,.25);
+  }
   .nlinks { @apply flex items-center gap-0.5 flex-1 justify-center; }
   .ndd { @apply relative; }
   .nl { @apply px-3 py-1.5 text-[.76rem] font-medium cursor-pointer rounded-[7px] transition-all duration-150 flex items-center gap-1 whitespace-nowrap; color: rgba(255,255,255,.75); font-family: var(--font-body); background: none; border: none; }
@@ -351,18 +358,23 @@
     background: var(--color-gold);
   }
   .hc-institute {
-    @apply font-heading font-bold text-white mb-4 mx-auto;
-    font-size: clamp(.95rem, 1.6vw, 1.2rem);
-    letter-spacing: .18em;
+    @apply font-heading font-extrabold mb-4 mx-auto;
+    color: #fff;
+    font-size: clamp(.9rem, 1.6vw, 1.25rem);
+    letter-spacing: .14em;
     text-transform: uppercase;
     padding-bottom: .9rem;
-    max-width: 540px;
-    border-bottom: 1px solid rgba(201,151,74,.35);
+    max-width: 600px;
+    border-bottom: 1px solid rgba(201,151,74,.45);
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
     position: relative;
   }
   .hc-institute em {
     @apply not-italic;
     color: var(--color-gold);
+  }
+  @media (max-width: 480px) {
+    .hc-institute { letter-spacing: .1em; padding-bottom: .7rem; }
   }
   .hc-title {
     @apply font-heading text-[clamp(2.6rem,5vw,4rem)] font-extrabold leading-[1.1] text-white mb-4;
