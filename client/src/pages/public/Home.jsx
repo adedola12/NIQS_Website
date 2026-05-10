@@ -166,7 +166,7 @@ export default function Home() {
             Est. 1969 &nbsp;&middot;&nbsp; Chartered Professional Body
           </div>
           <div className="hc-institute">
-            Nigerian Institute of <em>Quantity Surveyors</em>
+            Nigerian Institute of<br /><em>Quantity Surveyors</em>
           </div>
           <h1 className="hc-title">
             Advancing Nigeria's<br />Built <em>Environment</em>

@@ -360,11 +360,12 @@
   .hc-institute {
     @apply font-heading font-extrabold mb-4 mx-auto;
     color: #fff;
-    font-size: clamp(.9rem, 1.6vw, 1.25rem);
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    line-height: 1.2;
     letter-spacing: .14em;
     text-transform: uppercase;
-    padding-bottom: .9rem;
-    max-width: 600px;
+    padding-bottom: 1rem;
+    max-width: 480px;
     border-bottom: 1px solid rgba(201,151,74,.45);
     text-shadow: 0 1px 2px rgba(0,0,0,.35);
     position: relative;
@@ -374,7 +375,7 @@
     color: var(--color-gold);
   }
   @media (max-width: 480px) {
-    .hc-institute { letter-spacing: .1em; padding-bottom: .7rem; }
+    .hc-institute { letter-spacing: .1em; padding-bottom: .8rem; max-width: 320px; }
   }
   .hc-title {
     @apply font-heading text-[clamp(2.6rem,5vw,4rem)] font-extrabold leading-[1.1] text-white mb-4;
