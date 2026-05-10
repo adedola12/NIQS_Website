@@ -121,8 +121,10 @@ export default function Home() {
       API.get('/site-settings').catch(() => ({ data: {} })),
       API.get('/events?upcoming=true&limit=10').catch(() => ({ data: [] })),
     ]).then(([settingsRes, eventsRes]) => {
-      const customItems = settingsRes.data?.bannerItems || [];
-      const upcomingEvts = (eventsRes.data?.data || eventsRes.data || []);
+      const customItems = Array.isArray(settingsRes.data?.bannerItems) ? settingsRes.data.bannerItems : [];
+      /* The events endpoint can return either an array or { data: [...] } depending on the route shape. */
+      const rawEvts = eventsRes.data?.data ?? eventsRes.data;
+      const upcomingEvts = Array.isArray(rawEvts) ? rawEvts : [];
 
       // Build event ticker entries for future events
       const eventItems = upcomingEvts
