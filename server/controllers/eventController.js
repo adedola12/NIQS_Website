@@ -1,4 +1,43 @@
 const Event = require('../models/Event');
+const { classifyConflicts, describeConflict, dayStartUTC, dayEndUTC } = require('../utils/eventConflicts');
+
+/* ── Helpers ───────────────────────────────────────────────────────────────── */
+
+// When a flyer design is attached, derive/sync the canonical Event fields so the
+// calendar + guardrail stay consistent and the required schema fields validate.
+function applyFlyerToEvent(body) {
+  const f = body.flyer;
+  if (!f) return body;
+  const mapped = { ...body, hasFlyer: true };
+
+  if (f.title) mapped.title = f.title;
+  if (f.dateStart) mapped.date = f.dateStart;
+  mapped.endDate = f.dateEnd || f.dateStart || mapped.endDate || undefined;
+  mapped.description = body.description || f.subtitle || f.title || 'NIQS event';
+  mapped.location =
+    body.location ||
+    f.venueCity ||
+    f.venuePhysical ||
+    (f.venueType === 'Virtual' ? 'Online' : 'TBA');
+  if (f.venuePhysical) mapped.venue = f.venuePhysical;
+  if (f.registrationUrl) mapped.registrationLink = f.registrationUrl;
+  if (f.category) mapped.type = f.category === 'Webinar' ? 'webinar' : 'training';
+  return mapped;
+}
+
+function canOverrideConflicts(role) {
+  return role === 'main_admin' || role === 'national_admin';
+}
+
+function conflictMessage(hard) {
+  const first = hard[0];
+  const d = describeConflict(first);
+  const owner = first.scope === 'national' ? 'A National (HQ) event' : `A ${d.chapterName || 'chapter'} event`;
+  const more = hard.length > 1 ? ` (and ${hard.length - 1} more)` : '';
+  return `Date unavailable — ${owner} "${first.title}" already holds ${d.when}${more}. Pick another date.`;
+}
+
+/* ── Public reads ──────────────────────────────────────────────────────────── */
 
 exports.getAllEvents = async (req, res) => {
   try {
@@ -37,14 +76,84 @@ exports.getEventById = async (req, res) => {
   }
 };
 
-exports.createEvent = async (req, res) => {
+/* ── Calendar + guardrail ──────────────────────────────────────────────────── */
+
+// Lightweight projection of all events overlapping an optional [from, to] window.
+exports.getCalendarEvents = async (req, res) => {
   try {
-    if (req.admin.role === 'state_admin' && req.body.scope === 'national') {
-      return res.status(403).json({ message: 'State admins can only create chapter events' });
+    const { from, to } = req.query;
+    const filter = {};
+    if (from || to) {
+      if (to) filter.date = { $lte: dayEndUTC(to) };
+      if (from) filter.$expr = { $gte: [{ $ifNull: ['$endDate', '$date'] }, dayStartUTC(from)] };
     }
 
-    const event = await Event.create({ ...req.body, author: req.admin._id });
-    res.status(201).json(event);
+    const events = await Event.find(filter)
+      .select('title date endDate scope chapter type hasFlyer')
+      .populate('chapter', 'name')
+      .sort('date')
+      .lean();
+
+    res.json({ events });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Live pre-save availability check for the Flyer Studio / Calendar forms.
+exports.checkDate = async (req, res) => {
+  try {
+    const { start, end, excludeId } = req.query;
+    let { scope, chapter } = req.query;
+
+    // Resolve scope/chapter from the caller's role. Anyone who isn't HQ
+    // (state_admin, waqsn_admin, yqsf_admin) is chapter-scoped and subordinate to HQ.
+    if (!canOverrideConflicts(req.admin.role)) {
+      scope = 'chapter';
+      if (req.admin.assignedChapter) chapter = String(req.admin.assignedChapter);
+    }
+    scope = scope || 'national';
+
+    const { hard, warnings } = await classifyConflicts({ start, end, scope, chapter, excludeId });
+
+    res.json({
+      ok: hard.length === 0,
+      canOverride: canOverrideConflicts(req.admin.role),
+      hard: hard.map(describeConflict),
+      warnings: warnings.map(describeConflict),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+/* ── Writes (guardrail-enforced) ───────────────────────────────────────────── */
+
+exports.createEvent = async (req, res) => {
+  try {
+    // Only HQ (main/national) may publish national-scope events.
+    if (!canOverrideConflicts(req.admin.role) && req.body.scope === 'national') {
+      return res.status(403).json({ message: 'Only National/Main Admin can create national events' });
+    }
+
+    const body = applyFlyerToEvent(req.body);
+    const scope = body.scope || (canOverrideConflicts(req.admin.role) ? 'national' : 'chapter');
+    const chapter = scope === 'chapter' ? (body.chapter || req.admin.assignedChapter || null) : null;
+
+    const { hard, warnings } = await classifyConflicts({ start: body.date, end: body.endDate, scope, chapter });
+
+    if (hard.length && !(body.force && canOverrideConflicts(req.admin.role))) {
+      return res.status(409).json({ message: conflictMessage(hard), conflicts: hard.map(describeConflict) });
+    }
+
+    const { force, ...clean } = body;
+    const event = await Event.create({ ...clean, scope, chapter, author: req.admin._id });
+
+    res.status(201).json({
+      event,
+      warnings: warnings.map(describeConflict),
+      overridden: hard.length > 0,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -61,9 +170,29 @@ exports.updateEvent = async (req, res) => {
       }
     }
 
-    Object.assign(event, req.body);
+    const body = applyFlyerToEvent(req.body);
+    const scope = body.scope || event.scope;
+    const chapter = scope === 'chapter'
+      ? (body.chapter || event.chapter || req.admin.assignedChapter || null)
+      : null;
+
+    const { hard, warnings } = await classifyConflicts({
+      start: body.date || event.date,
+      end: body.endDate || event.endDate,
+      scope,
+      chapter,
+      excludeId: event._id,
+    });
+
+    if (hard.length && !(body.force && canOverrideConflicts(req.admin.role))) {
+      return res.status(409).json({ message: conflictMessage(hard), conflicts: hard.map(describeConflict) });
+    }
+
+    const { force, ...clean } = body;
+    Object.assign(event, clean, { scope, chapter });
     await event.save();
-    res.json(event);
+
+    res.json({ event, warnings: warnings.map(describeConflict), overridden: hard.length > 0 });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

@@ -23,6 +23,8 @@ import {
   MdLibraryBooks,
   MdManageAccounts,
   MdCampaign,
+  MdCalendarMonth,
+  MdDesignServices,
 } from 'react-icons/md';
 
 export function canManageAdmins(role) {
@@ -63,6 +65,8 @@ export function getAdminSidebarItems(role) {
   /* ── WAQSN admin ── */
   if (role === 'waqsn_admin') {
     items.push(
+      { label: 'Event Calendar',    path: '/admin/calendar',           icon: MdCalendarMonth   },
+      { label: 'Flyer Studio',      path: '/admin/flyer-studio',       icon: MdDesignServices  },
       { label: 'Webinars',          path: '/admin/webinars',           icon: MdVideoLibrary },
       { label: 'Workshop Materials',path: '/admin/workshop-materials', icon: MdFolderOpen   },
       { label: 'Contact Info',      path: '/admin/contact-info',       icon: MdContactPhone },
@@ -73,6 +77,8 @@ export function getAdminSidebarItems(role) {
   /* ── YQSF admin ── */
   if (role === 'yqsf_admin') {
     items.push(
+      { label: 'Event Calendar',    path: '/admin/calendar',           icon: MdCalendarMonth   },
+      { label: 'Flyer Studio',      path: '/admin/flyer-studio',       icon: MdDesignServices  },
       { label: 'Webinars',          path: '/admin/webinars',           icon: MdVideoLibrary },
       { label: 'Workshop Materials',path: '/admin/workshop-materials', icon: MdFolderOpen   },
       { label: 'Contact Info',      path: '/admin/contact-info',       icon: MdContactPhone },
@@ -83,6 +89,8 @@ export function getAdminSidebarItems(role) {
   /* ── State admin ── */
   if (role === 'state_admin') {
     items.push(
+      { label: 'Event Calendar',    path: '/admin/calendar',           icon: MdCalendarMonth   },
+      { label: 'Flyer Studio',      path: '/admin/flyer-studio',       icon: MdDesignServices  },
       { label: 'Exco Members',      path: '/admin/exco',               icon: MdGroups       },
       { label: 'Contact Messages',  path: '/admin/messages',           icon: MdMail         },
       { label: 'Chapter',           path: '/admin/chapters',           icon: MdLocationCity },
@@ -97,6 +105,8 @@ export function getAdminSidebarItems(role) {
   items.push(
     { label: 'News',             path: '/admin/news',     icon: MdArticle          },
     { label: 'Events',           path: '/admin/events',      icon: MdEvent            },
+    { label: 'Event Calendar',   path: '/admin/calendar',     icon: MdCalendarMonth    },
+    { label: 'Flyer Studio',     path: '/admin/flyer-studio', icon: MdDesignServices   },
     { label: 'Published Results', path: '/admin/exam-results', icon: MdAssignment       },
     { label: 'Exco Members',     path: '/admin/exco',     icon: MdGroups           },
     { label: 'Members',          path: '/admin/members',  icon: MdPeople           },

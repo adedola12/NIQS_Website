@@ -93,6 +93,8 @@ import AdminDashboard from './pages/admin/Dashboard';
 import ManageAdmins from './pages/admin/ManageAdmins';
 import ManageNews from './pages/admin/ManageNews';
 import ManageEvents from './pages/admin/ManageEvents';
+import EventCalendar from './pages/admin/EventCalendar';
+import FlyerStudio from './pages/admin/FlyerStudio';
 import ManageExco from './pages/admin/ManageExco';
 import ManageChapters from './pages/admin/ManageChapters';
 import ManageJobs from './pages/admin/ManageJobs';
@@ -229,6 +231,8 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="news" element={<ManageNews />} />
           <Route path="events" element={<ManageEvents />} />
+          <Route path="calendar" element={<EventCalendar />} />
+          <Route path="flyer-studio" element={<FlyerStudio />} />
           <Route path="exco" element={<ManageExco />} />
           <Route path="chapters" element={<ManageChapters />} />
           <Route path="jobs" element={<ManageJobs />} />
