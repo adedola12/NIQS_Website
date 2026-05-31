@@ -76,6 +76,8 @@ import Payment from './pages/public/Payment';
 import Contact from './pages/public/Contact';
 import Partnership from './pages/public/Partnership';
 import PartnerDetail from './pages/public/PartnerDetail';
+import EventRegister from './pages/public/EventRegister';
+import EventAttend from './pages/public/EventAttend';
 
 // Auth Pages
 import Login from './pages/auth/Login';
@@ -95,6 +97,7 @@ import ManageNews from './pages/admin/ManageNews';
 import ManageEvents from './pages/admin/ManageEvents';
 import EventCalendar from './pages/admin/EventCalendar';
 import FlyerStudio from './pages/admin/FlyerStudio';
+import ManageRegistrations from './pages/admin/ManageRegistrations';
 import ManageExco from './pages/admin/ManageExco';
 import ManageChapters from './pages/admin/ManageChapters';
 import ManageJobs from './pages/admin/ManageJobs';
@@ -195,6 +198,8 @@ export default function App() {
         <Route path="/news" element={<PublicPage element={<News />} />} />
         <Route path="/news/:slug" element={<PublicPage element={<NewsArticle />} />} />
         <Route path="/events" element={<PublicPage element={<Events />} />} />
+        <Route path="/events/:id/register" element={<PublicPage element={<EventRegister />} />} />
+        <Route path="/events/attend/:token" element={<PublicPage element={<EventAttend />} />} />
         <Route path="/jobs" element={<PublicPage element={<Jobs />} />} />
         <Route path="/payment" element={<PublicPage element={<Payment />} />} />
         <Route path="/contact" element={<PublicPage element={<Contact />} />} />
@@ -233,6 +238,7 @@ export default function App() {
           <Route path="events" element={<ManageEvents />} />
           <Route path="calendar" element={<EventCalendar />} />
           <Route path="flyer-studio" element={<FlyerStudio />} />
+          <Route path="registrations" element={<ManageRegistrations />} />
           <Route path="exco" element={<ManageExco />} />
           <Route path="chapters" element={<ManageChapters />} />
           <Route path="jobs" element={<ManageJobs />} />

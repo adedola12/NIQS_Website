@@ -1,4 +1,5 @@
 const Event = require('../models/Event');
+const Registration = require('../models/Registration');
 const { classifyConflicts, describeConflict, dayStartUTC, dayEndUTC } = require('../utils/eventConflicts');
 
 /* ── Helpers ───────────────────────────────────────────────────────────────── */
@@ -213,6 +214,8 @@ exports.getAdminEvents = async (req, res) => {
     let filter = {};
     if (req.admin.role === 'state_admin' && req.admin.assignedChapter) {
       filter.chapter = req.admin.assignedChapter;
+    } else if (req.admin.role === 'waqsn_admin' || req.admin.role === 'yqsf_admin') {
+      filter.author = req.admin._id;
     }
 
     const events = await Event.find(filter)
@@ -220,7 +223,24 @@ exports.getAdminEvents = async (req, res) => {
       .populate('chapter', 'name')
       .sort('-createdAt');
 
-    res.json(events);
+    // Attach registration + attendance counts in a single aggregation
+    const ids = events.map((e) => e._id);
+    const counts = await Registration.aggregate([
+      { $match: { event: { $in: ids } } },
+      { $group: { _id: '$event', total: { $sum: 1 }, attended: { $sum: { $cond: ['$attended', 1, 0] } } } },
+    ]);
+    const byEvent = {};
+    counts.forEach((c) => { byEvent[String(c._id)] = c; });
+
+    const withCounts = events.map((e) => {
+      const o = e.toObject();
+      const c = byEvent[String(e._id)];
+      o.registrationCount = c ? c.total : 0;
+      o.attendedCount = c ? c.attended : 0;
+      return o;
+    });
+
+    res.json(withCounts);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

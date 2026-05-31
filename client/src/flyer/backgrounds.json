@@ -17,5 +17,7 @@
   { "id": "light-solid-white",  "name": "White",           "theme": "light", "type": "solid",    "color": "#FFFFFF" },
   { "id": "light-solid-tint",   "name": "Light Navy Tint", "theme": "light", "type": "solid",    "color": "#EDF0F7" },
   { "id": "light-gradient-1",   "name": "Off-white Fade",  "theme": "light", "type": "gradient", "value": "linear-gradient(160deg, #F6F7FB 0%, #DDE3F0 100%)" },
-  { "id": "light-gradient-gold","name": "Gold Tint",       "theme": "light", "type": "gradient", "value": "linear-gradient(160deg, #FEFCF0 0%, #F6F7FB 100%)" }
+  { "id": "light-gradient-gold","name": "Gold Tint",       "theme": "light", "type": "gradient", "value": "linear-gradient(160deg, #FEFCF0 0%, #F6F7FB 100%)" },
+  { "id": "light-solid-gold",   "name": "Light Gold",      "theme": "light", "type": "solid",    "color": "#F3E6BC" },
+  { "id": "light-gradient-royalgold", "name": "Gold Sheen", "theme": "light", "type": "gradient", "value": "linear-gradient(155deg, #FBEFC4 0%, #E7CE7E 100%)" }
 ]

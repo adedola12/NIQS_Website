@@ -1,9 +1,11 @@
 import { useAuth } from '../../context/AuthContext';
+import useIsMobile from '../../hooks/useIsMobile';
 import { getAdminLabel } from '../../utils/roleHelpers';
 
 export default function AdminHeader({ title, breadcrumbs = [] }) {
   const { admin } = useAuth();
   const role = admin?.role || '';
+  const isMobile = useIsMobile();
 
   const roleBadgeColor =
     role === 'main_admin' ? '#C9974A' : role === 'national_admin' ? '#2563EB' : '#059669';
@@ -14,7 +16,7 @@ export default function AdminHeader({ title, breadcrumbs = [] }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '16px 28px',
+        padding: isMobile ? '14px 16px 14px 58px' : '16px 28px',
         background: '#fff',
         borderBottom: '1px solid #e5e7eb',
         position: 'sticky',
@@ -36,13 +38,13 @@ export default function AdminHeader({ title, breadcrumbs = [] }) {
             ))}
           </nav>
         )}
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#0B1F4B' }}>
+        <h1 style={{ margin: 0, fontSize: isMobile ? 17 : 22, fontWeight: 700, color: '#0B1F4B' }}>
           {title}
         </h1>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ textAlign: 'right' }}>
+        <div style={{ textAlign: 'right', display: isMobile ? 'none' : 'block' }}>
           <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0B1F4B' }}>
             {admin?.firstName} {admin?.lastName}
           </p>

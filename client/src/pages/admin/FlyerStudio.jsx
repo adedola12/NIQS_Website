@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import useIsMobile from '../../hooks/useIsMobile';
 import API from '../../api/axios';
 import AdminHeader from '../../components/admin/AdminHeader';
 import MainFlyerLeftDark from '../../flyer/MainFlyerLeftDark.jsx';
@@ -51,11 +52,19 @@ export default function FlyerStudio() {
   const [saving, setSaving] = useState(false);
   const [overrideInfo, setOverrideInfo] = useState(null);
 
-  const previewScale = PREVIEW_W / FLYER_W;
+  const isMobile = useIsMobile();
+  const previewW = isMobile
+    ? Math.min(PREVIEW_W, (typeof window !== 'undefined' ? window.innerWidth : PREVIEW_W) - 36)
+    : PREVIEW_W;
+  const previewScale = previewW / FLYER_W;
   const previewH = Math.round(FLYER_H * previewScale);
 
   const effectiveScope = lockChapter ? 'chapter' : scope;
   const effectiveChapter = lockChapter ? assignedChapterId : (scope === 'chapter' ? chapter : '');
+
+  // Once saved, the flyer QR encodes the live public registration page.
+  const publicBase = (import.meta.env.VITE_PUBLIC_URL || window.location.origin).replace(/\/$/, '');
+  const registerUrl = editingId ? `${publicBase}/events/${editingId}/register` : '';
 
   /* ── Data loads ── */
   useEffect(() => {
@@ -190,13 +199,15 @@ export default function FlyerStudio() {
       </div>
 
       {/* Studio */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0, minHeight: 'calc(100vh - 130px)' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', gap: 0, minHeight: isMobile ? 'auto' : 'calc(100vh - 130px)' }}>
         {/* Form panel */}
         <div style={{
-          width: 380, flexShrink: 0, alignSelf: 'stretch',
-          background: '#fff', borderRight: '1.5px solid #DDE3F0',
-          padding: '20px 20px 60px', overflowY: 'auto',
-          maxHeight: 'calc(100vh - 130px)',
+          width: isMobile ? '100%' : 380, flexShrink: 0, alignSelf: 'stretch',
+          background: '#fff',
+          borderRight: isMobile ? 'none' : '1.5px solid #DDE3F0',
+          borderBottom: isMobile ? '1.5px solid #DDE3F0' : 'none',
+          padding: '20px 20px 40px', overflowY: 'auto',
+          maxHeight: isMobile ? 'none' : 'calc(100vh - 130px)',
         }}>
           <AdminForm
             event={event}
@@ -218,15 +229,15 @@ export default function FlyerStudio() {
         <div style={{
           flex: 1, background: '#ECEEF5', alignSelf: 'stretch',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 18, padding: '24px 24px 48px', overflowY: 'auto',
-          maxHeight: 'calc(100vh - 130px)',
+          gap: 18, padding: isMobile ? '20px 12px 40px' : '24px 24px 48px', overflowY: 'auto',
+          maxHeight: isMobile ? 'none' : 'calc(100vh - 130px)',
         }}>
           <div style={{ alignSelf: 'stretch', fontSize: 11, fontWeight: 700, color: '#5A6485', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
             Live Preview — {event.category} / {event.layout}-aligned / {event.theme} / {SUB_LABELS[subDeliverable]} · 1080×1350
           </div>
 
           <div style={{
-            width: PREVIEW_W, height: previewH, position: 'relative', flexShrink: 0,
+            width: previewW, height: previewH, position: 'relative', flexShrink: 0,
             borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,102,0.14)', overflow: 'hidden',
           }}>
             <div style={{
@@ -234,7 +245,7 @@ export default function FlyerStudio() {
               transform: `scale(${previewScale})`, transformOrigin: 'top left',
               width: FLYER_W, height: FLYER_H,
             }}>
-              <MainFlyerLeftDark ref={flyerRef} event={event} subDeliverable={subDeliverable} />
+              <MainFlyerLeftDark ref={flyerRef} event={event} subDeliverable={subDeliverable} registerUrl={registerUrl} />
             </div>
           </div>
 
@@ -256,13 +267,14 @@ export default function FlyerStudio() {
           {saving && <p style={{ fontSize: 12, color: '#5A6485', margin: 0 }}>Saving…</p>}
           <p style={{ fontSize: 11, color: '#8892B0', textAlign: 'center', margin: 0, maxWidth: 460 }}>
             Edits update the preview live. <strong>Save event</strong> books the date on the calendar and stores the flyer; then export PNG / PDF / full pack.
+            {' '}Once saved, the QR code links to the live registration page.
           </p>
         </div>
       </div>
 
       {/* Hidden 1080×1350 export target */}
       <div aria-hidden="true" style={{ position: 'fixed', top: 0, left: '-9999px', width: FLYER_W, height: FLYER_H, pointerEvents: 'none', zIndex: -1 }}>
-        <MainFlyerLeftDark ref={exportRef} event={event} subDeliverable={subDeliverable} />
+        <MainFlyerLeftDark ref={exportRef} event={event} subDeliverable={subDeliverable} registerUrl={registerUrl} />
       </div>
 
       {/* Saved events drawer */}

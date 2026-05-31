@@ -9,6 +9,7 @@ const {
   getCalendarEvents,
   checkDate,
 } = require('../controllers/eventController');
+const { getPublicEvent, register, listForEvent } = require('../controllers/registrationController');
 const { protect, adminOnly } = require('../middleware/auth');
 const { chapterScope, deleteCheck } = require('../middleware/roleCheck');
 
@@ -21,6 +22,12 @@ router.get('/check-date', protect, adminOnly, checkDate);
 router.get('/admin/all', protect, adminOnly, getAdminEvents);
 
 router.get('/:id', getEventById);
+
+// Public registration (QR / "Register now")
+router.get('/:id/public', getPublicEvent);
+router.post('/:id/register', register);
+// Admin: registrants for an event
+router.get('/:id/registrations', protect, adminOnly, listForEvent);
 
 router.post('/', protect, adminOnly, chapterScope, createEvent);
 router.put('/:id', protect, adminOnly, chapterScope, updateEvent);

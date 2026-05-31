@@ -61,7 +61,7 @@ export default function AdminLayout() {
       </main>
       <style>{`
         @media (max-width: 768px) {
-          .admin-main-content { margin-left: 0 !important; }
+          .admin-main-content { margin-left: 0 !important; overflow-x: hidden; }
         }
       `}</style>
     </div>

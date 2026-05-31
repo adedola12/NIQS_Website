@@ -113,7 +113,7 @@ function GoldTitle({ title, goldWordIndex, fontSize, center = false }) {
   return (
     <h1 style={{
       fontFamily: FD, fontSize, fontWeight: 800,
-      color: WHITE, letterSpacing: '-0.04em', lineHeight: 0.98,
+      color: 'var(--fl-ink)', letterSpacing: '-0.04em', lineHeight: 0.98,
       margin: 0, textAlign: center ? 'center' : 'left',
     }}>
       {words.map((w, i) => (
@@ -157,20 +157,20 @@ function SpeakerCard({ speaker, cardW }) {
       ) : (
         <div style={{
           flex: 1, minHeight: 0, borderRadius: 8,
-          background: 'rgba(255,255,255,0.08)',
-          border: '1px solid rgba(255,255,255,0.12)',
+          background: 'var(--fl-surface)',
+          border: '1px solid var(--fl-surface-border)',
           display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
           overflow: 'hidden',
         }}>
-          <div style={{ width: '52%', height: '72%', background: 'rgba(255,255,255,0.18)', borderRadius: '50% 50% 0 0' }} />
+          <div style={{ width: '52%', height: '72%', background: 'var(--fl-silhouette)', borderRadius: '50% 50% 0 0' }} />
         </div>
       )}
       {/* Text — fixed height at bottom */}
       <div style={{ flexShrink: 0, paddingTop: 10 }}>
-        <p style={{ fontFamily: FB, fontSize: 17, fontWeight: 700, color: WHITE, letterSpacing: '-0.01em', lineHeight: 1.2, margin: '0 0 4px' }}>
+        <p style={{ fontFamily: FB, fontSize: 17, fontWeight: 700, color: 'var(--fl-ink)', letterSpacing: '-0.01em', lineHeight: 1.2, margin: '0 0 4px' }}>
           {speaker?.name || ''}
         </p>
-        <p style={{ fontFamily: FB, fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.6)', lineHeight: 1.3, margin: 0 }}>
+        <p style={{ fontFamily: FB, fontSize: 14, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.3, margin: 0 }}>
           {speaker?.topic || ''}
         </p>
       </div>
@@ -187,7 +187,7 @@ function PlatformIcon({ platform, size }) {
 }
 
 // ─── Meta + QR block ─────────────────────────────────────────────────────────
-function MetaQrBlock({ event, sec }) {
+function MetaQrBlock({ event, sec, registerUrl }) {
   const dateStr  = formatDateRange(event.dateStart, event.dateEnd)
   const timeSub  = [event.time, event.timeZone].filter(Boolean).join(' · ')
   const venueVal = event.venueCity ? `${event.venueCity} + Online` : event.venuePhysical
@@ -207,6 +207,7 @@ function MetaQrBlock({ event, sec }) {
   const fullUrl = event.registrationUrl
     ? (event.registrationUrl.startsWith('http') ? event.registrationUrl : `https://${event.registrationUrl}`)
     : ''
+  const qrTarget = registerUrl || fullUrl  // QR points to the live registration page once the event is saved
   const qrSz = 88
 
   function MetaIcon({ type }) {
@@ -225,7 +226,7 @@ function MetaQrBlock({ event, sec }) {
     return <PlatformIcon platform={type} size={iconSz} />
   }
 
-  if (!cells.length && !fullUrl) return null
+  if (!cells.length && !qrTarget) return null
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -250,18 +251,18 @@ function MetaQrBlock({ event, sec }) {
             </React.Fragment>
           ))}
         </div>
-        {sec.registration && fullUrl && (
+        {sec.registration && qrTarget && (
           <>
             <div style={{ width: 1, background: 'rgba(217,182,80,0.35)', alignSelf: 'stretch' }} />
             <div style={{ background: WHITE, padding: 5, borderRadius: 4, lineHeight: 0, flexShrink: 0 }}>
-              <QRCodeSVG value={fullUrl} size={qrSz} level="M" fgColor={NAVY} />
+              <QRCodeSVG value={qrTarget} size={qrSz} level="M" fgColor={NAVY} />
             </div>
           </>
         )}
       </div>
-      {sec.registration && url && (
-        <p style={{ fontFamily: FB, fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.55)', margin: 0, textAlign: 'center' }}>
-          Scan to register or visit <span style={{ color: GOLD, fontWeight: 600 }}>{url}</span>
+      {sec.registration && (url || registerUrl) && (
+        <p style={{ fontFamily: FB, fontSize: 14, fontWeight: 400, color: 'var(--fl-ink-faint)', margin: 0, textAlign: 'center' }}>
+          Scan to register{url ? <> or visit <span style={{ color: GOLD, fontWeight: 600 }}>{url}</span></> : ''}
         </p>
       )}
     </div>
@@ -274,7 +275,7 @@ function ContactBar({ enquiries, center = false }) {
   return (
     <div style={{
       position: 'absolute', bottom: 0, left: 0, right: 0, height: BAR_H,
-      background: WHITE,
+      background: 'var(--fl-bar-bg)',
       display: 'flex', alignItems: 'center',
       justifyContent: center ? 'center' : 'space-between',
       paddingLeft: PAD, paddingRight: PAD,
@@ -282,11 +283,11 @@ function ContactBar({ enquiries, center = false }) {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 2, background: GOLD, borderRadius: 2, flexShrink: 0 }} />
-        <span style={{ fontFamily: FB, fontSize: 13, fontWeight: 700, color: NAVY, letterSpacing: '0.22em', textTransform: 'uppercase' }}>ENQUIRIES</span>
-        <span style={{ fontFamily: FB, fontSize: 17, fontWeight: 400, color: NAVY }}>{phones}</span>
+        <span style={{ fontFamily: FB, fontSize: 13, fontWeight: 700, color: 'var(--fl-bar-text)', letterSpacing: '0.22em', textTransform: 'uppercase' }}>ENQUIRIES</span>
+        <span style={{ fontFamily: FB, fontSize: 17, fontWeight: 400, color: 'var(--fl-bar-text)' }}>{phones}</span>
       </div>
       {!center && (
-        <span style={{ fontFamily: FB, fontSize: 15, fontStyle: 'italic', color: 'rgba(0,0,102,0.5)' }}>niqs.org.ng</span>
+        <span style={{ fontFamily: FB, fontSize: 15, fontStyle: 'italic', color: 'var(--fl-bar-dim)' }}>niqs.org.ng</span>
       )}
     </div>
   )
@@ -314,7 +315,7 @@ function TitleZoneMain({ event, sec, center, speakerCount, isFive, speakers }) {
           {sec.themedEyebrow && <Eyebrow label={eyebrow} center={center} mb={10} />}
           <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={titleFs} center={center} />
           {sec.subtitle && event.subtitle && (
-            <p style={{ fontFamily: FB, fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45, margin: '10px 0 0' }}>
+            <p style={{ fontFamily: FB, fontSize: 17, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '10px 0 0' }}>
               {event.subtitle}
             </p>
           )}
@@ -333,7 +334,7 @@ function TitleZoneMain({ event, sec, center, speakerCount, isFive, speakers }) {
         <div style={{ textAlign: 'center' }}>
           <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={titleFs} center />
           {sec.subtitle && event.subtitle && (
-            <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45, margin: '10px auto 0', maxWidth: '84%' }}>
+            <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '10px auto 0', maxWidth: '84%' }}>
               {event.subtitle}
             </p>
           )}
@@ -348,7 +349,7 @@ function TitleZoneMain({ event, sec, center, speakerCount, isFive, speakers }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={titleFs} />
             {sec.subtitle && event.subtitle && (
-              <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45, margin: '10px 0 0' }}>
+              <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '10px 0 0' }}>
                 {event.subtitle}
               </p>
             )}
@@ -372,7 +373,7 @@ function TitleZoneNoSpeakers({ event, sec, center, cat }) {
         <div style={{ textAlign: 'center' }}>
           <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={TITLE_FS[0]} center />
           {sec.subtitle && event.subtitle && (
-            <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45, margin: '10px auto 0', maxWidth: '84%' }}>
+            <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '10px auto 0', maxWidth: '84%' }}>
               {event.subtitle}
             </p>
           )}
@@ -387,7 +388,7 @@ function TitleZoneNoSpeakers({ event, sec, center, cat }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={TITLE_FS[0]} />
             {sec.subtitle && event.subtitle && (
-              <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45, margin: '10px 0 0' }}>
+              <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '10px 0 0' }}>
                 {event.subtitle}
               </p>
             )}
@@ -443,13 +444,13 @@ function HeroImageZone({ event }) {
   return (
     <div style={{
       height: SPEAKER_H, borderRadius: 10, overflow: 'hidden',
-      background: 'rgba(255,255,255,0.07)',
-      border: '1px solid rgba(255,255,255,0.1)',
+      background: 'var(--fl-surface)',
+      border: '1px solid var(--fl-surface-border)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       {event.heroImage
         ? <img src={event.heroImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <span style={{ fontFamily: FB, fontSize: 18, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>Hero image</span>}
+        : <span style={{ fontFamily: FB, fontSize: 18, color: 'var(--fl-ink-faint)', fontStyle: 'italic' }}>Hero image</span>}
     </div>
   )
 }
@@ -467,10 +468,10 @@ function CountdownContent({ event, sec, center }) {
     <div style={{ height: spanH, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
       {/* Big number */}
       <div style={{ textAlign: center ? 'center' : 'left' }}>
-        <span style={{ display: 'block', fontFamily: FD, fontSize: 300, fontWeight: 800, color: WHITE, lineHeight: 0.85, letterSpacing: '-0.05em' }}>
+        <span style={{ display: 'block', fontFamily: FD, fontSize: 300, fontWeight: 800, color: 'var(--fl-ink)', lineHeight: 0.85, letterSpacing: '-0.05em' }}>
           {days}
         </span>
-        <p style={{ fontFamily: FB, fontSize: 28, fontWeight: 600, color: 'rgba(255,255,255,0.7)', margin: '10px 0 0', letterSpacing: '0.02em' }}>
+        <p style={{ fontFamily: FB, fontSize: 28, fontWeight: 600, color: 'var(--fl-ink-dim)', margin: '10px 0 0', letterSpacing: '0.02em' }}>
           Days to go
         </p>
         <div style={{ width: 80, height: 2, background: GOLD, borderRadius: 2, margin: center ? '14px auto 0' : '14px 0 0' }} />
@@ -481,7 +482,7 @@ function CountdownContent({ event, sec, center }) {
           {sec.themedEyebrow && <Eyebrow label={eyebrow} center={center} mb={10} />}
           <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={52} center={center} />
           {sec.subtitle && event.subtitle && (
-            <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45, margin: '10px 0 0' }}>
+            <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '10px 0 0' }}>
               {event.subtitle}
             </p>
           )}
@@ -506,15 +507,15 @@ function SpeakerCitationContent({ event, sec, center, speakers }) {
         // Center: portrait + text stacked
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
           <Eyebrow label="MEET THE SPEAKERS" center mb={0} />
-          <div style={{ width: portraitW, flex: 1, minHeight: 0, borderRadius: 10, overflow: 'hidden', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', position: 'relative' }}>
+          <div style={{ width: portraitW, flex: 1, minHeight: 0, borderRadius: 10, overflow: 'hidden', background: 'var(--fl-surface)', border: '1px solid var(--fl-surface-border)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', position: 'relative' }}>
             {featured?.photo
               ? <img src={featured.photo} alt={featured.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
-              : <div style={{ width: '38%', height: '82%', background: 'rgba(255,255,255,0.18)', borderRadius: '50% 50% 0 0' }} />}
+              : <div style={{ width: '38%', height: '82%', background: 'var(--fl-silhouette)', borderRadius: '50% 50% 0 0' }} />}
           </div>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: FD, fontSize: 28, fontWeight: 800, color: WHITE, letterSpacing: '-0.02em', margin: 0 }}>{featured?.name || ''}</p>
+            <p style={{ fontFamily: FD, fontSize: 28, fontWeight: 800, color: 'var(--fl-ink)', letterSpacing: '-0.02em', margin: 0 }}>{featured?.name || ''}</p>
             {featured?.role && <p style={{ fontFamily: FB, fontSize: 16, fontWeight: 400, color: GOLD, margin: '4px 0 0' }}>{featured.role}</p>}
-            {featured?.credentials && <p style={{ fontFamily: FB, fontSize: 16, color: 'rgba(255,255,255,0.65)', margin: '8px auto 0', maxWidth: '88%' }}>{featured.credentials}</p>}
+            {featured?.credentials && <p style={{ fontFamily: FB, fontSize: 16, color: 'var(--fl-ink-dim)', margin: '8px auto 0', maxWidth: '88%' }}>{featured.credentials}</p>}
           </div>
         </div>
       ) : (
@@ -523,10 +524,10 @@ function SpeakerCitationContent({ event, sec, center, speakers }) {
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <Eyebrow label="MEET THE SPEAKERS" mb={12} />
-              <p style={{ fontFamily: FD, fontSize: 30, fontWeight: 800, color: WHITE, letterSpacing: '-0.02em', margin: '0 0 6px' }}>{featured?.name || ''}</p>
+              <p style={{ fontFamily: FD, fontSize: 30, fontWeight: 800, color: 'var(--fl-ink)', letterSpacing: '-0.02em', margin: '0 0 6px' }}>{featured?.name || ''}</p>
               {featured?.role && <p style={{ fontFamily: FB, fontSize: 16, fontWeight: 400, color: GOLD, margin: '0 0 18px' }}>{featured.role}</p>}
               {featured?.topic && (
-                <p style={{ fontFamily: FB, fontSize: 17, color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, margin: '0 0 20px' }}>
+                <p style={{ fontFamily: FB, fontSize: 17, color: 'var(--fl-ink-dim)', lineHeight: 1.7, margin: '0 0 20px' }}>
                   {featured.topic}
                 </p>
               )}
@@ -537,10 +538,10 @@ function SpeakerCitationContent({ event, sec, center, speakers }) {
             </div>
           </div>
           {/* Portrait */}
-          <div style={{ width: portraitW, flexShrink: 0, borderRadius: 10, overflow: 'hidden', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', position: 'relative' }}>
+          <div style={{ width: portraitW, flexShrink: 0, borderRadius: 10, overflow: 'hidden', background: 'var(--fl-surface)', border: '1px solid var(--fl-surface-border)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', position: 'relative' }}>
             {featured?.photo
               ? <img src={featured.photo} alt={featured.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
-              : <div style={{ width: '38%', height: '82%', background: 'rgba(255,255,255,0.18)', borderRadius: '50% 50% 0 0' }} />}
+              : <div style={{ width: '38%', height: '82%', background: 'var(--fl-silhouette)', borderRadius: '50% 50% 0 0' }} />}
           </div>
         </>
       )}
@@ -557,14 +558,14 @@ function ThankYouContent({ event, center, cat }) {
     <div style={{ height: spanH, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
       {/* Hero text */}
       <div style={{ textAlign: center ? 'center' : 'left' }}>
-        <h1 style={{ fontFamily: FD, fontSize: 110, fontWeight: 800, color: WHITE, letterSpacing: '-0.04em', lineHeight: 0.92, margin: 0 }}>
+        <h1 style={{ fontFamily: FD, fontSize: 110, fontWeight: 800, color: 'var(--fl-ink)', letterSpacing: '-0.04em', lineHeight: 0.92, margin: 0 }}>
           Thank you
         </h1>
         <p style={{ fontFamily: FD, fontSize: 58, fontWeight: 700, color: GOLD, letterSpacing: '-0.02em', margin: '8px 0 0' }}>
           for coming!
         </p>
         {event.subtitle && (
-          <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45, margin: '20px 0 0', ...(center && { maxWidth: '84%', marginLeft: 'auto', marginRight: 'auto' }) }}>
+          <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '20px 0 0', ...(center && { maxWidth: '84%', marginLeft: 'auto', marginRight: 'auto' }) }}>
             {event.subtitle}
           </p>
         )}
@@ -641,7 +642,7 @@ function TitleZoneSolo({ event, sec, center, cat }) {
       {sec.themedEyebrow && <Eyebrow label={eyebrow} center={center} mb={16} />}
       <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={center ? 74 : 78} center={center} />
       {sec.subtitle && event.subtitle && (
-        <p style={{ fontFamily: FB, fontSize: 20, fontWeight: 400, color: 'rgba(255,255,255,0.62)', lineHeight: 1.45, margin: '16px 0 0', maxWidth: center ? '82%' : '92%' }}>
+        <p style={{ fontFamily: FB, fontSize: 20, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '16px 0 0', maxWidth: center ? '82%' : '92%' }}>
           {event.subtitle}
         </p>
       )}
@@ -655,13 +656,25 @@ function TitleZoneSolo({ event, sec, center, cat }) {
 }
 
 const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
-  { event, subDeliverable = 'main' }, ref
+  { event, subDeliverable = 'main', registerUrl }, ref
 ) {
   const center  = event.layout === 'Center'
   const sec     = getSec(event)
   const bg      = resolveBg(event.backgroundId, event.theme)
   const cat     = event.category || 'Training'
-  const logoSrc = '/assets/lockups/lockup-dark-bg.svg'
+  const light   = (event.theme || 'Dark') === 'Light'
+  const logoSrc = light ? '/assets/lockups/lockup-white-bg.svg' : '/assets/lockups/lockup-dark-bg.svg'
+  // Theme-aware ink/surface tokens — cascade to every descendant via CSS vars.
+  // Dark values equal the original hardcoded colours, so the dark theme is unchanged.
+  const themeVars = light ? {
+    '--fl-ink': '#0B1F4B', '--fl-ink-dim': 'rgba(11,31,75,0.62)', '--fl-ink-faint': 'rgba(11,31,75,0.5)',
+    '--fl-surface': 'rgba(11,31,75,0.06)', '--fl-surface-border': 'rgba(11,31,75,0.14)', '--fl-silhouette': 'rgba(11,31,75,0.2)',
+    '--fl-bar-bg': '#0B1F4B', '--fl-bar-text': '#FFFFFF', '--fl-bar-dim': 'rgba(255,255,255,0.55)',
+  } : {
+    '--fl-ink': '#FFFFFF', '--fl-ink-dim': 'rgba(255,255,255,0.62)', '--fl-ink-faint': 'rgba(255,255,255,0.5)',
+    '--fl-surface': 'rgba(255,255,255,0.08)', '--fl-surface-border': 'rgba(255,255,255,0.12)', '--fl-silhouette': 'rgba(255,255,255,0.18)',
+    '--fl-bar-bg': '#FFFFFF', '--fl-bar-text': '#000066', '--fl-bar-dim': 'rgba(0,0,102,0.5)',
+  }
 
   const allSpeakers  = (event.speakers || []).filter(sp => sp.name?.trim())
   const speakerCount = subDeliverable === 'main' ? Math.min(allSpeakers.length, 5) : 0
@@ -691,6 +704,7 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
         fontFamily: FB,
         boxSizing: 'border-box',
         ...bgStyle(bg),
+        ...themeVars,
       }}
     >
       {/* ── Absolute overlays (outside grid flow) ── */}
@@ -748,7 +762,7 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
 
       {/* ── Zone 4: Meta block (200px) — always ── */}
       <div style={{ gridRow: 4, gridColumn: 1, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
-        <MetaQrBlock event={event} sec={sec} />
+        <MetaQrBlock event={event} sec={sec} registerUrl={registerUrl} />
       </div>
 
       {/* ── Contact bar: absolute at bottom, full canvas width ── */}

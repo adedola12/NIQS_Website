@@ -59,6 +59,7 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/admin", require("./routes/admin"));
 app.use("/api/news", require("./routes/news"));
 app.use("/api/events", require("./routes/events"));
+app.use("/api/registrations", require("./routes/registrations"));
 app.use("/api/exco", require("./routes/exco"));
 app.use("/api/chapters", require("./routes/chapters"));
 app.use("/api/jobs", require("./routes/jobs"));

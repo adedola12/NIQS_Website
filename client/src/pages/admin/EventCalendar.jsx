@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import useIsMobile from '../../hooks/useIsMobile';
 import AdminHeader from '../../components/admin/AdminHeader';
 import { getCalendarEvents } from '../../flyer/flyerApi';
 
@@ -18,6 +19,8 @@ export default function EventCalendar() {
   const { admin } = useAuth();
   const navigate = useNavigate();
   const isHQ = HQ_ROLES.includes(admin?.role);
+  const isMobile = useIsMobile();
+  const maxChips = isMobile ? 1 : 3;
 
   const today = new Date();
   const [year, setYear] = useState(today.getUTCFullYear());
@@ -74,7 +77,7 @@ export default function EventCalendar() {
     <div>
       <AdminHeader title="Event Calendar" breadcrumbs={['Event Calendar']} />
 
-      <div style={{ padding: '20px 28px' }}>
+      <div style={{ padding: isMobile ? '16px 10px' : '20px 28px' }}>
         {/* Controls */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -93,14 +96,14 @@ export default function EventCalendar() {
         </div>
 
         {/* Weekday header */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, marginBottom: 6 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: isMobile ? 4 : 6, marginBottom: 6 }}>
           {WEEKDAYS.map((w) => (
             <div key={w} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{w}</div>
           ))}
         </div>
 
         {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: isMobile ? 4 : 6 }}>
           {days.map((d) => {
             const key = isoDay(d);
             const inMonth = d.getUTCMonth() === month;
@@ -115,7 +118,7 @@ export default function EventCalendar() {
                 onClick={() => book(key)}
                 title={lockedForMe ? 'Reserved by National (HQ)' : 'Click to book this date'}
                 style={{
-                  minHeight: 104, borderRadius: 8, padding: 7, cursor: 'pointer',
+                  minHeight: isMobile ? 58 : 104, borderRadius: 8, padding: isMobile ? 4 : 7, cursor: 'pointer',
                   background: inMonth ? '#fff' : '#f9fafb',
                   border: isToday ? '2px solid #0B1F4B' : '1px solid #e5e7eb',
                   opacity: inMonth ? 1 : 0.55,
@@ -126,15 +129,15 @@ export default function EventCalendar() {
                 onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: 12.5, fontWeight: isToday ? 800 : 600, color: isToday ? '#0B1F4B' : '#374151' }}>
+                  <span style={{ fontSize: isMobile ? 11 : 12.5, fontWeight: isToday ? 800 : 600, color: isToday ? '#0B1F4B' : '#374151' }}>
                     {d.getUTCDate()}
                   </span>
                   {lockedForMe && <span style={{ fontSize: 11 }} title="Reserved by HQ">🔒</span>}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  {dayEvents.slice(0, 3).map((ev) => (
+                  {dayEvents.slice(0, maxChips).map((ev) => (
                     <div key={ev._id + key} style={{
-                      fontSize: 10, fontWeight: 600, lineHeight: 1.2,
+                      fontSize: isMobile ? 8.5 : 10, fontWeight: 600, lineHeight: 1.2,
                       padding: '2px 5px', borderRadius: 4,
                       background: ev.scope === 'national' ? 'rgba(201,151,74,0.16)' : 'rgba(5,150,105,0.14)',
                       color: ev.scope === 'national' ? '#92600F' : '#04603A',
@@ -143,8 +146,8 @@ export default function EventCalendar() {
                       {ev.hasFlyer ? '🖼 ' : ''}{ev.title}
                     </div>
                   ))}
-                  {dayEvents.length > 3 && (
-                    <span style={{ fontSize: 9.5, color: '#9ca3af', fontWeight: 600 }}>+{dayEvents.length - 3} more</span>
+                  {dayEvents.length > maxChips && (
+                    <span style={{ fontSize: 9.5, color: '#9ca3af', fontWeight: 600 }}>+{dayEvents.length - maxChips}{isMobile ? '' : ' more'}</span>
                   )}
                 </div>
               </div>
