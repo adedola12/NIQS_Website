@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import BackgroundPicker from './BackgroundPicker.jsx'
 import { uploadImage } from './flyerApi'
+import { accentBackground, accentBackgroundSize } from './MainFlyerLeftDark.jsx'
 
 // ─── Shared form primitives ──────────────────────────────────────────────────
 
@@ -285,6 +286,48 @@ const ALL_TABS = [
   { value: 'speakerCitation', label: 'Citation'     },
   { value: 'thankYou',        label: 'Thank You'    },
 ]
+
+// ─── Background accent picker ─────────────────────────────────────────────────
+const ACCENTS = [
+  { id: 'none',     name: 'Plain'     },
+  { id: 'glow',     name: 'Gold Glow' },
+  { id: 'grid',     name: 'Blueprint' },
+  { id: 'dots',     name: 'Dots'      },
+  { id: 'diagonal', name: 'Diagonal'  },
+  { id: 'bubbles',  name: 'Bubbles'   },
+]
+
+function AccentPicker({ value, onChange, theme }) {
+  const baseBg = theme === 'Light' ? '#EDF0F7' : '#000066'
+  const current = value || 'glow'
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+      {ACCENTS.map(a => {
+        const bgi = accentBackground(a.id, theme)
+        const selected = current === a.id
+        return (
+          <button
+            key={a.id}
+            type="button"
+            onClick={() => onChange(a.id)}
+            style={{
+              border: selected ? '2px solid #000066' : '2px solid #DDE3F0',
+              borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
+              padding: 0, background: 'none',
+            }}
+          >
+            <div style={{ height: 40, background: baseBg, backgroundImage: bgi || 'none', backgroundSize: accentBackgroundSize(a.id) }} />
+            <div style={{ padding: '3px 6px', background: selected ? '#F0F0FF' : '#fff', borderTop: '1px solid #DDE3F0' }}>
+              <p style={{ fontSize: 9, fontWeight: 600, color: '#000066', margin: 0, fontFamily: "'Sora', sans-serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {a.name}
+              </p>
+            </div>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 export default function AdminForm({ event, onChange, subDeliverable, onSubDeliverableChange, publishing }) {
   const [open, setOpen] = React.useState({
@@ -814,11 +857,21 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
       <div style={{ marginBottom: 20 }}>
         <SectionHeader title="Background" open={open.background} onToggle={() => toggle('background')} />
         {open.background && (
-          <BackgroundPicker
-            value={event.backgroundId}
-            onChange={v => set('backgroundId', v)}
-            theme={event.theme}
-          />
+          <>
+            <BackgroundPicker
+              value={event.backgroundId}
+              onChange={v => set('backgroundId', v)}
+              theme={event.theme}
+            />
+            <p style={{ fontSize: 9, fontWeight: 700, color: '#9BA3BF', letterSpacing: '0.12em', textTransform: 'uppercase', margin: '4px 0 6px', fontFamily: "'Sora', sans-serif" }}>
+              Accent overlay
+            </p>
+            <AccentPicker
+              value={event.accent}
+              onChange={v => set('accent', v)}
+              theme={event.theme}
+            />
+          </>
         )}
       </div>
 

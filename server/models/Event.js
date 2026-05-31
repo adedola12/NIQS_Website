@@ -31,6 +31,7 @@ const flyerSchema = new mongoose.Schema({
   registrationExtra: { type: String, default: '' },
   enquiries: { type: [String], default: [] },
   backgroundId: { type: String, default: 'dark-bg-1' },
+  accent: { type: String, default: 'glow' },
   selectedSpeakerIndex: { type: Number, default: 0 },
   heroImage: { type: String, default: null },
   schedule: { type: String, default: '' },

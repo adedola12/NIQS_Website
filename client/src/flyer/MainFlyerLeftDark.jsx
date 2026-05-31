@@ -594,6 +594,66 @@ function ThankYouContent({ event, center, cat }) {
 // ROOT COMPONENT — CSS Grid canvas
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// ─── Background accent overlay ────────────────────────────────────────────────
+// CSS-only decorative patterns that blend into the flyer background. Gold on the
+// dark theme, navy on the light theme. Exported so the AdminForm picker can reuse
+// them for swatch previews (single source of truth).
+export function accentBackground(accent, theme) {
+  const c = (theme || 'Dark') !== 'Light' ? '217,182,80' : '0,0,102' // gold / navy
+  switch (accent) {
+    case 'glow':     return `radial-gradient(circle at 78% 82%, rgba(${c},0.18), transparent 55%)`
+    case 'grid':     return `linear-gradient(rgba(${c},0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(${c},0.07) 1px, transparent 1px)`
+    case 'dots':     return `radial-gradient(rgba(${c},0.16) 1.6px, transparent 1.8px)`
+    case 'diagonal': return `repeating-linear-gradient(45deg, rgba(${c},0.06) 0, rgba(${c},0.06) 2px, transparent 2px, transparent 24px)`
+    case 'bubbles':  return `radial-gradient(circle at 12% 18%, rgba(${c},0.13), transparent 22%), radial-gradient(circle at 88% 26%, rgba(${c},0.09), transparent 20%), radial-gradient(circle at 72% 82%, rgba(${c},0.13), transparent 26%), radial-gradient(circle at 22% 80%, rgba(${c},0.08), transparent 18%)`
+    default:         return null // 'none' / plain
+  }
+}
+export function accentBackgroundSize(accent) {
+  if (accent === 'grid') return '64px 64px'
+  if (accent === 'dots') return '30px 30px'
+  return undefined
+}
+function AccentLayer({ accent = 'glow', theme = 'Dark' }) {
+  const bgi = accentBackground(accent, theme)
+  if (!bgi) return null
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+      backgroundImage: bgi, backgroundSize: accentBackgroundSize(accent),
+    }} />
+  )
+}
+
+// ─── Title zone — 'main' deliverable with no speaker cards (full-canvas) ───────
+// Used when the Speakers section is off or no speakers are added. Centers the
+// title + subtitle + CPD seal across the title+speaker rows so nothing is clipped.
+function TitleZoneSolo({ event, sec, center, cat }) {
+  const goldIdx   = event.goldWordIndex ?? (event.title || '').split(' ').length - 1
+  const eyebrow   = cat === 'Webinar' ? 'WEBINAR SERIES' : 'CPD TRAINING'
+  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: cat }
+  return (
+    <div style={{
+      height: '100%', display: 'flex', flexDirection: 'column',
+      justifyContent: 'center', alignItems: center ? 'center' : 'flex-start',
+      textAlign: center ? 'center' : 'left', overflow: 'hidden',
+    }}>
+      {sec.themedEyebrow && <Eyebrow label={eyebrow} center={center} mb={16} />}
+      <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={center ? 74 : 78} center={center} />
+      {sec.subtitle && event.subtitle && (
+        <p style={{ fontFamily: FB, fontSize: 20, fontWeight: 400, color: 'rgba(255,255,255,0.62)', lineHeight: 1.45, margin: '16px 0 0', maxWidth: center ? '82%' : '92%' }}>
+          {event.subtitle}
+        </p>
+      )}
+      {sec.cpdSeal && (
+        <div style={{ marginTop: 30 }}>
+          <CpdSeal {...sealProps} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
   { event, subDeliverable = 'main' }, ref
 ) {
@@ -609,6 +669,12 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
 
   // Deliverables that span both title and speaker zones
   const isSpanDeliverable = ['countdown', 'speakerCitation', 'thankYou'].includes(subDeliverable)
+
+  // 'main' with no speaker cards (section off or none added) → give the title the
+  // full canvas height instead of clipping it above an empty 480px speaker band.
+  const showSpeakers = subDeliverable === 'main' && sec.speakers && speakerCount > 0
+  const mainSolo     = subDeliverable === 'main' && !showSpeakers
+  const accent       = event.accent || 'glow'
 
   return (
     <div
@@ -631,7 +697,7 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
       {bg.type === 'image' && (
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,20,0.28)', pointerEvents: 'none' }} />
       )}
-      <div style={{ position: 'absolute', bottom: BAR_H, right: -20, width: 320, height: 320, background: 'radial-gradient(circle, rgba(217,182,80,0.14), transparent 65%)', pointerEvents: 'none' }} />
+      <AccentLayer accent={accent} theme={event.theme} />
 
       {/* ── Zone 1: Header ── */}
       <div style={{
@@ -650,8 +716,8 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
         </div>
       </div>
 
-      {/* ── Zone 2: Title (1fr) — only for main/noSpeakers ── */}
-      {!isSpanDeliverable && (
+      {/* ── Zone 2: Title (1fr) — main(with speakers) / noSpeakers ── */}
+      {!isSpanDeliverable && !mainSolo && (
         <div style={{ gridRow: 2, gridColumn: 1, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
           {subDeliverable === 'noSpeakers'
             ? <TitleZoneNoSpeakers event={event} sec={sec} center={center} cat={cat} />
@@ -660,8 +726,8 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
         </div>
       )}
 
-      {/* ── Zone 3: Speaker band (480px) — only for main/noSpeakers ── */}
-      {!isSpanDeliverable && (
+      {/* ── Zone 3: Speaker band (480px) — main(with speakers) / noSpeakers ── */}
+      {!isSpanDeliverable && !mainSolo && (
         <div style={{ gridRow: 3, gridColumn: 1, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
           {subDeliverable === 'noSpeakers'
             ? <HeroImageZone event={event} />
@@ -670,9 +736,10 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
         </div>
       )}
 
-      {/* ── Zones 2+3 combined span — for countdown / citation / thankYou ── */}
-      {isSpanDeliverable && (
+      {/* ── Zones 2+3 combined span — span deliverables OR main-without-speakers ── */}
+      {(isSpanDeliverable || mainSolo) && (
         <div style={{ gridRow: '2 / 4', gridColumn: 1, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
+          {mainSolo                             && <TitleZoneSolo event={event} sec={sec} center={center} cat={cat} />}
           {subDeliverable === 'countdown'       && <CountdownContent event={event} sec={sec} center={center} />}
           {subDeliverable === 'speakerCitation' && <SpeakerCitationContent event={event} sec={sec} center={center} speakers={allSpeakers} />}
           {subDeliverable === 'thankYou'        && <ThankYouContent event={event} center={center} cat={cat} />}

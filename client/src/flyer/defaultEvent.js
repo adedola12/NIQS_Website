@@ -20,6 +20,7 @@ export const DEFAULT_EVENT = {
   registrationExtra: 'Special discounts for lecturers & students',
   enquiries: ['08091551476', '08069514106'],
   backgroundId: 'dark-bg-1',
+  accent: 'glow',
   theme: 'Dark',
   selectedSpeakerIndex: 0,
   sections: {
