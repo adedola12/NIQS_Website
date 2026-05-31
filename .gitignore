@@ -6,3 +6,6 @@ uploads/*
 !uploads/.gitkeep
 .DS_Store
 *.log
+
+# Claude Code worktrees (transient, must never be committed)
+.claude/worktrees/
