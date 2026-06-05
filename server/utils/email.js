@@ -99,4 +99,41 @@ function registrationEmailHtml(reg, event, links) {
   </div>`;
 }
 
-module.exports = { sendMail, registrationEmailHtml, publicBase, fmtDate };
+/** Branded (navy/gold) acknowledgement for a submitted flyer request. */
+function flyerRequestEmailHtml(reqDoc) {
+  const NAVY = '#000066', GOLD = '#D9B650';
+  const when = reqDoc.dateEnd && String(reqDoc.dateEnd) !== String(reqDoc.dateStart)
+    ? `${fmtDate(reqDoc.dateStart)} – ${fmtDate(reqDoc.dateEnd)}`
+    : fmtDate(reqDoc.dateStart);
+  const venue = reqDoc.venueCity || reqDoc.venuePhysical || '';
+
+  return `
+  <div style="margin:0;padding:24px;background:#ECEEF5;font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2e;">
+    <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,102,.12);">
+      <div style="background:${NAVY};padding:20px 28px;color:#fff;">
+        <p style="margin:0;font-size:12px;letter-spacing:.16em;color:${GOLD};font-weight:700;text-transform:uppercase;">Nigerian Institute of Quantity Surveyors</p>
+        <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);">Flyer request received</p>
+      </div>
+      <div style="padding:28px;">
+        <p style="margin:0 0 4px;font-size:14px;color:#5A6485;">Hi ${reqDoc.requesterName},</p>
+        <h1 style="margin:0 0 16px;font-size:22px;line-height:1.25;color:${NAVY};">Thanks — we've got your request for<br><span style="color:${NAVY};">${reqDoc.title}</span></h1>
+        <p style="margin:0 0 18px;font-size:14px;color:#5A6485;line-height:1.55;">Our team will design the flyer and follow up shortly. Here's a summary of what you sent:</p>
+
+        <table style="width:100%;border-collapse:collapse;font-size:14px;margin:0 0 20px;">
+          <tr><td style="padding:6px 0;color:#5A6485;width:120px;">Type</td><td style="padding:6px 0;font-weight:600;">${reqDoc.category}</td></tr>
+          ${when ? `<tr><td style="padding:6px 0;color:#5A6485;">Date</td><td style="padding:6px 0;font-weight:600;">${when}</td></tr>` : ''}
+          ${reqDoc.time ? `<tr><td style="padding:6px 0;color:#5A6485;">Time</td><td style="padding:6px 0;font-weight:600;">${reqDoc.time} ${reqDoc.timeZone || ''}</td></tr>` : ''}
+          ${venue ? `<tr><td style="padding:6px 0;color:#5A6485;">Venue</td><td style="padding:6px 0;font-weight:600;">${venue}</td></tr>` : ''}
+          ${reqDoc.cpdPoints ? `<tr><td style="padding:6px 0;color:#5A6485;">CPD points</td><td style="padding:6px 0;font-weight:600;">${reqDoc.cpdPoints}</td></tr>` : ''}
+        </table>
+
+        <p style="margin:0;font-size:13px;color:#8892B0;line-height:1.5;">If any details change, just reply to this email and let us know.</p>
+      </div>
+      <div style="background:#F6F7FB;padding:16px 28px;border-top:1px solid #DDE3F0;">
+        <p style="margin:0;font-size:11px;color:#8892B0;">You're receiving this because you submitted a flyer request to NIQS. niqs.org.ng</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+module.exports = { sendMail, registrationEmailHtml, flyerRequestEmailHtml, publicBase, fmtDate };

@@ -10,6 +10,10 @@ import AdminForm from '../../flyer/AdminForm.jsx';
 import ExportControls from '../../flyer/ExportControls.jsx';
 import { DEFAULT_EVENT } from '../../flyer/defaultEvent.js';
 import { listFlyerEvents, saveFlyerEvent, deleteFlyerEvent, checkDate } from '../../flyer/flyerApi';
+import {
+  generateFlyerLink, listFlyerRequests, getFlyerRequest,
+  setFlyerRequestStatus, requestToEvent,
+} from '../../api/flyerRequestApi';
 
 const FLYER_W = 1080;
 const FLYER_H = 1350;
@@ -34,6 +38,7 @@ export default function FlyerStudio() {
 
   const flyerRef = useRef(null);
   const exportRef = useRef(null);
+  const loadedRequestRef = useRef(null);
 
   const [event, setEvent] = useState({
     ...DEFAULT_EVENT,
@@ -51,6 +56,13 @@ export default function FlyerStudio() {
   const [availability, setAvailability] = useState(null);
   const [saving, setSaving] = useState(false);
   const [overrideInfo, setOverrideInfo] = useState(null);
+
+  // ── Flyer requests (intake queue) ──
+  const [requests, setRequests] = useState([]);
+  const [showRequests, setShowRequests] = useState(false);
+  const [activeRequestId, setActiveRequestId] = useState(null);
+  const [shareUrl, setShareUrl] = useState(null);
+  const [linkLoading, setLinkLoading] = useState(false);
 
   const isMobile = useIsMobile();
   const previewW = isMobile
@@ -72,6 +84,7 @@ export default function FlyerStudio() {
       .then(({ data }) => setChapters(data.chapters || data || []))
       .catch(() => {});
     refreshSaved();
+    refreshRequests();
   }, []);
 
   const refreshSaved = useCallback(async () => {
@@ -81,6 +94,25 @@ export default function FlyerStudio() {
       /* silent */
     }
   }, []);
+
+  const refreshRequests = useCallback(async () => {
+    try {
+      setRequests(await listFlyerRequests());
+    } catch {
+      /* silent */
+    }
+  }, []);
+
+  /* ── Auto-fill from a submitted request (?request=<id> deep link) ── */
+  useEffect(() => {
+    const rid = searchParams.get('request');
+    if (!rid || loadedRequestRef.current === rid) return;
+    loadedRequestRef.current = rid;
+    getFlyerRequest(rid)
+      .then((r) => loadRequest(r))
+      .catch(() => toast.error('Could not load that request'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   /* ── Live availability check (debounced) ── */
   useEffect(() => {
@@ -106,6 +138,7 @@ export default function FlyerStudio() {
   function handleNew() {
     setEvent({ ...DEFAULT_EVENT, id: null });
     setEditingId(null);
+    setActiveRequestId(null);
     setScope(isHQ ? 'national' : 'chapter');
     setChapter(lockChapter ? assignedChapterId : '');
     setSubDeliverable('main');
@@ -115,10 +148,49 @@ export default function FlyerStudio() {
   function handleLoad(ev) {
     setEvent({ ...DEFAULT_EVENT, ...(ev.flyer || {}), id: ev._id });
     setEditingId(ev._id);
+    setActiveRequestId(null);
     setScope(ev.scope || 'national');
     setChapter(ev.chapter?._id || ev.chapter || '');
     setSubDeliverable('main');
     setShowEvents(false);
+  }
+
+  // Auto-fill the studio from a submitted intake request.
+  function loadRequest(r) {
+    setEvent(requestToEvent(r));
+    setEditingId(null);
+    setActiveRequestId(r._id);
+    setScope(isHQ ? (r.scope || 'national') : 'chapter');
+    setChapter(r.chapter?._id || r.chapter || (lockChapter ? assignedChapterId : ''));
+    setSubDeliverable('main');
+    setShowRequests(false);
+    setAvailability(null);
+    // Best-effort: flag it in-progress so it leaves the "new" queue.
+    setFlyerRequestStatus(r._id, { status: 'in_progress' }).then(refreshRequests).catch(() => {});
+    toast.success('Loaded request — finish the design, then Save');
+  }
+
+  // Generate + copy a shareable intake-form link scoped to the current publish target.
+  async function handleShareLink() {
+    setLinkLoading(true);
+    try {
+      const token = await generateFlyerLink({
+        scope: effectiveScope,
+        chapter: effectiveChapter || undefined,
+      });
+      const url = `${publicBase}/flyer-request/${token}`;
+      setShareUrl(url);
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success('Intake form link copied to clipboard');
+      } catch {
+        /* clipboard blocked — the modal still shows the URL */
+      }
+    } catch {
+      toast.error('Could not generate a link');
+    } finally {
+      setLinkLoading(false);
+    }
   }
 
   async function handleSave(force = false) {
@@ -146,6 +218,15 @@ export default function FlyerStudio() {
         toast(`Heads up: ${res.warnings.length} other event(s) also fall on this date`, { icon: '⚠️' });
       }
       refreshSaved();
+      // If this flyer came from an intake request, close out that request.
+      if (activeRequestId) {
+        try {
+          await setFlyerRequestStatus(activeRequestId, { status: 'completed', createdEvent: res.event._id });
+          toast.success('Linked request marked complete');
+        } catch { /* non-fatal */ }
+        setActiveRequestId(null);
+        refreshRequests();
+      }
     } catch (err) {
       if (err.response?.status === 409) {
         const data = err.response.data || {};
@@ -176,6 +257,7 @@ export default function FlyerStudio() {
 
   const canOverride = isHQ;
   const blocked = availability && availability.ok === false && !canOverride;
+  const pendingRequestCount = requests.filter((r) => r.status === 'pending').length;
 
   return (
     <div>
@@ -188,15 +270,31 @@ export default function FlyerStudio() {
         flexWrap: 'wrap',
       }}>
         <AvailabilityBanner availability={availability} canOverride={canOverride} hasDate={!!event.dateStart} />
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button onClick={handleShareLink} disabled={linkLoading} style={toolBtn('#fff', '#000066', '1.5px solid #DDE3F0')}>
+            {linkLoading ? 'Generating…' : '🔗 Share intake form'}
+          </button>
           <button onClick={handleNew} style={toolBtn('#F0F0FF', '#000066', '1.5px solid #000066')}>
             + New event
+          </button>
+          <button onClick={() => setShowRequests((v) => !v)} style={toolBtn('#fff', '#000066', '1.5px solid #DDE3F0')}>
+            Requests{pendingRequestCount > 0 ? ` (${pendingRequestCount})` : ''}
           </button>
           <button onClick={() => setShowEvents((v) => !v)} style={toolBtn('#000066', '#fff')}>
             Saved events ({savedEvents.length})
           </button>
         </div>
       </div>
+
+      {/* Active-request banner */}
+      {activeRequestId && (
+        <div style={{
+          padding: '8px 28px', background: '#F0F0FF', borderBottom: '1px solid #DDE3F0',
+          fontSize: 12.5, color: '#000066', fontWeight: 500,
+        }}>
+          ✏️ You're building from a submitted request — saving the flyer will mark that request complete.
+        </div>
+      )}
 
       {/* Studio */}
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', gap: 0, minHeight: isMobile ? 'auto' : 'calc(100vh - 130px)' }}>
@@ -287,6 +385,18 @@ export default function FlyerStudio() {
           onClose={() => setShowEvents(false)}
         />
       )}
+
+      {/* Flyer requests drawer */}
+      {showRequests && (
+        <RequestsDrawer
+          requests={requests}
+          onLoad={loadRequest}
+          onClose={() => setShowRequests(false)}
+        />
+      )}
+
+      {/* Share intake-form link */}
+      {shareUrl && <ShareLinkModal url={shareUrl} onClose={() => setShareUrl(null)} />}
 
       {/* Override confirmation (HQ only) */}
       {overrideInfo && (
@@ -389,6 +499,83 @@ function SavedDrawer({ events, currentId, onLoad, onDelete, onClose }) {
         </div>
       </div>
     </>
+  );
+}
+
+/* ── Flyer requests drawer ── */
+function RequestsDrawer({ requests, onLoad, onClose }) {
+  const open = requests.filter((r) => r.status === 'pending' || r.status === 'in_progress');
+  return (
+    <>
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,102,0.18)', zIndex: 1500 }} onClick={onClose} />
+      <div style={{
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: 360, background: '#fff', zIndex: 1501,
+        boxShadow: '-4px 0 20px rgba(0,0,102,0.12)', display: 'flex', flexDirection: 'column',
+        fontFamily: "'Sora', sans-serif",
+      }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1.5px solid #DDE3F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#000066' }}>Flyer Requests</span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#5A6485' }}>×</button>
+        </div>
+        {open.length === 0 && (
+          <div style={{ padding: 24, color: '#5A6485', fontSize: 13, textAlign: 'center' }}>
+            No open requests.<br />Share the intake form link to collect event briefs.
+          </div>
+        )}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 12px' }}>
+          {open.map((r) => (
+            <div key={r._id}
+              onClick={() => onLoad(r)}
+              style={{ borderRadius: 8, padding: '10px 12px', marginBottom: 6, cursor: 'pointer', border: '1.5px solid #DDE3F0', background: '#FAFBFF' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6, marginBottom: 3 }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#000066', margin: 0, lineHeight: 1.3 }}>
+                  {r.title || 'Untitled event'}
+                </p>
+                <span style={{
+                  fontSize: 9, fontWeight: 800, borderRadius: 999, padding: '1px 7px', height: 'fit-content', whiteSpace: 'nowrap',
+                  color: r.status === 'pending' ? '#854D0E' : '#1E40AF',
+                  background: r.status === 'pending' ? '#FEF9C3' : '#DBEAFE',
+                }}>
+                  {r.status === 'pending' ? 'NEW' : 'WIP'}
+                </span>
+              </div>
+              <p style={{ fontSize: 10, color: '#5A6485', margin: 0 }}>
+                {r.category} · {fmtDate(r.dateStart)} · by {r.requesterName}
+              </p>
+              <button onClick={(e) => { e.stopPropagation(); onLoad(r); }}
+                style={{ marginTop: 8, fontSize: 10, fontWeight: 700, color: '#fff', background: '#000066', border: 'none', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontFamily: "'Sora', sans-serif" }}>
+                Build flyer →
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ── Share intake-form link modal ── */
+function ShareLinkModal({ url, onClose }) {
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 20 }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: 12, padding: '24px 28px', width: '100%', maxWidth: 520, boxShadow: '0 20px 60px rgba(0,0,0,0.2)', fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ margin: '0 0 8px', color: '#000066', fontSize: 18 }}>Share this intake form</h3>
+        <p style={{ color: '#5A6485', fontSize: 13, margin: '0 0 14px', lineHeight: 1.5 }}>
+          Send this link to whoever has the event details. Their submission lands in your <strong>Requests</strong> queue, ready to auto-fill the studio.
+        </p>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input readOnly value={url} onFocus={(e) => e.target.select()}
+            style={{ flex: 1, padding: '10px 12px', border: '1.5px solid #DDE3F0', borderRadius: 8, fontSize: 13, color: '#1a1a2e', fontFamily: "'Sora', sans-serif", background: '#F6F7FB' }} />
+          <button onClick={() => { navigator.clipboard?.writeText(url); toast.success('Copied'); }}
+            style={{ padding: '10px 16px', border: 'none', borderRadius: 8, background: '#000066', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: "'Sora', sans-serif" }}>
+            Copy
+          </button>
+        </div>
+        <div style={{ textAlign: 'right', marginTop: 18 }}>
+          <button onClick={onClose} style={{ padding: '9px 18px', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 13.5, cursor: 'pointer', background: '#e5e7eb', color: '#374151' }}>Done</button>
+        </div>
+      </div>
+    </div>
   );
 }
 

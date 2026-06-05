@@ -78,6 +78,8 @@ import Partnership from './pages/public/Partnership';
 import PartnerDetail from './pages/public/PartnerDetail';
 import EventRegister from './pages/public/EventRegister';
 import EventAttend from './pages/public/EventAttend';
+import FlyerRequest from './pages/public/FlyerRequest';
+import RequestFlyer from './pages/public/RequestFlyer';
 
 // Auth Pages
 import Login from './pages/auth/Login';
@@ -97,6 +99,7 @@ import ManageNews from './pages/admin/ManageNews';
 import ManageEvents from './pages/admin/ManageEvents';
 import EventCalendar from './pages/admin/EventCalendar';
 import FlyerStudio from './pages/admin/FlyerStudio';
+import FlyerRequests from './pages/admin/FlyerRequests';
 import ManageRegistrations from './pages/admin/ManageRegistrations';
 import ManageExco from './pages/admin/ManageExco';
 import ManageChapters from './pages/admin/ManageChapters';
@@ -200,6 +203,9 @@ export default function App() {
         <Route path="/events" element={<PublicPage element={<Events />} />} />
         <Route path="/events/:id/register" element={<PublicPage element={<EventRegister />} />} />
         <Route path="/events/attend/:token" element={<PublicPage element={<EventAttend />} />} />
+        <Route path="/request-flyer" element={<PublicPage element={<RequestFlyer />} />} />
+        <Route path="/flyer-request" element={<PublicPage element={<FlyerRequest />} />} />
+        <Route path="/flyer-request/:token" element={<PublicPage element={<FlyerRequest />} />} />
         <Route path="/jobs" element={<PublicPage element={<Jobs />} />} />
         <Route path="/payment" element={<PublicPage element={<Payment />} />} />
         <Route path="/contact" element={<PublicPage element={<Contact />} />} />
@@ -238,6 +244,7 @@ export default function App() {
           <Route path="events" element={<ManageEvents />} />
           <Route path="calendar" element={<EventCalendar />} />
           <Route path="flyer-studio" element={<FlyerStudio />} />
+          <Route path="flyer-requests" element={<FlyerRequests />} />
           <Route path="registrations" element={<ManageRegistrations />} />
           <Route path="exco" element={<ManageExco />} />
           <Route path="chapters" element={<ManageChapters />} />
