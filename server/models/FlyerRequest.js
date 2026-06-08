@@ -23,9 +23,12 @@ const flyerRequestSchema = new mongoose.Schema({
   notes: { type: String, default: '' },            // anything else for the designer
 
   // ── Event basics ──
-  category: { type: String, default: 'Training' }, // Training | Webinar
+  // Training | Webinar | Courtesy Visit | Appreciation | Congratulations | Condolence
+  category: { type: String, default: 'Training' },
   title: { type: String, required: true, trim: true },
   subtitle: { type: String, default: '' },
+  host: { type: String, default: '' },     // Courtesy Visit — chapter/body being visited
+  message: { type: String, default: '' },  // Appreciation / Congratulations / Condolence body
 
   // ── Schedule ──
   dateStart: { type: String, default: '' },        // YYYY-MM-DD

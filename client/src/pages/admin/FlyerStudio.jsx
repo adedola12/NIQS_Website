@@ -9,6 +9,7 @@ import MainFlyerLeftDark from '../../flyer/MainFlyerLeftDark.jsx';
 import AdminForm from '../../flyer/AdminForm.jsx';
 import ExportControls from '../../flyer/ExportControls.jsx';
 import { DEFAULT_EVENT } from '../../flyer/defaultEvent.js';
+import { getCategoryConfig } from '../../flyer/categories.js';
 import { listFlyerEvents, saveFlyerEvent, deleteFlyerEvent, checkDate } from '../../flyer/flyerApi';
 import {
   generateFlyerLink, listFlyerRequests, getFlyerRequest,
@@ -20,11 +21,6 @@ const FLYER_H = 1350;
 const PREVIEW_W = 400;
 
 const HQ_ROLES = ['main_admin', 'national_admin'];
-
-const SUB_LABELS = {
-  noSpeakers: 'No Speakers', main: 'Speakers', countdown: 'Countdown',
-  speakerCitation: 'Citation', thankYou: 'Thank You',
-};
 
 export default function FlyerStudio() {
   const { admin } = useAuth();
@@ -331,7 +327,7 @@ export default function FlyerStudio() {
           maxHeight: isMobile ? 'none' : 'calc(100vh - 130px)',
         }}>
           <div style={{ alignSelf: 'stretch', fontSize: 11, fontWeight: 700, color: '#5A6485', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            Live Preview — {event.category} / {event.layout}-aligned / {event.theme} / {SUB_LABELS[subDeliverable]} · 1080×1350
+            Live Preview — {event.category} / {event.layout}-aligned / {event.theme} / {getCategoryConfig(event.category).tabs[subDeliverable]} · 1080×1350
           </div>
 
           <div style={{

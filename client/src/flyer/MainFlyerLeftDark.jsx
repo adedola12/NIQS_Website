@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import backgrounds from './backgrounds.json'
+import { getCategoryConfig } from './categories.js'
 
 // ─── Brand tokens ──────────────────────────────────────────────────────────────
 const GOLD = '#D9B650'
@@ -187,7 +188,7 @@ function PlatformIcon({ platform, size }) {
 }
 
 // ─── Meta + QR block ─────────────────────────────────────────────────────────
-function MetaQrBlock({ event, sec, registerUrl }) {
+function MetaQrBlock({ event, sec, cfg, registerUrl }) {
   const dateStr  = formatDateRange(event.dateStart, event.dateEnd)
   const timeSub  = [event.time, event.timeZone].filter(Boolean).join(' · ')
   const venueVal = event.venueCity ? `${event.venueCity} + Online` : event.venuePhysical
@@ -197,6 +198,8 @@ function MetaQrBlock({ event, sec, registerUrl }) {
   const cells = []
   if (sec.metaDate && dateStr)
     cells.push({ key: 'date', icon: 'date', label: 'DATE', val: dateStr, sub: timeSub })
+  if (cfg.showHost && event.host)
+    cells.push({ key: 'host', icon: 'host', label: cfg.hostLabel, val: event.host, sub: '' })
   if (sec.metaVenue && event.venueType !== 'Virtual' && event.venuePhysical)
     cells.push({ key: 'venue', icon: 'venue', label: 'VENUE', val: venueVal, sub: venueSub })
   if (sec.metaPlatform && event.venueType !== 'In-Person' && event.platform)
@@ -209,6 +212,7 @@ function MetaQrBlock({ event, sec, registerUrl }) {
     : ''
   const qrTarget = registerUrl || fullUrl  // QR points to the live registration page once the event is saved
   const qrSz = 88
+  const showQr = cfg.showRegistration && sec.registration && qrTarget
 
   function MetaIcon({ type }) {
     if (type === 'date') return (
@@ -223,10 +227,15 @@ function MetaQrBlock({ event, sec, registerUrl }) {
         <circle cx="12" cy="9" r="2.5" stroke={GOLD} strokeWidth="1.8"/>
       </svg>
     )
+    if (type === 'host') return (
+      <svg width={iconSz} height={iconSz} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
+        <path d="M3 21h18M5 21V8l7-4 7 4v13M10 21v-5h4v5" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    )
     return <PlatformIcon platform={type} size={iconSz} />
   }
 
-  if (!cells.length && !qrTarget) return null
+  if (!cells.length && !showQr) return null
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -251,7 +260,7 @@ function MetaQrBlock({ event, sec, registerUrl }) {
             </React.Fragment>
           ))}
         </div>
-        {sec.registration && qrTarget && (
+        {showQr && (
           <>
             <div style={{ width: 1, background: 'rgba(217,182,80,0.35)', alignSelf: 'stretch' }} />
             <div style={{ background: WHITE, padding: 5, borderRadius: 4, lineHeight: 0, flexShrink: 0 }}>
@@ -260,7 +269,7 @@ function MetaQrBlock({ event, sec, registerUrl }) {
           </>
         )}
       </div>
-      {sec.registration && (url || registerUrl) && (
+      {cfg.showRegistration && sec.registration && (url || registerUrl) && (
         <p style={{ fontFamily: FB, fontSize: 14, fontWeight: 400, color: 'var(--fl-ink-faint)', margin: 0, textAlign: 'center' }}>
           Scan to register{url ? <> or visit <span style={{ color: GOLD, fontWeight: 600 }}>{url}</span></> : ''}
         </p>
@@ -298,12 +307,12 @@ function ContactBar({ enquiries, center = false }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // ─── Title zone — 'main' deliverable ──────────────────────────────────────────
-function TitleZoneMain({ event, sec, center, speakerCount, isFive, speakers }) {
+function TitleZoneMain({ event, sec, cfg, center, speakerCount, isFive, speakers }) {
   const goldIdx   = event.goldWordIndex ?? (event.title || '').split(' ').length - 1
-  const cat       = event.category || 'Training'
-  const eyebrow   = cat === 'Webinar' ? 'WEBINAR SERIES' : 'CPD TRAINING'
+  const eyebrow   = cfg.eyebrow
   const titleFs   = TITLE_FS[speakerCount] ?? 66
-  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: cat }
+  const showSeal  = cfg.isCpd && sec.cpdSeal
+  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: event.category }
 
   if (isFive) {
     // 5-speaker: title left, 5th speaker card right
@@ -338,7 +347,7 @@ function TitleZoneMain({ event, sec, center, speakerCount, isFive, speakers }) {
               {event.subtitle}
             </p>
           )}
-          {sec.cpdSeal && (
+          {showSeal && (
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
               <CpdSeal {...sealProps} />
             </div>
@@ -354,7 +363,7 @@ function TitleZoneMain({ event, sec, center, speakerCount, isFive, speakers }) {
               </p>
             )}
           </div>
-          {sec.cpdSeal && <CpdSeal {...sealProps} />}
+          {showSeal && <CpdSeal {...sealProps} />}
         </div>
       )}
     </div>
@@ -362,10 +371,11 @@ function TitleZoneMain({ event, sec, center, speakerCount, isFive, speakers }) {
 }
 
 // ─── Title zone — 'noSpeakers' deliverable ────────────────────────────────────
-function TitleZoneNoSpeakers({ event, sec, center, cat }) {
+function TitleZoneNoSpeakers({ event, sec, cfg, center }) {
   const goldIdx   = event.goldWordIndex ?? (event.title || '').split(' ').length - 1
-  const eyebrow   = cat === 'Webinar' ? 'WEBINAR SERIES' : 'CPD TRAINING'
-  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: cat }
+  const eyebrow   = cfg.eyebrow
+  const showSeal  = cfg.isCpd && sec.cpdSeal
+  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: event.category }
   return (
     <div style={{ height: '100%', overflow: 'hidden' }}>
       {sec.themedEyebrow && <Eyebrow label={eyebrow} center={center} mb={10} />}
@@ -377,7 +387,7 @@ function TitleZoneNoSpeakers({ event, sec, center, cat }) {
               {event.subtitle}
             </p>
           )}
-          {sec.cpdSeal && (
+          {showSeal && (
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
               <CpdSeal {...sealProps} />
             </div>
@@ -393,7 +403,7 @@ function TitleZoneNoSpeakers({ event, sec, center, cat }) {
               </p>
             )}
           </div>
-          {sec.cpdSeal && <CpdSeal {...sealProps} />}
+          {showSeal && <CpdSeal {...sealProps} />}
         </div>
       )}
     </div>
@@ -401,16 +411,13 @@ function TitleZoneNoSpeakers({ event, sec, center, cat }) {
 }
 
 // ─── Speaker band — 'main' deliverable ───────────────────────────────────────
-function SpeakerBandMain({ event, sec, center, speakerCount, isFive, speakers }) {
+function SpeakerBandMain({ event, sec, cfg, center, speakerCount, isFive, speakers }) {
   const displayCount   = isFive ? 4 : speakerCount
   const gap            = CARD_GAP[isFive ? 4 : speakerCount] ?? 18
   const cardW          = displayCount > 0 ? getCardW(displayCount, gap) : 0
   const displaySpeakers = speakers.slice(0, displayCount)
-  const cat            = event.category || 'Training'
-  const presLabel      = cat === 'Training' ? 'FACULTY' : 'PRESENTERS'
-  const sealProps      = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: cat }
-
-  const eyebrowH = 28  // eyebrow + its margin-bottom
+  const presLabel      = cfg.peopleLabel
+  const sealProps      = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: event.category }
 
   return (
     <div style={{ height: SPEAKER_H, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -428,7 +435,7 @@ function SpeakerBandMain({ event, sec, center, speakerCount, isFive, speakers })
             <SpeakerCard key={sp.id ?? i} speaker={sp} cardW={cardW} />
           ))}
           {/* For 5-speaker layout: CPD seal fills the remaining space to the right */}
-          {isFive && sec.cpdSeal && (
+          {isFive && cfg.isCpd && sec.cpdSeal && (
             <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', paddingBottom: 10 }}>
               <CpdSeal {...sealProps} />
             </div>
@@ -456,12 +463,12 @@ function HeroImageZone({ event }) {
 }
 
 // ─── Countdown (spans title + speaker zones) ──────────────────────────────────
-function CountdownContent({ event, sec, center }) {
+function CountdownContent({ event, sec, cfg, center }) {
   const days      = daysUntil(event.dateStart)
   const goldIdx   = event.goldWordIndex ?? (event.title || '').split(' ').length - 1
-  const cat       = event.category || 'Training'
-  const eyebrow   = cat === 'Webinar' ? 'WEBINAR SERIES' : 'CPD TRAINING'
-  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: cat }
+  const eyebrow   = cfg.eyebrow
+  const showSeal  = cfg.isCpd && sec.cpdSeal
+  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: event.category }
   const spanH     = TITLE_H + ROW_GAP + SPEAKER_H  // 808px
 
   return (
@@ -487,17 +494,21 @@ function CountdownContent({ event, sec, center }) {
             </p>
           )}
         </div>
-        {sec.cpdSeal && <CpdSeal {...sealProps} />}
+        {showSeal && <CpdSeal {...sealProps} />}
       </div>
     </div>
   )
 }
 
 // ─── Speaker Citation (spans title + speaker zones) ───────────────────────────
-function SpeakerCitationContent({ event, sec, center, speakers }) {
+function SpeakerCitationContent({ event, sec, cfg, center, speakers }) {
   const featured  = speakers[event.selectedSpeakerIndex ?? 0] ?? speakers[0]
   const goldIdx   = event.goldWordIndex ?? (event.title || '').split(' ').length - 1
-  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: event.category || 'Training' }
+  const showSeal  = cfg.isCpd && sec.cpdSeal
+  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: event.category }
+  const eyebrowTx = cfg.citationEyebrow
+  // Occasion flyers carry a single body message; CPD flyers use the person's talk topic.
+  const bodyText  = (cfg.showMessage && event.message) ? event.message : featured?.topic
   const spanH     = TITLE_H + ROW_GAP + SPEAKER_H  // 808px
   const portraitW = Math.round(CONTENT_W * 0.36)   // ~346px
 
@@ -506,7 +517,7 @@ function SpeakerCitationContent({ event, sec, center, speakers }) {
       {center ? (
         // Center: portrait + text stacked
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
-          <Eyebrow label="MEET THE SPEAKERS" center mb={0} />
+          <Eyebrow label={eyebrowTx} center mb={0} />
           <div style={{ width: portraitW, flex: 1, minHeight: 0, borderRadius: 10, overflow: 'hidden', background: 'var(--fl-surface)', border: '1px solid var(--fl-surface-border)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', position: 'relative' }}>
             {featured?.photo
               ? <img src={featured.photo} alt={featured.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
@@ -523,18 +534,18 @@ function SpeakerCitationContent({ event, sec, center, speakers }) {
         <>
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
-              <Eyebrow label="MEET THE SPEAKERS" mb={12} />
+              <Eyebrow label={eyebrowTx} mb={12} />
               <p style={{ fontFamily: FD, fontSize: 30, fontWeight: 800, color: 'var(--fl-ink)', letterSpacing: '-0.02em', margin: '0 0 6px' }}>{featured?.name || ''}</p>
               {featured?.role && <p style={{ fontFamily: FB, fontSize: 16, fontWeight: 400, color: GOLD, margin: '0 0 18px' }}>{featured.role}</p>}
-              {featured?.topic && (
-                <p style={{ fontFamily: FB, fontSize: 17, color: 'var(--fl-ink-dim)', lineHeight: 1.7, margin: '0 0 20px' }}>
-                  {featured.topic}
+              {bodyText && (
+                <p style={{ fontFamily: FB, fontSize: 17, color: 'var(--fl-ink-dim)', lineHeight: 1.7, margin: '0 0 20px', whiteSpace: 'pre-line' }}>
+                  {bodyText}
                 </p>
               )}
             </div>
             <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
               <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={32} />
-              {sec.cpdSeal && <CpdSeal {...sealProps} />}
+              {showSeal && <CpdSeal {...sealProps} />}
             </div>
           </div>
           {/* Portrait */}
@@ -550,40 +561,45 @@ function SpeakerCitationContent({ event, sec, center, speakers }) {
 }
 
 // ─── Thank You (spans title + speaker zones) ──────────────────────────────────
-function ThankYouContent({ event, center, cat }) {
+function ThankYouContent({ event, cfg, center }) {
   const goldIdx = event.goldWordIndex ?? (event.title || '').split(' ').length - 1
   const spanH   = TITLE_H + ROW_GAP + SPEAKER_H  // 808px
+  // Sombre occasions (condolence) drop the celebratory gold accent for a muted ink tone.
+  const accentColor = cfg.tone === 'sombre' ? 'var(--fl-ink-dim)' : GOLD
+  const body  = (cfg.showMessage && event.message) ? event.message : event.subtitle
 
   return (
     <div style={{ height: spanH, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
       {/* Hero text */}
       <div style={{ textAlign: center ? 'center' : 'left' }}>
         <h1 style={{ fontFamily: FD, fontSize: 110, fontWeight: 800, color: 'var(--fl-ink)', letterSpacing: '-0.04em', lineHeight: 0.92, margin: 0 }}>
-          Thank you
+          {cfg.heroLine1}
         </h1>
-        <p style={{ fontFamily: FD, fontSize: 58, fontWeight: 700, color: GOLD, letterSpacing: '-0.02em', margin: '8px 0 0' }}>
-          for coming!
+        <p style={{ fontFamily: FD, fontSize: 58, fontWeight: 700, color: accentColor, letterSpacing: '-0.02em', margin: '8px 0 0' }}>
+          {cfg.heroLine2}
         </p>
-        {event.subtitle && (
-          <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '20px 0 0', ...(center && { maxWidth: '84%', marginLeft: 'auto', marginRight: 'auto' }) }}>
-            {event.subtitle}
+        {body && (
+          <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 400, color: 'var(--fl-ink-dim)', lineHeight: 1.45, margin: '20px 0 0', whiteSpace: 'pre-line', ...(center && { maxWidth: '84%', marginLeft: 'auto', marginRight: 'auto' }) }}>
+            {body}
           </p>
         )}
       </div>
       {/* Divider */}
-      <div style={{ width: 80, height: 2, background: GOLD, borderRadius: 2, ...(center && { marginLeft: 'auto', marginRight: 'auto' }) }} />
+      <div style={{ width: 80, height: 2, background: accentColor, borderRadius: 2, ...(center && { marginLeft: 'auto', marginRight: 'auto' }) }} />
       {/* Recap card */}
       <div style={{ background: 'rgba(0,0,20,0.55)', borderRadius: 12, padding: '24px 26px', border: '0.5px solid rgba(255,255,255,0.1)' }}>
-        <p style={{ fontFamily: FB, fontSize: 11, fontWeight: 700, color: GOLD, letterSpacing: '0.22em', textTransform: 'uppercase', margin: '0 0 10px' }}>
-          {cat === 'Training' ? 'CPD TRAINING' : 'WEBINAR'}
+        <p style={{ fontFamily: FB, fontSize: 11, fontWeight: 700, color: accentColor, letterSpacing: '0.22em', textTransform: 'uppercase', margin: '0 0 10px' }}>
+          {cfg.eyebrow}
         </p>
         <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={34} center={center} />
         <p style={{ fontFamily: FB, fontSize: 18, fontWeight: 600, color: 'rgba(255,255,255,0.8)', margin: '10px 0 0', letterSpacing: '-0.01em' }}>
           {formatDateRange(event.dateStart, event.dateEnd)}
         </p>
-        {event.venueCity && (
+        {(event.host || event.venueCity) && (
           <p style={{ fontFamily: FB, fontSize: 16, color: 'rgba(255,255,255,0.55)', margin: '5px 0 0' }}>
-            {event.venueCity}{event.venuePhysical ? ` · ${event.venuePhysical}` : ''}
+            {cfg.showHost && event.host
+              ? event.host
+              : `${event.venueCity}${event.venuePhysical ? ` · ${event.venuePhysical}` : ''}`}
           </p>
         )}
       </div>
@@ -629,10 +645,11 @@ function AccentLayer({ accent = 'glow', theme = 'Dark' }) {
 // ─── Title zone — 'main' deliverable with no speaker cards (full-canvas) ───────
 // Used when the Speakers section is off or no speakers are added. Centers the
 // title + subtitle + CPD seal across the title+speaker rows so nothing is clipped.
-function TitleZoneSolo({ event, sec, center, cat }) {
+function TitleZoneSolo({ event, sec, cfg, center }) {
   const goldIdx   = event.goldWordIndex ?? (event.title || '').split(' ').length - 1
-  const eyebrow   = cat === 'Webinar' ? 'WEBINAR SERIES' : 'CPD TRAINING'
-  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: cat }
+  const eyebrow   = cfg.eyebrow
+  const showSeal  = cfg.isCpd && sec.cpdSeal
+  const sealProps = { points: event.cpdPoints || 0, variant: event.cpdSealVariant || 'auto', category: event.category }
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column',
@@ -646,7 +663,7 @@ function TitleZoneSolo({ event, sec, center, cat }) {
           {event.subtitle}
         </p>
       )}
-      {sec.cpdSeal && (
+      {showSeal && (
         <div style={{ marginTop: 30 }}>
           <CpdSeal {...sealProps} />
         </div>
@@ -662,6 +679,7 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
   const sec     = getSec(event)
   const bg      = resolveBg(event.backgroundId, event.theme)
   const cat     = event.category || 'Training'
+  const cfg     = getCategoryConfig(cat)
   const light   = (event.theme || 'Dark') === 'Light'
   const logoSrc = light ? '/assets/lockups/lockup-white-bg.svg' : '/assets/lockups/lockup-dark-bg.svg'
   // Theme-aware ink/surface tokens — cascade to every descendant via CSS vars.
@@ -725,7 +743,7 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
         <div style={{ background: GOLD, padding: '9px 20px', borderRadius: 5, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ width: 8, height: 8, background: NAVY, borderRadius: '50%', display: 'inline-block', flexShrink: 0 }} />
           <span style={{ fontFamily: FB, fontSize: 13, fontWeight: 700, color: NAVY, letterSpacing: '0.18em' }}>
-            {cat.toUpperCase()}
+            {cfg.badge}
           </span>
         </div>
       </div>
@@ -734,8 +752,8 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
       {!isSpanDeliverable && !mainSolo && (
         <div style={{ gridRow: 2, gridColumn: 1, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
           {subDeliverable === 'noSpeakers'
-            ? <TitleZoneNoSpeakers event={event} sec={sec} center={center} cat={cat} />
-            : <TitleZoneMain event={event} sec={sec} center={center} speakerCount={speakerCount} isFive={isFive} speakers={allSpeakers} />
+            ? <TitleZoneNoSpeakers event={event} sec={sec} cfg={cfg} center={center} />
+            : <TitleZoneMain event={event} sec={sec} cfg={cfg} center={center} speakerCount={speakerCount} isFive={isFive} speakers={allSpeakers} />
           }
         </div>
       )}
@@ -745,7 +763,7 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
         <div style={{ gridRow: 3, gridColumn: 1, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
           {subDeliverable === 'noSpeakers'
             ? <HeroImageZone event={event} />
-            : <SpeakerBandMain event={event} sec={sec} center={center} speakerCount={speakerCount} isFive={isFive} speakers={allSpeakers} />
+            : <SpeakerBandMain event={event} sec={sec} cfg={cfg} center={center} speakerCount={speakerCount} isFive={isFive} speakers={allSpeakers} />
           }
         </div>
       )}
@@ -753,16 +771,16 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
       {/* ── Zones 2+3 combined span — span deliverables OR main-without-speakers ── */}
       {(isSpanDeliverable || mainSolo) && (
         <div style={{ gridRow: '2 / 4', gridColumn: 1, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
-          {mainSolo                             && <TitleZoneSolo event={event} sec={sec} center={center} cat={cat} />}
-          {subDeliverable === 'countdown'       && <CountdownContent event={event} sec={sec} center={center} />}
-          {subDeliverable === 'speakerCitation' && <SpeakerCitationContent event={event} sec={sec} center={center} speakers={allSpeakers} />}
-          {subDeliverable === 'thankYou'        && <ThankYouContent event={event} center={center} cat={cat} />}
+          {mainSolo                             && <TitleZoneSolo event={event} sec={sec} cfg={cfg} center={center} />}
+          {subDeliverable === 'countdown'       && <CountdownContent event={event} sec={sec} cfg={cfg} center={center} />}
+          {subDeliverable === 'speakerCitation' && <SpeakerCitationContent event={event} sec={sec} cfg={cfg} center={center} speakers={allSpeakers} />}
+          {subDeliverable === 'thankYou'        && <ThankYouContent event={event} cfg={cfg} center={center} />}
         </div>
       )}
 
       {/* ── Zone 4: Meta block (200px) — always ── */}
       <div style={{ gridRow: 4, gridColumn: 1, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
-        <MetaQrBlock event={event} sec={sec} registerUrl={registerUrl} />
+        <MetaQrBlock event={event} sec={sec} cfg={cfg} registerUrl={registerUrl} />
       </div>
 
       {/* ── Contact bar: absolute at bottom, full canvas width ── */}

@@ -4,6 +4,18 @@ const { classifyConflicts, describeConflict, dayStartUTC, dayEndUTC } = require(
 
 /* ── Helpers ───────────────────────────────────────────────────────────────── */
 
+// Map a flyer category to the canonical Event.type enum. The precise flyer
+// category is preserved on the `flyer` subdocument; this only drives the
+// calendar/listing classification, so occasion flyers reuse existing enum values.
+const FLYER_TYPE_BY_CATEGORY = {
+  Training: 'training',
+  Webinar: 'webinar',
+  'Courtesy Visit': 'meeting',
+  Appreciation: 'social',
+  Congratulations: 'social',
+  Condolence: 'other',
+};
+
 // When a flyer design is attached, derive/sync the canonical Event fields so the
 // calendar + guardrail stay consistent and the required schema fields validate.
 function applyFlyerToEvent(body) {
@@ -22,7 +34,10 @@ function applyFlyerToEvent(body) {
     (f.venueType === 'Virtual' ? 'Online' : 'TBA');
   if (f.venuePhysical) mapped.venue = f.venuePhysical;
   if (f.registrationUrl) mapped.registrationLink = f.registrationUrl;
-  if (f.category) mapped.type = f.category === 'Webinar' ? 'webinar' : 'training';
+  if (f.category) mapped.type = FLYER_TYPE_BY_CATEGORY[f.category] || 'other';
+  // Courtesy visits / appreciation flyers often have no physical venue — fall back
+  // to the host (e.g. "NIQS Lagos State Chapter") so the required `location` validates.
+  if (!body.location && !f.venueCity && !f.venuePhysical && f.host) mapped.location = f.host;
   return mapped;
 }
 

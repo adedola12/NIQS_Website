@@ -10,11 +10,14 @@ const flyerSpeakerSchema = new mongoose.Schema({
 }, { _id: false });
 
 const flyerSchema = new mongoose.Schema({
-  category: { type: String, default: 'Training' },     // Training | Webinar
+  // Training | Webinar | Courtesy Visit | Appreciation | Congratulations | Condolence
+  category: { type: String, default: 'Training' },
   layout: { type: String, default: 'Left' },           // Left | Center
   theme: { type: String, default: 'Dark' },            // Light | Dark
   title: { type: String, default: '' },
   subtitle: { type: String, default: '' },
+  host: { type: String, default: '' },                 // Courtesy Visit — who/where is being visited
+  message: { type: String, default: '' },              // Appreciation / Congratulations / Condolence body
   goldWordIndex: { type: Number, default: null },
   dateStart: { type: String, default: '' },            // YYYY-MM-DD
   dateEnd: { type: String, default: '' },              // YYYY-MM-DD

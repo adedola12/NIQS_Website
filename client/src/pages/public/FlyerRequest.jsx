@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getLinkContext, submitFlyerRequest } from '../../api/flyerRequestApi';
+import { CATEGORIES, getCategoryConfig } from '../../flyer/categories.js';
 
 const NAVY = '#0B1F4B';
 const GOLD = '#C9974A';
 const FD = "'Bricolage Grotesque', sans-serif";
 const FB = "'Sora', sans-serif";
 
-const SPEAKER_ROLES = ['Faculty', 'Presenter', 'Keynote', 'Host', 'Panelist'];
 const PLATFORMS = [
   { v: 'Zoom', l: 'Zoom' },
   { v: 'GoogleMeet', l: 'Google Meet' },
@@ -19,7 +19,7 @@ const PLATFORMS = [
 
 const BLANK = {
   requesterName: '', requesterEmail: '', requesterPhone: '', requesterOrg: '', notes: '',
-  category: 'Training', title: '', subtitle: '',
+  category: 'Training', title: '', subtitle: '', host: '', message: '',
   dateStart: '', dateEnd: '', time: '', timeZone: 'WAT',
   cpdPoints: '', venueType: 'Hybrid', venuePhysical: '', venueCity: '',
   platform: 'Zoom', platformNote: '',
@@ -43,15 +43,28 @@ export default function FlyerRequest() {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
+  const cfg = getCategoryConfig(form.category);
   const showVenue = form.venueType !== 'Virtual';
   const showPlatform = form.venueType !== 'In-Person';
+
+  // Occasion flyers (no CPD) default to in-person, mirroring the Flyer Studio.
+  const prevCatRef = useRef(form.category);
+  useEffect(() => {
+    if (form.category !== prevCatRef.current) {
+      prevCatRef.current = form.category;
+      if (!getCategoryConfig(form.category).isCpd && form.venueType !== 'In-Person') {
+        set('venueType', 'In-Person');
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.category]);
 
   function setSpeaker(i, k, v) {
     setSpeakers((list) => list.map((s, idx) => (idx === i ? { ...s, [k]: v } : s)));
   }
   function addSpeaker() {
     if (speakers.length >= 5) return;
-    setSpeakers((l) => [...l, { name: '', role: 'Faculty', credentials: '', topic: '' }]);
+    setSpeakers((l) => [...l, { name: '', role: cfg.defaultRole, credentials: '', topic: '' }]);
   }
   function removeSpeaker(i) {
     setSpeakers((l) => l.filter((_, idx) => idx !== i));
@@ -160,29 +173,44 @@ export default function FlyerRequest() {
 
           {/* ── Event basics ── */}
           <SectionTitle>Event details</SectionTitle>
-          <Field label="Event type">
-            <SegToggle
+          <Field label="Flyer type">
+            <Select
               value={form.category}
               onChange={(v) => set('category', v)}
-              options={[{ v: 'Training', l: 'Training' }, { v: 'Webinar', l: 'Webinar' }]}
+              options={CATEGORIES.map((c) => ({ value: c, label: c }))}
             />
           </Field>
-          <Field label="Event title" required>
+          <Field label={cfg.isCpd ? 'Event title' : 'Headline'} required>
             <Input value={form.title} onChange={(v) => set('title', v)} placeholder="e.g. Advancing Digital Cost Management in Construction" />
           </Field>
-          <Field label="Subtitle / short description">
-            <Input value={form.subtitle} onChange={(v) => set('subtitle', v)} placeholder="One line describing the event" />
+          <Field label={cfg.isCpd ? 'Subtitle / short description' : 'Subtitle / occasion'}>
+            <Input value={form.subtitle} onChange={(v) => set('subtitle', v)} placeholder="One line describing the occasion" />
           </Field>
-          <Row>
-            <Field label="CPD points">
-              <Input type="number" value={form.cpdPoints} onChange={(v) => set('cpdPoints', v)} placeholder="e.g. 5" />
-            </Field>
-            <Field label="" >
-              <span />
-            </Field>
-          </Row>
 
-          {form.category === 'Training' && (
+          {cfg.showHost && (
+            <Field label="Host / where visiting" hint="The chapter, body or office being visited">
+              <Input value={form.host} onChange={(v) => set('host', v)} placeholder="e.g. NIQS Lagos State Chapter" />
+            </Field>
+          )}
+
+          {cfg.showMessage && (
+            <Field label={cfg.messageLabel}>
+              <TextArea value={form.message} onChange={(v) => set('message', v)} placeholder="Write the citation / message here…" />
+            </Field>
+          )}
+
+          {cfg.isCpd && (
+            <Row>
+              <Field label="CPD points">
+                <Input type="number" value={form.cpdPoints} onChange={(v) => set('cpdPoints', v)} placeholder="e.g. 5" />
+              </Field>
+              <Field label="" >
+                <span />
+              </Field>
+            </Row>
+          )}
+
+          {cfg.showModules && (
             <Field label="Module breakdown" hint="One module per line">
               <TextArea
                 value={form.schedule}
@@ -241,12 +269,12 @@ export default function FlyerRequest() {
             </Row>
           )}
 
-          {/* ── Speakers ── */}
-          <SectionTitle>Speakers / facilitators <Muted>(optional, up to 5)</Muted></SectionTitle>
+          {/* ── People (speakers / delegation / honorees …) ── */}
+          <SectionTitle>{cfg.isCpd ? 'Speakers / facilitators' : `${cfg.peopleNoun}s`} <Muted>(optional, up to 5)</Muted></SectionTitle>
           {speakers.map((s, i) => (
             <div key={i} style={{ border: '1.5px solid #DDE3F0', borderRadius: 10, padding: 14, marginBottom: 10, background: '#FAFBFF' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: NAVY, letterSpacing: '0.06em' }}>SPEAKER {i + 1}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: NAVY, letterSpacing: '0.06em' }}>{cfg.peopleNoun.toUpperCase()} {i + 1}</span>
                 <button type="button" onClick={() => removeSpeaker(i)} style={{ background: 'none', border: 'none', color: '#C9302C', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>Remove</button>
               </div>
               <Row>
@@ -254,26 +282,30 @@ export default function FlyerRequest() {
                   <Input value={s.name} onChange={(v) => setSpeaker(i, 'name', v)} placeholder="QS Dr John Doe" />
                 </Field>
                 <Field label="Role">
-                  <Select value={s.role} onChange={(v) => setSpeaker(i, 'role', v)} options={SPEAKER_ROLES.map((r) => ({ value: r, label: r }))} />
+                  <Select value={s.role} onChange={(v) => setSpeaker(i, 'role', v)} options={cfg.peopleRoles.map((r) => ({ value: r, label: r }))} />
                 </Field>
               </Row>
-              <Field label="Talk / module topic">
-                <Input value={s.topic} onChange={(v) => setSpeaker(i, 'topic', v)} placeholder="What will they speak on?" />
+              <Field label={cfg.isCpd ? 'Talk / module topic' : 'Note (optional)'}>
+                <Input value={s.topic} onChange={(v) => setSpeaker(i, 'topic', v)} placeholder={cfg.isCpd ? 'What will they speak on?' : 'e.g. role, title or short note'} />
               </Field>
             </div>
           ))}
           {speakers.length < 5 && (
-            <button type="button" onClick={addSpeaker} style={dashBtn}>+ Add speaker</button>
+            <button type="button" onClick={addSpeaker} style={dashBtn}>+ Add {cfg.peopleNoun.toLowerCase()}</button>
           )}
 
           {/* ── Registration & enquiries ── */}
-          <SectionTitle>Registration &amp; contact</SectionTitle>
-          <Field label="Registration link" hint="If you already have one">
-            <Input value={form.registrationUrl} onChange={(v) => set('registrationUrl', v)} placeholder="niqs.org.ng/register" />
-          </Field>
-          <Field label="Registration note">
-            <Input value={form.registrationExtra} onChange={(v) => set('registrationExtra', v)} placeholder="e.g. Discounts for students" />
-          </Field>
+          <SectionTitle>{cfg.showRegistration ? <>Registration &amp; contact</> : 'Contact'}</SectionTitle>
+          {cfg.showRegistration && (
+            <>
+              <Field label="Registration link" hint="If you already have one">
+                <Input value={form.registrationUrl} onChange={(v) => set('registrationUrl', v)} placeholder="niqs.org.ng/register" />
+              </Field>
+              <Field label="Registration note">
+                <Input value={form.registrationExtra} onChange={(v) => set('registrationExtra', v)} placeholder="e.g. Discounts for students" />
+              </Field>
+            </>
+          )}
           <Field label="Enquiry phone numbers">
             {enquiries.map((n, i) => (
               <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 8 }}>

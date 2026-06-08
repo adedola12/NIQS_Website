@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import BackgroundPicker from './BackgroundPicker.jsx'
 import { uploadImage } from './flyerApi'
 import { accentBackground, accentBackgroundSize } from './MainFlyerLeftDark.jsx'
+import { CATEGORIES, getCategoryConfig } from './categories.js'
 
 // ─── Shared form primitives ──────────────────────────────────────────────────
 
@@ -132,9 +133,10 @@ function SectionHeader({ title, open, onToggle }) {
 
 // ─── Speaker card ─────────────────────────────────────────────────────────────
 
-function SpeakerRow({ speaker, index, onChange, onRemove }) {
+function SpeakerRow({ speaker, index, onChange, onRemove, roles, noun = 'Speaker' }) {
   const fileRef = useRef()
   const [uploading, setUploading] = React.useState(false)
+  const roleOptions = roles || ['Faculty', 'Presenter', 'Keynote', 'Host', 'Panelist']
 
   function update(key, val) {
     onChange({ ...speaker, [key]: val })
@@ -162,7 +164,7 @@ function SpeakerRow({ speaker, index, onChange, onRemove }) {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#000066', letterSpacing: '0.06em' }}>
-          SPEAKER {index + 1}
+          {noun.toUpperCase()} {index + 1}
         </span>
         <button
           type="button"
@@ -205,7 +207,7 @@ function SpeakerRow({ speaker, index, onChange, onRemove }) {
         <Select
           value={speaker.role}
           onChange={v => update('role', v)}
-          options={['Faculty', 'Presenter', 'Keynote', 'Host', 'Panelist']}
+          options={roleOptions}
         />
         <Input
           placeholder="Credentials prefix (e.g. Prof)"
@@ -360,7 +362,7 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
     if (event.speakers.length >= 5) return
     set('speakers', [
       ...event.speakers,
-      { id: Date.now().toString(), name: '', credentials: '', photo: null, role: 'Faculty', topic: '' },
+      { id: Date.now().toString(), name: '', credentials: '', photo: null, role: cfg.defaultRole, topic: '' },
     ])
   }
 
@@ -368,13 +370,20 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
     set('speakers', event.speakers.filter((_, i) => i !== index))
   }
 
-  const subTabs = ALL_TABS
+  const cfg = getCategoryConfig(event.category)
+  const subTabs = ALL_TABS.map(t => ({ value: t.value, label: cfg.tabs[t.value] || t.label }))
   const prevCategoryRef = React.useRef(event.category)
   React.useEffect(() => {
     if (event.category !== prevCategoryRef.current) {
       prevCategoryRef.current = event.category
       onSubDeliverableChange('main')
+      // Occasion flyers (no CPD) are in-person by default — avoids a stray
+      // "Platform" meta cell carried over from the Hybrid CPD default.
+      if (!cfg.isCpd && event.venueType !== 'In-Person') {
+        onChange({ ...event, venueType: 'In-Person' })
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event.category])
 
   const SEC_DEFAULTS = {
@@ -521,7 +530,7 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
                 <Select
                   value={event.category}
                   onChange={v => set('category', v)}
-                  options={['Webinar', 'Training']}
+                  options={CATEGORIES}
                 />
               </Field>
               <Field label="Layout">
@@ -549,7 +558,7 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
                   fontSize: 12, color: '#000066', fontWeight: 700, background: '#F6F7FB',
                   letterSpacing: '0.06em',
                 }}>
-                  {event.category === 'Webinar' ? 'W' : 'T'}-{event.layout === 'Left' ? 'L' : 'C'}{event.theme === 'Light' ? 'L' : 'D'}
+                  {cfg.packId}-{event.layout === 'Left' ? 'L' : 'C'}{event.theme === 'Light' ? 'L' : 'D'}
                 </div>
               </Field>
             </Row>
@@ -581,16 +590,35 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
               <Input
                 value={event.subtitle}
                 onChange={v => set('subtitle', v)}
-                placeholder="Brief description of the event"
+                placeholder={cfg.isCpd ? 'Brief description of the event' : 'One line about the occasion'}
                 maxLength={100}
               />
             </Field>
+            {cfg.showHost && (
+              <Field label="Host / where visiting" hint="The chapter, body or office being visited">
+                <Input
+                  value={event.host || ''}
+                  onChange={v => set('host', v)}
+                  placeholder="e.g. NIQS Lagos State Chapter"
+                />
+              </Field>
+            )}
+            {cfg.showMessage && (
+              <Field label={cfg.messageLabel} hint="Shown on the Spotlight / closing views">
+                <textarea
+                  style={{ ...inputStyle, minHeight: 88, resize: 'vertical', lineHeight: 1.5 }}
+                  value={event.message || ''}
+                  onChange={e => set('message', e.target.value)}
+                  placeholder="Write the citation / message here…"
+                />
+              </Field>
+            )}
             {subDeliverable === 'noSpeakers' && (
-              <Field label="Hero image" hint="Shown on the 'No Speakers' view">
+              <Field label="Hero image" hint="Shown on the 'Announcement' view">
                 <HeroUpload value={event.heroImage} onChange={url => set('heroImage', url)} />
               </Field>
             )}
-            {event.category === 'Training' && (
+            {cfg.showModules && (
               <Field label="Module Breakdown" hint="One module per line — shown in Training Schedule view">
                 <textarea
                   style={{ ...inputStyle, minHeight: 88, resize: 'vertical', lineHeight: 1.5 }}
@@ -600,27 +628,29 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
                 />
               </Field>
             )}
-            <Row>
-              <Field label="CPD Points">
-                <Input
-                  type="number" min={1} max={99}
-                  value={event.cpdPoints}
-                  onChange={v => set('cpdPoints', Number(v))}
-                />
-              </Field>
-              <Field label="CPD Seal">
-                <Select
-                  value={event.cpdSealVariant}
-                  onChange={v => set('cpdSealVariant', v)}
-                  options={[
-                    { value: 'auto', label: 'Auto (by category)' },
-                    { value: 'gold', label: 'Gold seal' },
-                    { value: 'red', label: 'Red seal' },
-                    { value: 'hybrid', label: 'Red & Gold' },
-                  ]}
-                />
-              </Field>
-            </Row>
+            {cfg.isCpd && (
+              <Row>
+                <Field label="CPD Points">
+                  <Input
+                    type="number" min={1} max={99}
+                    value={event.cpdPoints}
+                    onChange={v => set('cpdPoints', Number(v))}
+                  />
+                </Field>
+                <Field label="CPD Seal">
+                  <Select
+                    value={event.cpdSealVariant}
+                    onChange={v => set('cpdSealVariant', v)}
+                    options={[
+                      { value: 'auto', label: 'Auto (by category)' },
+                      { value: 'gold', label: 'Gold seal' },
+                      { value: 'red', label: 'Red seal' },
+                      { value: 'hybrid', label: 'Red & Gold' },
+                    ]}
+                  />
+                </Field>
+              </Row>
+            )}
           </>
         )}
       </div>
@@ -725,9 +755,9 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
         )}
       </div>
 
-      {/* ── Speakers ── */}
+      {/* ── People (speakers / delegation / honorees …) ── */}
       <div style={{ marginBottom: 20 }}>
-        <SectionHeader title={`Speakers (${event.speakers.length}/5)`} open={open.speakers} onToggle={() => toggle('speakers')} />
+        <SectionHeader title={`${cfg.peopleNoun}s (${event.speakers.length}/5)`} open={open.speakers} onToggle={() => toggle('speakers')} />
         {open.speakers && (
           <>
             {event.speakers.map((s, i) => (
@@ -735,6 +765,8 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
                 key={s.id}
                 speaker={s}
                 index={i}
+                roles={cfg.peopleRoles}
+                noun={cfg.peopleNoun}
                 onChange={updated => setSpeaker(i, updated)}
                 onRemove={() => removeSpeaker(i)}
               />
@@ -750,14 +782,15 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
                   cursor: 'pointer', fontFamily: "'Sora', sans-serif",
                 }}
               >
-                + Add speaker
+                + Add {cfg.peopleNoun.toLowerCase()}
               </button>
             )}
           </>
         )}
       </div>
 
-      {/* ── Registration ── */}
+      {/* ── Registration (CPD events only) ── */}
+      {cfg.showRegistration && (
       <div style={{ marginBottom: 20 }}>
         <SectionHeader title="Registration" open={open.registration} onToggle={() => toggle('registration')} />
         {open.registration && (
@@ -779,6 +812,7 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
           </>
         )}
       </div>
+      )}
 
       {/* ── Enquiries ── */}
       <div style={{ marginBottom: 20 }}>
@@ -824,17 +858,21 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
         <SectionHeader title="Layout & Sections" open={open.sections} onToggle={() => toggle('sections')} />
         {open.sections && (
           <div style={{ paddingTop: 2 }}>
-            <GroupLabel>Header</GroupLabel>
-            <ToggleRow label="CPD seal" on={sections.cpdSeal} onChange={v => setSection('cpdSeal', v)} />
+            {cfg.isCpd && (
+              <>
+                <GroupLabel>Header</GroupLabel>
+                <ToggleRow label="CPD seal" on={sections.cpdSeal} onChange={v => setSection('cpdSeal', v)} />
+              </>
+            )}
 
             <GroupLabel>Title area</GroupLabel>
             <ToggleRow label="Subtitle" on={sections.subtitle} onChange={v => setSection('subtitle', v)} />
             <ToggleRow label="Themed eyebrow" on={sections.themedEyebrow} onChange={v => setSection('themedEyebrow', v)} />
 
-            <GroupLabel>Speakers</GroupLabel>
-            <ToggleRow label="Show speakers section" on={sections.speakers} onChange={v => setSection('speakers', v)} />
+            <GroupLabel>{cfg.peopleNoun}s</GroupLabel>
+            <ToggleRow label={`Show ${cfg.peopleNoun.toLowerCase()} section`} on={sections.speakers} onChange={v => setSection('speakers', v)} />
             <ToggleRow
-              label={event.category === 'Training' ? 'FACULTY label' : 'PRESENTERS label'}
+              label={`${cfg.peopleLabel} label`}
               on={sections.presentersEyebrow}
               onChange={v => setSection('presentersEyebrow', v)}
               indent
@@ -847,7 +885,9 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
             <ToggleRow label="Platform" on={sections.metaPlatform} onChange={v => setSection('metaPlatform', v)} indent />
 
             <GroupLabel>Footer</GroupLabel>
-            <ToggleRow label="Registration block" on={sections.registration} onChange={v => setSection('registration', v)} />
+            {cfg.showRegistration && (
+              <ToggleRow label="Registration block" on={sections.registration} onChange={v => setSection('registration', v)} />
+            )}
             <ToggleRow label="Contact bar" on={sections.contactBar} onChange={v => setSection('contactBar', v)} />
           </div>
         )}

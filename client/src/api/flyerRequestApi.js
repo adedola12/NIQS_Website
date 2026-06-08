@@ -65,6 +65,8 @@ export function requestToEvent(r) {
     category: r.category || 'Training',
     title: r.title || '',
     subtitle: r.subtitle || '',
+    host: r.host || '',           // Courtesy Visit — who/where is being visited
+    message: r.message || '',     // Appreciation / Congratulations / Condolence body
     goldWordIndex: null, // let the form default to the last word
     dateStart: r.dateStart || '',
     dateEnd: r.dateEnd || '',

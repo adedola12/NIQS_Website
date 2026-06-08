@@ -5,6 +5,9 @@ const { sendMail, flyerRequestEmailHtml } = require('../utils/email');
 
 const LINK_PURPOSE = 'flyer_intake';
 
+// Mirrors client/src/flyer/categories.js — keep in sync.
+const FLYER_CATEGORIES = ['Training', 'Webinar', 'Courtesy Visit', 'Appreciation', 'Congratulations', 'Condolence'];
+
 /* ── Helpers ───────────────────────────────────────────────────────────────── */
 
 function isHQ(role) {
@@ -124,9 +127,11 @@ exports.createRequest = async (req, res) => {
       requesterPhone: b.requesterPhone || '',
       requesterOrg: b.requesterOrg || '',
       notes: b.notes || '',
-      category: b.category === 'Webinar' ? 'Webinar' : 'Training',
+      category: FLYER_CATEGORIES.includes(b.category) ? b.category : 'Training',
       title: b.title,
       subtitle: b.subtitle || '',
+      host: b.host || '',
+      message: b.message || '',
       dateStart: b.dateStart || '',
       dateEnd: b.dateEnd || '',
       time: b.time || '',

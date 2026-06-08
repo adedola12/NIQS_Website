@@ -5,6 +5,10 @@ export const DEFAULT_EVENT = {
   title: 'Advancing Digital Cost Management in Nigerian Construction',
   subtitle: 'Hands-on training in BIM-driven quantity surveying and modern estimation workflows',
   goldWordIndex: 3,
+  // Occasion fields (courtesy visit / appreciation / congratulations / condolence).
+  // Ignored by the CPD layouts; see flyer/categories.js.
+  host: '',        // who/where is being visited or honoured (Courtesy Visit)
+  message: '',     // free-text citation / tribute / appreciation body
   dateStart: '2026-05-05',
   dateEnd: '2026-05-09',
   time: '9:00 AM daily',
