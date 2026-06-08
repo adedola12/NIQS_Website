@@ -191,7 +191,11 @@ function PlatformIcon({ platform, size }) {
 function MetaQrBlock({ event, sec, cfg, registerUrl }) {
   const dateStr  = formatDateRange(event.dateStart, event.dateEnd)
   const timeSub  = [event.time, event.timeZone].filter(Boolean).join(' · ')
-  const venueVal = event.venueCity ? `${event.venueCity} + Online` : event.venuePhysical
+  // Only append "+ Online" for hybrid/virtual — an in-person visit shouldn't say it.
+  const venueOnline = event.venueType !== 'In-Person'
+  const venueVal = event.venueCity
+    ? (venueOnline ? `${event.venueCity} + Online` : event.venueCity)
+    : event.venuePhysical
   const venueSub = event.venuePhysical !== venueVal ? event.venuePhysical : ''
   const platLabel = { GoogleMeet: 'Google Meet', XSpaces: 'X Spaces' }[event.platform] ?? event.platform
 
@@ -607,6 +611,78 @@ function ThankYouContent({ event, cfg, center }) {
   )
 }
 
+// ─── Itinerary / Programme (spans title + speaker zones) ──────────────────────
+// Parses event.schedule (one item per line) into a timeline. Each line may carry
+// a leading time/label before " — " or ": " (e.g. "10:00 AM — Arrival" or
+// "Day 1: Fundamentals"); lines without a separator render as a plain step.
+function parseItinerary(schedule) {
+  return (schedule || '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const m = line.match(/^(.*?)(?:\s+[—–-]\s+|:\s+)(.+)$/)
+      if (m && m[1].trim().length <= 28) return { time: m[1].trim(), text: m[2].trim() }
+      return { time: '', text: line }
+    })
+}
+
+function ItineraryContent({ event, sec, cfg, center }) {
+  const goldIdx = event.goldWordIndex ?? (event.title || '').split(' ').length - 1
+  const spanH   = TITLE_H + ROW_GAP + SPEAKER_H  // 808px
+  // Gold accents throughout (consistent with the gold eyebrow + people labels);
+  // the sombre tone only softens the big closing hero, not functional chrome.
+  const accent  = GOLD
+  const items   = parseItinerary(event.schedule)
+  const n        = items.length
+  // Scale type/spacing so 3–9 items all sit comfortably in the fixed span.
+  const rowFs   = n > 7 ? 16 : n > 5 ? 18 : 20
+  const timeFs  = n > 7 ? 14 : 15
+  const rowPadY = n > 7 ? 9 : n > 5 ? 12 : 16
+  const hasTime = items.some((it) => it.time)
+
+  return (
+    <div style={{ height: spanH, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {sec.themedEyebrow && <Eyebrow label={cfg.itineraryEyebrow} center={center} mb={12} />}
+      <GoldTitle title={event.title} goldWordIndex={goldIdx} fontSize={center ? 40 : 42} center={center} />
+      <p style={{ fontFamily: FB, fontSize: 17, fontWeight: 600, color: accent, margin: '10px 0 0', letterSpacing: '-0.01em', textAlign: center ? 'center' : 'left' }}>
+        {formatDateRange(event.dateStart, event.dateEnd)}
+        {cfg.showHost && event.host ? `  ·  ${event.host}` : ''}
+      </p>
+      <div style={{ height: 2, background: accent, opacity: 0.4, borderRadius: 2, margin: '16px 0 4px', width: center ? 120 : '100%', alignSelf: center ? 'center' : 'stretch' }} />
+
+      {/* Agenda rows fill the remaining height */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', maxWidth: center ? 760 : '100%', width: center ? '100%' : 'auto', marginLeft: center ? 'auto' : 0, marginRight: center ? 'auto' : 0 }}>
+        {n === 0 ? (
+          <p style={{ fontFamily: FB, fontSize: 18, color: 'var(--fl-ink-faint)', fontStyle: 'italic', margin: '20px 0 0' }}>
+            Add itinerary items in the form — one per line.
+          </p>
+        ) : (
+          items.map((it, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'baseline', gap: 18,
+              padding: `${rowPadY}px 0`,
+              borderBottom: i < n - 1 ? '1px solid rgba(255,255,255,0.10)' : 'none',
+            }}>
+              {hasTime && (
+                <span style={{
+                  flexShrink: 0, width: 168, fontFamily: FB, fontSize: timeFs, fontWeight: 700,
+                  color: accent, letterSpacing: '0.04em', lineHeight: 1.3,
+                }}>
+                  {it.time}
+                </span>
+              )}
+              <span style={{ flex: 1, minWidth: 0, fontFamily: FB, fontSize: rowFs, fontWeight: 500, color: 'var(--fl-ink)', lineHeight: 1.35 }}>
+                {it.text}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // ROOT COMPONENT — CSS Grid canvas
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -699,7 +775,7 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
   const isFive       = speakerCount === 5
 
   // Deliverables that span both title and speaker zones
-  const isSpanDeliverable = ['countdown', 'speakerCitation', 'thankYou'].includes(subDeliverable)
+  const isSpanDeliverable = ['countdown', 'speakerCitation', 'thankYou', 'itinerary'].includes(subDeliverable)
 
   // 'main' with no speaker cards (section off or none added) → give the title the
   // full canvas height instead of clipping it above an empty 480px speaker band.
@@ -774,6 +850,7 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
           {mainSolo                             && <TitleZoneSolo event={event} sec={sec} cfg={cfg} center={center} />}
           {subDeliverable === 'countdown'       && <CountdownContent event={event} sec={sec} cfg={cfg} center={center} />}
           {subDeliverable === 'speakerCitation' && <SpeakerCitationContent event={event} sec={sec} cfg={cfg} center={center} speakers={allSpeakers} />}
+          {subDeliverable === 'itinerary'       && <ItineraryContent event={event} sec={sec} cfg={cfg} center={center} />}
           {subDeliverable === 'thankYou'        && <ThankYouContent event={event} cfg={cfg} center={center} />}
         </div>
       )}

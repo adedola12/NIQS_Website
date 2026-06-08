@@ -244,6 +244,8 @@ const Navbar = () => {
   const { admin, user, logout } = useAuth();
 
   const isLoggedIn = !!(admin || user);
+  // "Request a Flyer" is an admin-facing entry point — only surface it to admins.
+  const isAdminUser = !!admin;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -401,12 +403,14 @@ const Navbar = () => {
             >
               Jobs
             </Link>
-            <Link
-              to="/request-flyer"
-              className={`nl${location.pathname === "/request-flyer" ? " on" : ""}`}
-            >
-              Request a Flyer
-            </Link>
+            {isAdminUser && (
+              <Link
+                to="/request-flyer"
+                className={`nl${location.pathname === "/request-flyer" ? " on" : ""}`}
+              >
+                Request a Flyer
+              </Link>
+            )}
             <Link
               to="/contact"
               className={`nl${location.pathname === "/contact" ? " on" : ""}`}
@@ -540,9 +544,11 @@ const Navbar = () => {
         <Link to="/jobs" className="ml" onClick={closeMenu}>
           Jobs
         </Link>
-        <Link to="/request-flyer" className="ml" onClick={closeMenu}>
-          Request a Flyer
-        </Link>
+        {isAdminUser && (
+          <Link to="/request-flyer" className="ml" onClick={closeMenu}>
+            Request a Flyer
+          </Link>
+        )}
         <Link to="/contact" className="ml" onClick={closeMenu}>
           Contact
         </Link>

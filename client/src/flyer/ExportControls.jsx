@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import JSZip from 'jszip'
+import { getCategoryConfig } from './categories.js'
 
 const EXPORT_W = 1080
 const EXPORT_H = 1350
@@ -72,12 +73,14 @@ async function captureCanvas(flyerRef) {
   })
 }
 
-const PACK_SUBS = [
-  { value: 'noSpeakers', label: 'Main_No_Speakers' },
-  { value: 'main',       label: 'Main_Speakers'    },
-  { value: 'countdown',  label: 'Countdown'        },
-  { value: 'thankYou',   label: 'Thank_You'        },
-]
+// The pack exports every view the category offers (one PNG each), except the
+// single-person spotlight, which is exported once per named person below.
+function packSubsFor(category) {
+  const cfg = getCategoryConfig(category)
+  return cfg.deliverables
+    .filter((d) => d !== 'speakerCitation')
+    .map((d) => ({ value: d, label: (cfg.tabs[d] || d).replace(/[^a-zA-Z0-9]+/g, '_') }))
+}
 
 export default function ExportControls({ flyerRef, eventTitle, onSave, subDeliverable, onSubDeliverableChange, event, onEventChange }) {
   const [busy, setBusy] = useState(null)
@@ -118,10 +121,11 @@ export default function ExportControls({ flyerRef, eventTitle, onSave, subDelive
     const originalSub = subDeliverable
     const originalSpeakerIdx = event.selectedSpeakerIndex ?? 0
     const speakers = (event.speakers || []).filter(sp => sp.name?.trim())
+    const packSubs = packSubsFor(event.category)
     let packError = null
 
-    // Non-faculty sub-deliverables
-    for (const { value, label } of PACK_SUBS) {
+    // Non-spotlight sub-deliverables
+    for (const { value, label } of packSubs) {
       try {
         flushSync(() => onSubDeliverableChange(value))
         await new Promise(r => setTimeout(r, 120))

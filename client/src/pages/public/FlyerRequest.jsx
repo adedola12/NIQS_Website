@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getLinkContext, submitFlyerRequest } from '../../api/flyerRequestApi';
-import { CATEGORIES, getCategoryConfig } from '../../flyer/categories.js';
+import { CATEGORIES, getCategoryConfig, hasItinerary } from '../../flyer/categories.js';
 
 const NAVY = '#0B1F4B';
 const GOLD = '#C9974A';
@@ -210,12 +210,12 @@ export default function FlyerRequest() {
             </Row>
           )}
 
-          {cfg.showModules && (
-            <Field label="Module breakdown" hint="One module per line">
+          {hasItinerary(form.category) && (
+            <Field label={cfg.scheduleLabel} hint='One item per line — e.g. "10:00 AM — Arrival & reception"'>
               <TextArea
                 value={form.schedule}
                 onChange={(v) => set('schedule', v)}
-                placeholder={'Day 1: Introduction to Digital Workflows\nDay 2: BIM & Quantity Surveying\nDay 3: Practical Sessions'}
+                placeholder={cfg.schedulePlaceholder}
               />
             </Field>
           )}

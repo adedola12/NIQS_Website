@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import BackgroundPicker from './BackgroundPicker.jsx'
 import { uploadImage } from './flyerApi'
 import { accentBackground, accentBackgroundSize } from './MainFlyerLeftDark.jsx'
-import { CATEGORIES, getCategoryConfig } from './categories.js'
+import { CATEGORIES, getCategoryConfig, hasItinerary } from './categories.js'
 
 // ─── Shared form primitives ──────────────────────────────────────────────────
 
@@ -281,14 +281,6 @@ function HeroUpload({ value, onChange }) {
 
 // ─── Main AdminForm ────────────────────────────────────────────────────────────
 
-const ALL_TABS = [
-  { value: 'noSpeakers',      label: 'No Speakers'  },
-  { value: 'main',            label: 'Speakers'     },
-  { value: 'countdown',       label: 'Countdown'    },
-  { value: 'speakerCitation', label: 'Citation'     },
-  { value: 'thankYou',        label: 'Thank You'    },
-]
-
 // ─── Background accent picker ─────────────────────────────────────────────────
 const ACCENTS = [
   { id: 'none',     name: 'Plain'     },
@@ -371,7 +363,7 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
   }
 
   const cfg = getCategoryConfig(event.category)
-  const subTabs = ALL_TABS.map(t => ({ value: t.value, label: cfg.tabs[t.value] || t.label }))
+  const subTabs = cfg.deliverables.map(v => ({ value: v, label: cfg.tabs[v] || v }))
   const prevCategoryRef = React.useRef(event.category)
   React.useEffect(() => {
     if (event.category !== prevCategoryRef.current) {
@@ -423,7 +415,7 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
       {/* ── Sub-deliverable switcher ── */}
       <div style={{ marginBottom: 20 }}>
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)',
+          display: 'grid', gridTemplateColumns: `repeat(${subTabs.length}, 1fr)`,
           gap: 3, background: '#ECEEF5', borderRadius: 8, padding: 3,
         }}>
           {subTabs.map(tab => (
@@ -433,8 +425,8 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
               onClick={() => onSubDeliverableChange(tab.value)}
               style={{
                 padding: '7px 2px', borderRadius: 6, border: 'none',
-                fontSize: 10, fontWeight: 700, cursor: 'pointer',
-                letterSpacing: '0.03em', textAlign: 'center',
+                fontSize: subTabs.length > 5 ? 9.5 : 10, fontWeight: 700, cursor: 'pointer',
+                letterSpacing: '0.02em', textAlign: 'center', lineHeight: 1.15,
                 fontFamily: "'Sora', sans-serif",
                 background: subDeliverable === tab.value ? '#000066' : 'transparent',
                 color: subDeliverable === tab.value ? '#fff' : '#5A6485',
@@ -618,13 +610,13 @@ export default function AdminForm({ event, onChange, subDeliverable, onSubDelive
                 <HeroUpload value={event.heroImage} onChange={url => set('heroImage', url)} />
               </Field>
             )}
-            {cfg.showModules && (
-              <Field label="Module Breakdown" hint="One module per line — shown in Training Schedule view">
+            {hasItinerary(event.category) && (
+              <Field label={cfg.scheduleLabel} hint={`One item per line — shown on the "${cfg.tabs.itinerary}" view. Tip: "10:00 AM — Arrival" splits into a time + label.`}>
                 <textarea
                   style={{ ...inputStyle, minHeight: 88, resize: 'vertical', lineHeight: 1.5 }}
                   value={event.schedule || ''}
                   onChange={e => set('schedule', e.target.value)}
-                  placeholder={'Day 1: Introduction to Digital Workflows\nDay 2: BIM & Quantity Surveying\nDay 3: Practical Sessions'}
+                  placeholder={cfg.schedulePlaceholder}
                 />
               </Field>
             )}
