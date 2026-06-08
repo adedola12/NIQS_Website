@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { getLinkContext, submitFlyerRequest } from '../../api/flyerRequestApi';
+import { getLinkContext, submitFlyerRequest, uploadFlyerRequestImage } from '../../api/flyerRequestApi';
 import { CATEGORIES, getCategoryConfig, hasItinerary } from '../../flyer/categories.js';
 
 const NAVY = '#0B1F4B';
@@ -32,9 +32,13 @@ export default function FlyerRequest() {
   const [form, setForm] = useState(BLANK);
   const [speakers, setSpeakers] = useState([]);
   const [enquiries, setEnquiries] = useState(['']);
+  const [references, setReferences] = useState([]); // [{ url, caption }] — project image library
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+
+  // Image upload is token-gated server-side, so only offer it when the link is valid.
+  const canUpload = !!ctx?.valid;
 
   useEffect(() => {
     if (!token) return;
@@ -64,10 +68,21 @@ export default function FlyerRequest() {
   }
   function addSpeaker() {
     if (speakers.length >= 5) return;
-    setSpeakers((l) => [...l, { name: '', role: cfg.defaultRole, credentials: '', topic: '' }]);
+    setSpeakers((l) => [...l, { name: '', role: cfg.defaultRole, credentials: '', topic: '', photo: null }]);
   }
   function removeSpeaker(i) {
     setSpeakers((l) => l.filter((_, idx) => idx !== i));
+  }
+
+  function addReference(url) {
+    if (!url) return;
+    setReferences((l) => (l.length >= 12 ? l : [...l, { url, caption: '' }]));
+  }
+  function setReferenceCaption(i, caption) {
+    setReferences((l) => l.map((r, idx) => (idx === i ? { ...r, caption } : r)));
+  }
+  function removeReference(i) {
+    setReferences((l) => l.filter((_, idx) => idx !== i));
   }
 
   function setEnquiry(i, v) {
@@ -97,8 +112,9 @@ export default function FlyerRequest() {
         ...form,
         token,
         cpdPoints: Number(form.cpdPoints) || 0,
-        speakers: speakers.filter((s) => s.name.trim() || s.topic.trim()),
+        speakers: speakers.filter((s) => s.name.trim() || s.topic.trim() || s.photo),
         enquiries: enquiries.map((e) => e.trim()).filter(Boolean),
+        referenceImages: references.filter((r) => r.url),
       });
       setDone(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -277,14 +293,21 @@ export default function FlyerRequest() {
                 <span style={{ fontSize: 11, fontWeight: 700, color: NAVY, letterSpacing: '0.06em' }}>{cfg.peopleNoun.toUpperCase()} {i + 1}</span>
                 <button type="button" onClick={() => removeSpeaker(i)} style={{ background: 'none', border: 'none', color: '#C9302C', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>Remove</button>
               </div>
-              <Row>
-                <Field label="Full name">
-                  <Input value={s.name} onChange={(v) => setSpeaker(i, 'name', v)} placeholder="QS Dr John Doe" />
-                </Field>
-                <Field label="Role">
-                  <Select value={s.role} onChange={(v) => setSpeaker(i, 'role', v)} options={cfg.peopleRoles.map((r) => ({ value: r, label: r }))} />
-                </Field>
-              </Row>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                {canUpload && (
+                  <ImageUpload value={s.photo} onChange={(url) => setSpeaker(i, 'photo', url)} token={token} size={64} />
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Row>
+                    <Field label="Full name">
+                      <Input value={s.name} onChange={(v) => setSpeaker(i, 'name', v)} placeholder="QS Dr John Doe" />
+                    </Field>
+                    <Field label="Role">
+                      <Select value={s.role} onChange={(v) => setSpeaker(i, 'role', v)} options={cfg.peopleRoles.map((r) => ({ value: r, label: r }))} />
+                    </Field>
+                  </Row>
+                </div>
+              </div>
               <Field label={cfg.isCpd ? 'Talk / module topic' : 'Note (optional)'}>
                 <Input value={s.topic} onChange={(v) => setSpeaker(i, 'topic', v)} placeholder={cfg.isCpd ? 'What will they speak on?' : 'e.g. role, title or short note'} />
               </Field>
@@ -292,6 +315,38 @@ export default function FlyerRequest() {
           ))}
           {speakers.length < 5 && (
             <button type="button" onClick={addSpeaker} style={dashBtn}>+ Add {cfg.peopleNoun.toLowerCase()}</button>
+          )}
+
+          {/* ── Project image library ── */}
+          {canUpload && (
+            <>
+              <SectionTitle>Project images <Muted>(optional, up to 12)</Muted></SectionTitle>
+              <p style={{ fontSize: 12.5, color: '#5A6485', margin: '-4px 0 12px', lineHeight: 1.5 }}>
+                Upload any images that help us design the flyer — extra speaker photos, a venue shot, sponsor or partner logos, the chapter crest, etc.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 10, marginBottom: 4 }}>
+                {references.map((r, i) => (
+                  <div key={i} style={{ border: '1.5px solid #DDE3F0', borderRadius: 10, padding: 8, background: '#FAFBFF' }}>
+                    <div style={{ width: '100%', height: 84, borderRadius: 6, overflow: 'hidden', background: '#EEF1F8', marginBottom: 6 }}>
+                      <img src={r.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <input
+                      value={r.caption}
+                      onChange={(e) => setReferenceCaption(i, e.target.value)}
+                      placeholder="Caption (optional)"
+                      style={{ ...inputStyle, padding: '6px 8px', fontSize: 12 }}
+                    />
+                    <button type="button" onClick={() => removeReference(i)}
+                      style={{ marginTop: 6, width: '100%', background: 'none', border: '1px solid #FCA5A5', color: '#C9302C', borderRadius: 6, padding: '5px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: FB }}>
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                {references.length < 12 && (
+                  <ImageUpload onChange={addReference} token={token} size="full" label="image" />
+                )}
+              </div>
+            </>
           )}
 
           {/* ── Registration & enquiries ── */}
@@ -331,6 +386,63 @@ export default function FlyerRequest() {
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── image uploader (token-gated) ── */
+function ImageUpload({ value, onChange, token, size = 56, label = 'Photo' }) {
+  const fileRef = useRef();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const full = size === 'full';
+
+  async function handle(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setErr('');
+    setBusy(true);
+    try {
+      const url = await uploadFlyerRequestImage(file, token);
+      onChange(url);
+    } catch (ex) {
+      setErr(ex.response?.data?.message || 'Upload failed');
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  const boxStyle = full
+    ? { width: '100%', height: 84, borderRadius: 8 }
+    : { width: size, height: size, borderRadius: 8, flexShrink: 0 };
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => fileRef.current?.click()}
+        disabled={busy}
+        style={{
+          ...boxStyle, border: '1.5px dashed #DDE3F0', background: '#F6F7FB',
+          cursor: busy ? 'wait' : 'pointer', overflow: 'hidden', padding: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        {busy
+          ? <span style={{ fontSize: 10, color: '#5A6485' }}>Uploading…</span>
+          : value
+            ? <img src={value} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : <span style={{ fontSize: 10.5, color: '#5A6485', textAlign: 'center', padding: 4, lineHeight: 1.3 }}>+ {label}</span>}
+      </button>
+      <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handle} />
+      {value && !full && (
+        <button type="button" onClick={() => onChange(null)}
+          style={{ display: 'block', margin: '4px auto 0', background: 'none', border: 'none', color: '#C9302C', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: FB }}>
+          Remove
+        </button>
+      )}
+      {err && <p style={{ fontSize: 10, color: '#C9302C', margin: '4px 0 0' }}>{err}</p>}
     </div>
   );
 }

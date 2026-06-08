@@ -3,6 +3,8 @@ const {
   generateLink,
   getLinkContext,
   createRequest,
+  uploadAssetMw,
+  uploadAsset,
   listRequests,
   getRequest,
   updateStatus,
@@ -11,8 +13,9 @@ const {
 const { protect, adminOnly } = require('../middleware/auth');
 
 // ── Public — intake form ──
-router.post('/', createRequest);               // submit a request
-router.get('/context/:token', getLinkContext); // resolve a shared-link token for display
+router.post('/', createRequest);                       // submit a request
+router.get('/context/:token', getLinkContext);         // resolve a shared-link token for display
+router.post('/upload', uploadAssetMw, uploadAsset);    // token-gated image upload (speaker photo / reference)
 
 // ── Admin ──
 router.post('/link', protect, adminOnly, generateLink);   // generate a shareable link

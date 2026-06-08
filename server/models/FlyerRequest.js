@@ -1,11 +1,18 @@
 const mongoose = require('mongoose');
 
-/* ── Speaker subdoc (text-only — photos are added by the admin in Flyer Studio) ── */
+/* ── Speaker subdoc (photo optional — requester may upload, else admin adds in Studio) ── */
 const requestSpeakerSchema = new mongoose.Schema({
   name: { type: String, default: '' },
   credentials: { type: String, default: '' },
   role: { type: String, default: 'Faculty' },
   topic: { type: String, default: '' },
+  photo: { type: String, default: null }, // uploaded image URL
+}, { _id: false });
+
+/* ── Reference image (the requester's "project library": logos, venue, sponsors …) ── */
+const referenceImageSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  caption: { type: String, default: '' },
 }, { _id: false });
 
 /*
@@ -56,6 +63,9 @@ const flyerRequestSchema = new mongoose.Schema({
   // ── Enquiries + speakers ──
   enquiries: { type: [String], default: [] },
   speakers: { type: [requestSpeakerSchema], default: [] },
+
+  // ── Requester-uploaded image library (speaker photos live on each speaker above) ──
+  referenceImages: { type: [referenceImageSchema], default: [] },
 
   // ── Routing / scope (resolved from the link token the admin shared) ──
   scope: { type: String, enum: ['national', 'chapter'], default: 'national' },

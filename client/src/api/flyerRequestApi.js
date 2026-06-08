@@ -21,6 +21,18 @@ export async function submitFlyerRequest(payload) {
   return data;
 }
 
+/**
+ * Upload an image for an intake request (speaker photo or reference asset).
+ * Token-gated server-side — pass the shared-link token. Returns the stored URL.
+ */
+export async function uploadFlyerRequestImage(file, token) {
+  const fd = new FormData();
+  fd.append('file', file);
+  if (token) fd.append('token', token);
+  const { data } = await API.post('/flyer-requests/upload', fd);
+  return data.url;
+}
+
 /* ── Admin ── */
 
 /** Generate a shareable intake link; returns the signed token. */
@@ -86,7 +98,7 @@ export function requestToEvent(r) {
       id: `req-${i + 1}`,
       name: s.name || '',
       credentials: s.credentials || '',
-      photo: null,
+      photo: s.photo || null,   // requester-uploaded photo carries into the studio
       role: s.role || 'Faculty',
       topic: s.topic || '',
     })),

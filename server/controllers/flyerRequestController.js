@@ -1,9 +1,21 @@
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
 const FlyerRequest = require('../models/FlyerRequest');
 const Chapter = require('../models/Chapter');
 const { sendMail, flyerRequestEmailHtml } = require('../utils/email');
+const { storeBuffer } = require('../utils/storage');
 
 const LINK_PURPOSE = 'flyer_intake';
+
+// Public asset upload: in-memory, image-only, 8 MB cap (keeps it on Cloudinary).
+const assetUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype && file.mimetype.startsWith('image/')) return cb(null, true);
+    cb(new Error('Only image files are allowed.'));
+  },
+});
 
 // Mirrors client/src/flyer/categories.js — keep in sync.
 const FLYER_CATEGORIES = ['Training', 'Webinar', 'Courtesy Visit', 'Appreciation', 'Congratulations', 'Condolence'];
@@ -84,6 +96,35 @@ exports.getLinkContext = async (req, res) => {
   }
 };
 
+/* ── Public: upload an image for a request (speaker photo / reference asset) ──── */
+// Parses the multipart body and maps multer errors to friendly messages.
+exports.uploadAssetMw = (req, res, next) => {
+  assetUpload.single('file')(req, res, (err) => {
+    if (err) {
+      const msg = err.code === 'LIMIT_FILE_SIZE' ? 'Image too large (max 8 MB).' : (err.message || 'Upload error.');
+      return res.status(400).json({ message: msg });
+    }
+    next();
+  });
+};
+
+exports.uploadAsset = async (req, res) => {
+  try {
+    // Gate on a valid flyer-intake token so this public endpoint can't be abused.
+    try {
+      const d = jwt.verify(req.body.token || req.query.token || '', process.env.JWT_SECRET);
+      if (d.purpose !== LINK_PURPOSE) throw new Error('bad purpose');
+    } catch (_) {
+      return res.status(401).json({ message: 'A valid request link is required to upload images.' });
+    }
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
+    const stored = await storeBuffer(req.file);
+    res.json({ url: stored.url });
+  } catch (err) {
+    res.status(500).json({ message: 'Upload failed', error: err.message });
+  }
+};
+
 /* ── Public: submit an intake request ──────────────────────────────────────── */
 exports.createRequest = async (req, res) => {
   try {
@@ -114,11 +155,19 @@ exports.createRequest = async (req, res) => {
             credentials: s.credentials || '',
             role: s.role || 'Faculty',
             topic: s.topic || '',
+            photo: s.photo || null,
           }))
       : [];
 
     const enquiries = Array.isArray(b.enquiries)
       ? b.enquiries.map((e) => String(e || '').trim()).filter(Boolean).slice(0, 5)
+      : [];
+
+    const referenceImages = Array.isArray(b.referenceImages)
+      ? b.referenceImages
+          .filter((im) => im && im.url)
+          .slice(0, 12)
+          .map((im) => ({ url: im.url, caption: String(im.caption || '').slice(0, 80) }))
       : [];
 
     const doc = await FlyerRequest.create({
@@ -147,6 +196,7 @@ exports.createRequest = async (req, res) => {
       registrationExtra: b.registrationExtra || '',
       enquiries,
       speakers,
+      referenceImages,
       scope,
       chapter,
       requestedBy,

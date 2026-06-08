@@ -57,6 +57,7 @@ export default function FlyerStudio() {
   const [requests, setRequests] = useState([]);
   const [showRequests, setShowRequests] = useState(false);
   const [activeRequestId, setActiveRequestId] = useState(null);
+  const [requestAssets, setRequestAssets] = useState([]); // requester-uploaded reference images
   const [shareUrl, setShareUrl] = useState(null);
   const [linkLoading, setLinkLoading] = useState(false);
 
@@ -135,6 +136,7 @@ export default function FlyerStudio() {
     setEvent({ ...DEFAULT_EVENT, id: null });
     setEditingId(null);
     setActiveRequestId(null);
+    setRequestAssets([]);
     setScope(isHQ ? 'national' : 'chapter');
     setChapter(lockChapter ? assignedChapterId : '');
     setSubDeliverable('main');
@@ -145,6 +147,7 @@ export default function FlyerStudio() {
     setEvent({ ...DEFAULT_EVENT, ...(ev.flyer || {}), id: ev._id });
     setEditingId(ev._id);
     setActiveRequestId(null);
+    setRequestAssets([]);
     setScope(ev.scope || 'national');
     setChapter(ev.chapter?._id || ev.chapter || '');
     setSubDeliverable('main');
@@ -156,6 +159,7 @@ export default function FlyerStudio() {
     setEvent(requestToEvent(r));
     setEditingId(null);
     setActiveRequestId(r._id);
+    setRequestAssets(r.referenceImages || []);
     setScope(isHQ ? (r.scope || 'national') : 'chapter');
     setChapter(r.chapter?._id || r.chapter || (lockChapter ? assignedChapterId : ''));
     setSubDeliverable('main');
@@ -292,6 +296,11 @@ export default function FlyerStudio() {
         </div>
       )}
 
+      {/* Requester's project image library (speaker photos auto-fill the cards above) */}
+      {requestAssets.length > 0 && (
+        <ProjectLibrary assets={requestAssets} />
+      )}
+
       {/* Studio */}
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', gap: 0, minHeight: isMobile ? 'auto' : 'calc(100vh - 130px)' }}>
         {/* Form panel */}
@@ -403,6 +412,37 @@ export default function FlyerStudio() {
           onConfirm={() => handleSave(true)}
         />
       )}
+    </div>
+  );
+}
+
+/* ── Requester's project image library ── */
+function ProjectLibrary({ assets }) {
+  return (
+    <div style={{ padding: '10px 28px', background: '#FAFBFF', borderBottom: '1px solid #DDE3F0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 11, fontWeight: 800, color: '#000066', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          📎 Project library
+        </span>
+        <span style={{ fontSize: 11.5, color: '#5A6485' }}>
+          {assets.length} image{assets.length > 1 ? 's' : ''} from the requester — click to open / download. (Speaker photos already fill the cards.)
+        </span>
+      </div>
+      <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
+        {assets.map((a, i) => (
+          <a key={i} href={a.url} target="_blank" rel="noreferrer" title={a.caption || 'Open image'}
+            style={{ flexShrink: 0, width: 96, textDecoration: 'none' }}>
+            <div style={{ width: 96, height: 72, borderRadius: 8, overflow: 'hidden', border: '1.5px solid #DDE3F0', background: '#EEF1F8' }}>
+              <img src={a.url} alt={a.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            {a.caption && (
+              <p style={{ fontSize: 10, color: '#5A6485', margin: '4px 0 0', lineHeight: 1.25, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {a.caption}
+              </p>
+            )}
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
