@@ -21,7 +21,10 @@ const adminSchema = new mongoose.Schema({
   },
   isActive: { type: Boolean, default: true },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
-  lastLogin: { type: Date }
+  lastLogin: { type: Date },
+  // Admin-only password reset (email link)
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date }
 }, { timestamps: true });
 
 adminSchema.pre('save', async function (next) {

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { adminLogin, memberLogin, registerMember, getMe, logout, forgotPassword, resetPassword, seedAdmin, seedMember } = require('../controllers/authController');
+const { adminLogin, memberLogin, registerMember, getMe, logout, forgotPassword, resetPassword, adminForgotPassword, adminResetPassword, seedAdmin, seedMember } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
 router.post('/admin/login',    adminLogin);
@@ -16,5 +16,9 @@ router.get('/me',              protect, getMe);
 router.post('/logout',         logout);
 router.post('/forgot-password', forgotPassword);
 router.put('/reset-password/:token', resetPassword);
+
+// Admin-only password reset
+router.post('/admin/forgot-password', adminForgotPassword);
+router.put('/admin/reset-password/:token', adminResetPassword);
 
 module.exports = router;

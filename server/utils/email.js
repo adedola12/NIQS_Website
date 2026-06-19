@@ -136,4 +136,29 @@ function flyerRequestEmailHtml(reqDoc) {
   </div>`;
 }
 
-module.exports = { sendMail, registrationEmailHtml, flyerRequestEmailHtml, publicBase, fmtDate };
+/** Branded (navy/gold) admin password-reset email. */
+function passwordResetEmailHtml(admin, link) {
+  const NAVY = '#000066', GOLD = '#D9B650';
+  return `
+  <div style="margin:0;padding:24px;background:#ECEEF5;font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2e;">
+    <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,102,.12);">
+      <div style="background:${NAVY};padding:20px 28px;color:#fff;">
+        <p style="margin:0;font-size:12px;letter-spacing:.16em;color:${GOLD};font-weight:700;text-transform:uppercase;">NIQS Admin</p>
+        <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);">Password reset request</p>
+      </div>
+      <div style="padding:28px;">
+        <p style="margin:0 0 4px;font-size:14px;color:#5A6485;">Hi ${admin.firstName || 'Admin'},</p>
+        <h1 style="margin:0 0 14px;font-size:21px;line-height:1.25;color:${NAVY};">Reset your admin password</h1>
+        <p style="margin:0 0 20px;font-size:14px;color:#5A6485;line-height:1.55;">We received a request to reset the password for your NIQS admin account (<strong>${admin.email}</strong>). This link expires in <strong>30 minutes</strong>.</p>
+        <a href="${link}" style="display:inline-block;background:${GOLD};color:${NAVY};text-decoration:none;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;">Reset password</a>
+        <p style="margin:16px 0 0;font-size:11px;color:#8892B0;word-break:break-all;">${link}</p>
+        <p style="margin:18px 0 0;font-size:13px;color:#8892B0;line-height:1.5;">Didn't request this? You can safely ignore this email — your password won't change.</p>
+      </div>
+      <div style="background:#F6F7FB;padding:16px 28px;border-top:1px solid #DDE3F0;">
+        <p style="margin:0;font-size:11px;color:#8892B0;">NIQS admin security · niqs.org.ng</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+module.exports = { sendMail, registrationEmailHtml, flyerRequestEmailHtml, passwordResetEmailHtml, publicBase, fmtDate };

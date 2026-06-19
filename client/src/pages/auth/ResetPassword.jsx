@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import API from '../../api/axios';
 
 const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const isAdmin = params.get('type') === 'admin';
+  const minLen = isAdmin ? 8 : 6;
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,8 +21,8 @@ const ResetPassword = () => {
       return;
     }
 
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+    if (password.length < minLen) {
+      toast.error(`Password must be at least ${minLen} characters`);
       return;
     }
 
@@ -30,7 +33,7 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      await API.put(`/auth/reset-password/${token}`, { password });
+      await API.put(`${isAdmin ? '/auth/admin/reset-password/' : '/auth/reset-password/'}${token}`, { password });
       toast.success('Password reset successfully!');
       navigate('/login');
     } catch (err) {
@@ -69,12 +72,12 @@ const ResetPassword = () => {
               id="password"
               className="fi"
               type="password"
-              placeholder="Minimum 6 characters"
+              placeholder={`Minimum ${minLen} characters`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
               required
-              minLength={6}
+              minLength={minLen}
             />
           </div>
 
@@ -89,7 +92,7 @@ const ResetPassword = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
               required
-              minLength={6}
+              minLength={minLen}
             />
           </div>
 

@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const Admin = require('../models/Admin');
 const User = require('../models/User');
+const { sendMail, passwordResetEmailHtml, publicBase } = require('../utils/email');
 
 const generateToken = (id, isAdmin = false) => {
   return jwt.sign({ id, isAdmin }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -122,6 +123,70 @@ exports.getMe = async (req, res) => {
     res.status(401).json({ message: 'Not authenticated' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ── Admin-only password reset (email link) ──────────────────────────────────
+// Generic response always (no account enumeration). Sends a 30-min reset link
+// via the shared email util; if SMTP isn't configured the link is logged server-side.
+exports.adminForgotPassword = async (req, res) => {
+  const generic = { message: 'If an admin account exists for that email, a reset link has been sent.' };
+  try {
+    const email = (req.body.email || '').toLowerCase().trim();
+    if (!email) return res.json(generic);
+
+    const admin = await Admin.findOne({ email });
+    if (!admin || !admin.isActive) return res.json(generic);
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    admin.resetPasswordToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    admin.resetPasswordExpires = Date.now() + 30 * 60 * 1000; // 30 minutes
+    await admin.save();
+
+    const base = (publicBase() || req.headers.origin || '').replace(/\/$/, '');
+    const link = `${base}/reset-password/${rawToken}?type=admin`;
+
+    const result = await sendMail({
+      to: admin.email,
+      subject: 'Reset your NIQS admin password',
+      html: passwordResetEmailHtml(admin, link),
+      text: `Reset your NIQS admin password (expires in 30 minutes): ${link}`,
+    });
+    if (!result.sent) {
+      console.warn(`[admin reset] SMTP not configured — reset link for ${admin.email}: ${link}`);
+    }
+    return res.json(generic);
+  } catch (error) {
+    // Never reveal internal errors on this endpoint
+    return res.json(generic);
+  }
+};
+
+exports.adminResetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password || password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters' });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const admin = await Admin.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!admin) {
+      return res.status(400).json({ message: 'Invalid or expired reset link. Please request a new one.' });
+    }
+
+    admin.password = password; // pre-save hook bcrypt-hashes
+    admin.resetPasswordToken = undefined;
+    admin.resetPasswordExpires = undefined;
+    admin.isActive = true;
+    await admin.save();
+
+    return res.json({ message: 'Password reset successful. You can now sign in.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 

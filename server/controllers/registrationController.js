@@ -3,15 +3,22 @@ const Event = require('../models/Event');
 const Registration = require('../models/Registration');
 const { dayStartUTC, dayEndUTC } = require('../utils/eventConflicts');
 const { sendMail, registrationEmailHtml, publicBase } = require('../utils/email');
+const portal = require('../utils/portalClient');
 
 const ATTEND_GRACE_DAYS = 5; // attendance link stays active this many days after the end date
 
 /* ── Helpers ───────────────────────────────────────────────────────────────── */
 
-// Stub for the future NIQS portal (portal.niqsng.org) member lookup.
-// Returns null today; swap in the real API call when it's live.
-async function lookupMember(/* membershipNumber */) {
-  return null;
+// Verify a member against the NIQS portal (portal.niqsng.org). Returns the portal
+// member object, or null. No-ops (null) until PORTAL_API_URL + PORTAL_API_KEY are set.
+// See docs/PORTAL_INTEGRATION_SPEC.md §4.1.
+async function lookupMember(membershipNumber) {
+  if (!membershipNumber) return null;
+  try {
+    return await portal.verifyMember({ membershipNumber });
+  } catch {
+    return null;
+  }
 }
 
 function cpdOf(event) {
@@ -85,6 +92,13 @@ exports.register = async (req, res) => {
     else if (vt === 'Virtual') participationMode = 'virtual';
     else participationMode = req.body.participationMode === 'virtual' ? 'virtual' : 'in-person';
 
+    // Verify against the NIQS portal (no-op → false until PORTAL_API_* configured)
+    let memberVerified = false;
+    if (isMember && membershipNumber) {
+      const portalMember = await lookupMember(membershipNumber);
+      memberVerified = !!portalMember;
+    }
+
     const emailLc = String(email).toLowerCase().trim();
     let reg = await Registration.findOne({ event: event._id, email: emailLc });
 
@@ -92,6 +106,7 @@ exports.register = async (req, res) => {
       Object.assign(reg, {
         isMember: !!isMember,
         membershipNumber: membershipNumber || '',
+        memberVerified,
         username: username || reg.username || '',
         fullName,
         phone: phone || '',
@@ -105,7 +120,7 @@ exports.register = async (req, res) => {
         event: event._id,
         isMember: !!isMember,
         membershipNumber: membershipNumber || '',
-        memberVerified: false,
+        memberVerified,
         username: username || '',
         fullName,
         email: emailLc,

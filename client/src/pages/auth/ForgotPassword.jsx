@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import API from '../../api/axios';
 
 const ForgotPassword = () => {
+  const [params] = useSearchParams();
+  const isAdmin = params.get('type') === 'admin';
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -18,7 +20,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      await API.post('/auth/forgot-password', { email });
+      await API.post(isAdmin ? '/auth/admin/forgot-password' : '/auth/forgot-password', { email });
       setSent(true);
       toast.success('Reset link sent! Check your email.');
     } catch (err) {
@@ -45,9 +47,9 @@ const ForgotPassword = () => {
           <span className="login-logo-sub">Nigerian Institute of Quantity Surveyors</span>
         </div>
 
-        <h1 className="login-heading">Forgot Password</h1>
+        <h1 className="login-heading">{isAdmin ? 'Admin Password Reset' : 'Forgot Password'}</h1>
         <p className="login-subtitle">
-          Enter your email address and we'll send you a link to reset your password.
+          Enter your {isAdmin ? 'admin ' : ''}email address and we'll send you a link to reset your password.
         </p>
 
         {sent ? (
