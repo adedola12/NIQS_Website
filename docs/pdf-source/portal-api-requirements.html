@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NIQS Membership Portal — API Integration Requirements</title>
+<style>
+  :root{
+    --navy:#0B1F4B; --navy2:#132660; --navy3:#1a3280;
+    --gold:#C9974A; --gold2:#D9AB60; --goldl:#EBC87A; --goldxl:#f6efe0;
+    --ink:#1c2532; --muted:#5b6573; --muted2:#8a93a3;
+    --line:#e3e7ee; --line2:#eef1f6; --soft:#f6f8fb;
+  }
+  *{ box-sizing:border-box; }
+  html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); font-size:9.4pt; line-height:1.6; margin:0;
+    background:#ffffff;
+  }
+  .cover{ background:#ffffff; }
+  h1,h2,h3,h4{ font-weight:700; color:var(--navy); margin:0; line-height:1.25; }
+  p{ margin:0 0 7pt; }
+  a{ color:var(--navy3); text-decoration:none; }
+  em{ font-style:normal; color:var(--gold); font-weight:700; }
+  code{ font-family:"Consolas","Courier New",monospace; font-size:8.6pt; background:var(--soft);
+        border:1px solid var(--line); border-radius:3px; padding:0.5pt 3pt; color:#1f3a6b; }
+
+  /* ---------- COVER ---------- */
+  .cover{ height:247mm; display:flex; flex-direction:column; break-after:page; position:relative; }
+  .cover-band{ background:var(--navy); color:#fff; padding:9pt 14pt; display:flex;
+    justify-content:space-between; align-items:center; border-bottom:3px solid var(--gold); }
+  .cover-band .l{ font-weight:800; letter-spacing:.16em; font-size:9pt; color:#fff; }
+  .cover-band .l b{ color:var(--gold); }
+  .cover-band .r{ font-size:6.6pt; letter-spacing:.14em; color:var(--goldl); font-weight:700; text-transform:uppercase; }
+  .cover-body{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center;
+    padding:0 24pt; justify-content:center; }
+  .crest{ width:128px; height:auto; margin-bottom:14pt; }
+  .inst{ font-size:11pt; font-weight:700; color:var(--navy); letter-spacing:.04em; }
+  .inst-sub{ font-size:7.6pt; color:var(--muted); letter-spacing:.22em; text-transform:uppercase; margin-top:2pt; }
+  .rule{ width:64px; height:3px; background:var(--gold); border-radius:2px; margin:20pt auto 18pt; }
+  .doc-kicker{ font-size:8pt; font-weight:800; letter-spacing:.26em; text-transform:uppercase; color:var(--gold); margin-bottom:9pt; }
+  .doc-title{ font-size:26pt; line-height:1.12; color:var(--navy); letter-spacing:-.01em; max-width:420pt; }
+  .doc-subtitle{ font-size:11pt; color:var(--muted); font-weight:500; margin-top:11pt; max-width:380pt; line-height:1.5; }
+  .meta-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; width:100%; max-width:470pt;
+    margin-top:30pt; border:1px solid var(--line); border-radius:7px; overflow:hidden; }
+  .meta-cell{ padding:9pt 11pt; border-right:1px solid var(--line); text-align:left; }
+  .meta-cell:last-child{ border-right:none; }
+  .meta-cell .k{ font-size:6.4pt; letter-spacing:.14em; text-transform:uppercase; color:var(--muted2); font-weight:700; }
+  .meta-cell .v{ font-size:9pt; font-weight:700; color:var(--navy); margin-top:3pt; }
+  .cover-foot{ background:var(--soft); border-top:1px solid var(--line); padding:8pt 14pt;
+    font-size:7.2pt; color:var(--muted); text-align:center; }
+  .cover-foot b{ color:var(--navy); }
+
+  /* ---------- SECTIONS ---------- */
+  section{ padding:0 2pt; }
+  .pb{ break-before:page; }
+  h1.sec{ font-size:15pt; padding-bottom:6pt; margin-bottom:11pt; border-bottom:2px solid var(--gold);
+    display:flex; align-items:baseline; gap:9pt; }
+  h1.sec .n{ color:var(--gold); font-size:13pt; }
+  h2.sub{ font-size:11pt; margin:15pt 0 7pt; color:var(--navy2); }
+  h2.sub .n{ color:var(--gold); margin-right:5pt; }
+  h3.sub3{ font-size:9.6pt; margin:11pt 0 5pt; color:var(--navy3); }
+  .lead{ font-size:9.6pt; color:#3a4555; }
+
+  ul,ol{ margin:0 0 8pt; padding-left:16pt; }
+  li{ margin-bottom:3.5pt; }
+
+  /* ---------- TABLES ---------- */
+  table.tbl{ width:100%; border-collapse:collapse; margin:6pt 0 11pt; font-size:8.5pt; }
+  table.tbl th{ background:var(--navy); color:#fff; text-align:left; padding:5.5pt 7pt; font-weight:600;
+    font-size:7.6pt; letter-spacing:.03em; border:1px solid var(--navy); }
+  table.tbl td{ padding:5pt 7pt; border:1px solid var(--line); vertical-align:top; }
+  table.tbl tr:nth-child(even) td{ background:var(--soft); }
+  table.tbl td b{ color:var(--navy); }
+  .tbl-sm{ font-size:8pt; }
+  .ctr{ text-align:center; }
+
+  /* ---------- ENDPOINT CARDS ---------- */
+  .ep{ border:1px solid var(--line); border-radius:7px; margin:9pt 0 12pt; overflow:hidden; break-inside:avoid; }
+  .ep-head{ background:var(--soft); border-bottom:1px solid var(--line); padding:7pt 10pt;
+    display:flex; align-items:center; gap:8pt; flex-wrap:wrap; }
+  .verb{ font-size:7.2pt; font-weight:800; letter-spacing:.06em; padding:2pt 7pt; border-radius:4px; color:#fff; }
+  .verb.get{ background:#1a7f4b; } .verb.post{ background:#1d4ed8; }
+  .verb.put{ background:#b45309; } .verb.del{ background:#b91c1c; }
+  .verb.url{ background:#6b7280; }
+  .ep-path{ font-family:"Consolas","Courier New",monospace; font-size:9pt; font-weight:700; color:var(--navy); flex:1; min-width:200pt; }
+  .ep-tag{ font-size:6.6pt; font-weight:800; text-transform:uppercase; letter-spacing:.08em;
+    padding:2pt 7pt; border-radius:20px; }
+  .ep-tag.p1{ background:#e6f4ec; color:#1a7f4b; border:1px solid #b8e0c8; }
+  .ep-tag.p2{ background:#e6edfb; color:#1d4ed8; border:1px solid #c2d2f7; }
+  .ep-tag.p3{ background:#f1eef9; color:#6d28d9; border:1px solid #ddd2f3; }
+  .ep-body{ padding:8pt 10pt; }
+  .ep-body .why{ font-size:8.8pt; color:#3a4555; margin-bottom:6pt; }
+  .ep-body .lbl{ font-size:6.8pt; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted2); margin:7pt 0 3pt; }
+  pre{ background:#0f1c3a; color:#e6ecf7; border-radius:6px; padding:8pt 10pt; margin:3pt 0 4pt;
+    font-family:"Consolas","Courier New",monospace; font-size:7.9pt; line-height:1.5; overflow:hidden;
+    white-space:pre-wrap; word-break:break-word; border-left:3px solid var(--gold); }
+  pre .k{ color:var(--goldl); } pre .s{ color:#9ad7a0; } pre .c{ color:#7f8db0; font-style:italic; }
+
+  /* ---------- CALLOUTS ---------- */
+  .box{ border:1px solid var(--line); border-left:4px solid var(--gold); background:#fffdf8;
+    border-radius:6px; padding:8pt 11pt; margin:8pt 0 11pt; font-size:8.8pt; break-inside:avoid; }
+  .box.navy{ border-left-color:var(--navy); background:var(--soft); }
+  .box .bt{ font-weight:800; color:var(--navy); font-size:8.6pt; letter-spacing:.02em; margin-bottom:3pt; }
+  .box.navy .bt{ color:var(--navy); }
+
+  .decision{ border:1px solid var(--line); border-radius:6px; padding:7pt 10pt; margin:6pt 0; break-inside:avoid; background:#fff; }
+  .decision .did{ display:inline-block; font-weight:800; color:#fff; background:var(--gold); font-size:7pt;
+    letter-spacing:.06em; padding:2pt 7pt; border-radius:4px; margin-right:6pt; }
+  .decision .dq{ font-weight:700; color:var(--navy); }
+
+  .toc{ margin-top:8pt; }
+  .toc .row{ display:flex; align-items:baseline; gap:7pt; padding:4pt 0; border-bottom:1px dotted var(--line); font-size:9.2pt; }
+  .toc .row .n{ color:var(--gold); font-weight:800; width:24pt; }
+  .toc .row .t{ color:var(--navy); font-weight:600; }
+  .toc .row.s2{ padding-left:30pt; font-size:8.6pt; }
+  .toc .row.s2 .t{ font-weight:500; color:#3a4555; }
+
+  .muted{ color:var(--muted); }
+  .small{ font-size:8pt; }
+  .nowrap{ white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<!-- ============================== COVER ============================== -->
+<div class="cover">
+  <div class="cover-band">
+    <div class="l">ADLM<b>·</b>STUDIO</div>
+    <div class="r">Confidential — For the Portal Development Team</div>
+  </div>
+
+  <div class="cover-body">
+    <img class="crest" src="__LOGO_DATA_URI__" alt="NIQS crest">
+    <div class="inst">Nigerian Institute of Quantity Surveyors</div>
+    <div class="inst-sub">Membership Portal Programme</div>
+
+    <div class="rule"></div>
+
+    <div class="doc-kicker">API Integration Requirements</div>
+    <h1 class="doc-title">Membership Portal &mdash; Endpoints Required for Website Integration</h1>
+    <div class="doc-subtitle">
+      The complete list of API routes the Portal team must expose so the NIQS website can integrate
+      member access, directories, payments, jobs and learning into one seamless platform.
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-cell"><div class="k">Prepared by</div><div class="v">ADLM Studio</div></div>
+      <div class="meta-cell"><div class="k">For</div><div class="v">Portal Dev Team</div></div>
+      <div class="meta-cell"><div class="k">Version</div><div class="v">1.0</div></div>
+      <div class="meta-cell"><div class="k">Date</div><div class="v">19 Jun 2026</div></div>
+    </div>
+  </div>
+
+  <div class="cover-foot">
+    <b>Website:</b> ADLM Studio &nbsp;·&nbsp; <b>Portal:</b> partner team &nbsp;·&nbsp;
+    portal.niqsng.org &nbsp;·&nbsp; Companion to the repository <b>Portal Integration Spec</b>
+  </div>
+</div>
+
+<!-- ============================== DOC CONTROL + TOC ============================== -->
+<section>
+  <h1 class="sec"><span class="n">0</span> Document Control &amp; Contents</h1>
+
+  <table class="tbl">
+    <tr><th style="width:22%">Field</th><th>Detail</th></tr>
+    <tr><td><b>Document</b></td><td>NIQS Membership Portal — API Integration Requirements</td></tr>
+    <tr><td><b>Status</b></td><td>Draft v1.0 — issued for review by the Portal development team</td></tr>
+    <tr><td><b>Author / owner</b></td><td>ADLM Studio (NIQS website vendor)</td></tr>
+    <tr><td><b>Audience</b></td><td>Membership Portal development team (partner company) · NIQS Secretariat &amp; IT</td></tr>
+    <tr><td><b>Purpose</b></td><td>Define every API route, payload and rule the Portal must provide so the two systems integrate into one seamless platform for NIQS members.</td></tr>
+    <tr><td><b>Related</b></td><td>Repository docs: <code>PORTAL_INTEGRATION_SPEC.md</code> (low-level contract) and <code>MEMBERSHIP_PORTAL_ACCESS_REQUIREMENTS.md</code> (feature checklist)</td></tr>
+    <tr><td><b>Confidentiality</b></td><td>Confidential — shared between NIQS, ADLM Studio and the Portal team only.</td></tr>
+  </table>
+
+  <div class="box navy">
+    <div class="bt">How to read this document</div>
+    The <b>Portal team builds</b> the endpoints in Section&nbsp;3. The <b>website (ADLM)</b> consumes them
+    server-to-server with a Bearer API key and never exposes the key to the browser. Each endpoint is tagged
+    <span class="ep-tag p1" style="padding:1pt 6pt">P1</span> launch-critical,
+    <span class="ep-tag p2" style="padding:1pt 6pt">P2</span> auth &amp; write-backs, or
+    <span class="ep-tag p3" style="padding:1pt 6pt">P3</span> future. Start with the P1 set in Section&nbsp;9.
+  </div>
+
+  <h2 class="sub"><span class="n"></span>Contents</h2>
+  <div class="toc">
+    <div class="row"><span class="n">1</span><span class="t">Background &amp; Ownership Boundary</span></div>
+    <div class="row"><span class="n">2</span><span class="t">Global API Conventions</span></div>
+    <div class="row"><span class="n">3</span><span class="t">Required Endpoints (the Portal builds)</span></div>
+    <div class="row s2"><span class="n">3.1</span><span class="t">Member login &amp; Single Sign-On (link to your portal)</span></div>
+    <div class="row s2"><span class="n">3.2</span><span class="t">Membership verification</span></div>
+    <div class="row s2"><span class="n">3.3</span><span class="t">Member profile</span></div>
+    <div class="row s2"><span class="n">3.4</span><span class="t">Registered-QS directory search — all / state / YQSF / WAQSN</span></div>
+    <div class="row s2"><span class="n">3.5</span><span class="t">Directory statistics (counters)</span></div>
+    <div class="row s2"><span class="n">3.6</span><span class="t">CPD ledger</span></div>
+    <div class="row s2"><span class="n">3.7</span><span class="t">Examination results (per member)</span></div>
+    <div class="row s2"><span class="n">3.8</span><span class="t">Digital ID card</span></div>
+    <div class="row s2"><span class="n">3.9</span><span class="t">Payments &amp; member purchases</span></div>
+    <div class="row s2"><span class="n">3.10</span><span class="t">Job application support</span></div>
+    <div class="row s2"><span class="n">3.11</span><span class="t">Digital Library — progress tracking (future)</span></div>
+    <div class="row"><span class="n">4</span><span class="t">Endpoint Summary Matrix</span></div>
+    <div class="row"><span class="n">5</span><span class="t">Webhooks the Portal calls on the Website</span></div>
+    <div class="row"><span class="n">6</span><span class="t">Data Field Mapping</span></div>
+    <div class="row"><span class="n">7</span><span class="t">Segment Rules — YQSF &amp; WAQSN</span></div>
+    <div class="row"><span class="n">8</span><span class="t">Security &amp; Operational Requirements</span></div>
+    <div class="row"><span class="n">9</span><span class="t">Open Decisions &amp; Phased Delivery</span></div>
+    <div class="row"><span class="n">10</span><span class="t">What We Need From You — Checklist</span></div>
+  </div>
+</section>
+
+<!-- ============================== 1. BACKGROUND ============================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">1</span> Background &amp; Ownership Boundary</h1>
+  <p class="lead">
+    Two systems make up the NIQS digital platform. The <b>public website</b> (built by ADLM Studio) handles
+    public content, events, flyers and the member-facing pages. The <b>Membership Portal</b>
+    (<code>portal.niqsng.org</code>, built by your team) is the system of record for member identity,
+    the registered-QS register, dues and member records. For NIQS members to experience one seamless platform,
+    the website must read from — and write a little back to — the portal through a shared API.
+  </p>
+
+  <h2 class="sub"><span class="n">1.1</span> Who owns what</h2>
+  <table class="tbl">
+    <tr><th style="width:46%">Domain</th><th style="width:16%">Owner</th><th>Notes</th></tr>
+    <tr><td>Member identity &amp; login credentials</td><td><b>Portal</b></td><td>Website uses SSO; never stores member passwords.</td></tr>
+    <tr><td>Membership record (number, type, status, expiry)</td><td><b>Portal</b></td><td>Website reads via API.</td></tr>
+    <tr><td>Registered-QS directory (individuals)</td><td><b>Portal</b></td><td>Website renders search &amp; segmented views.</td></tr>
+    <tr><td>Dues, payments, invoices</td><td><b>Portal</b></td><td>Website links to checkout / reads standing.</td></tr>
+    <tr><td>CPD ledger, exam results, ID card</td><td><b>Portal</b></td><td>Website displays; posts CPD earned at its events.</td></tr>
+    <tr><td>Public content (news, events, chapters, exco, partners, brand)</td><td><b>Website</b></td><td>—</td></tr>
+    <tr><td>Events, flyer studio, event registration &amp; attendance/CPD capture</td><td><b>Website</b></td><td>Posts earned CPD back to the portal ledger.</td></tr>
+    <tr><td>Job board &amp; job applications</td><td><b>Website</b></td><td>Needs member identity (SSO) + optional CV from portal.</td></tr>
+    <tr><td>QS Firm (company) directory</td><td><b>Website</b></td><td>Today website-managed; could move to portal — see D9.</td></tr>
+  </table>
+
+  <h2 class="sub"><span class="n">1.2</span> Integration channels</h2>
+  <table class="tbl">
+    <tr><th style="width:30%">Channel</th><th style="width:14%">Direction</th><th>Use</th></tr>
+    <tr><td><b>REST API (server-to-server)</b></td><td>Website → Portal</td><td>Verify, profile, directory search, stats, CPD, results, payments. Bearer API key. <b>Phase 1.</b></td></tr>
+    <tr><td><b>SSO / member login</b></td><td>Browser → Portal → Website</td><td>Member signs in once against the portal. <b>Phase 2.</b></td></tr>
+    <tr><td><b>Webhooks</b></td><td>Portal → Website</td><td>Membership / payment status changes (Section&nbsp;5). <b>Phase 3.</b></td></tr>
+  </table>
+</section>
+
+<!-- ============================== 2. CONVENTIONS ============================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">2</span> Global API Conventions</h1>
+  <p>These apply to every endpoint in Section&nbsp;3 so our client needs only configuration, not per-endpoint rewrites.</p>
+
+  <table class="tbl">
+    <tr><th style="width:24%">Item</th><th>Convention</th></tr>
+    <tr><td><b>Base URL</b></td><td><code>https://portal.niqsng.org/api/v1</code> &nbsp;(confirm — see D7). One base per environment: staging + production.</td></tr>
+    <tr><td><b>Auth</b></td><td><code>Authorization: Bearer &lt;PORTAL_API_KEY&gt;</code> — one key per environment, server-to-server only, never sent to the browser.</td></tr>
+    <tr><td><b>Transport</b></td><td>HTTPS only. JSON request &amp; response, UTF-8.</td></tr>
+    <tr><td><b>Pagination</b></td><td>List endpoints accept <code>page</code> (1-based) &amp; <code>pageSize</code>; return <code>total, page, pageSize</code>.</td></tr>
+    <tr><td><b>Idempotency</b></td><td>Write-backs (CPD, library) are idempotent on a <code>reference</code> field — retries must not double-count.</td></tr>
+  </table>
+
+  <h2 class="sub"><span class="n">2.1</span> Error envelope</h2>
+  <p>Every non-2xx response uses one shape so both sides parse failures consistently:</p>
+  <pre>{ <span class="k">"error"</span>: { <span class="k">"code"</span>: <span class="s">"string"</span>, <span class="k">"message"</span>: <span class="s">"human readable"</span> } }</pre>
+  <table class="tbl tbl-sm">
+    <tr><th>200</th><th>400</th><th>401</th><th>403</th><th>404</th><th>409</th><th>422</th><th>429</th></tr>
+    <tr><td>OK</td><td>Bad request</td><td>Bad / missing key</td><td>Not permitted</td><td>Not found</td><td>Duplicate</td><td>Validation</td><td>Rate limit</td></tr>
+  </table>
+
+  <h2 class="sub"><span class="n">2.2</span> Shared vocabularies</h2>
+  <p>Keep these identical on both sides (they already match the website's models):</p>
+  <table class="tbl tbl-sm">
+    <tr><th style="width:20%">Field</th><th>Allowed values</th></tr>
+    <tr><td><b>membershipType</b></td><td><code>probationer</code> · <code>graduate</code> · <code>corporate</code> · <code>fellow</code> · <code>student</code> · <code>technician</code></td></tr>
+    <tr><td><b>status</b></td><td><code>active</code> · <code>expired</code> · <code>suspended</code> · <code>pending</code></td></tr>
+    <tr><td><b>gender</b></td><td><code>male</code> · <code>female</code> &nbsp;(required for the WAQSN view — Section&nbsp;7)</td></tr>
+    <tr><td><b>membershipNumber</b></td><td>Canonical key, e.g. <code>NIQS/12345</code> — confirm exact format (D2).</td></tr>
+  </table>
+</section>
+
+<!-- ============================== 3. ENDPOINTS ============================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">3</span> Required Endpoints <span style="font-size:9pt;color:var(--muted);font-weight:500">— the Portal builds these</span></h1>
+
+  <!-- 3.1 SSO -->
+  <h2 class="sub"><span class="n">3.1</span> Member login &amp; Single Sign-On — link to the portal you built</h2>
+  <p>A member clicks <b>Member Login</b> on the website and authenticates against <b>your</b> portal (single source of
+     truth for credentials). We then mint a short-lived website session. Recommended: redirect + code exchange.</p>
+
+  <div class="ep">
+    <div class="ep-head"><span class="verb url">REDIRECT</span><span class="ep-path">GET /sso/authorize</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body">
+      <div class="why">Browser redirect to your hosted login. On success you redirect back to our callback with a one-time code.</div>
+      <div class="lbl">Query</div>
+      <pre>?client_id=NIQS_WEBSITE &amp;redirect_uri=https://niqs.org.ng/login/portal/callback
+&amp;state=&lt;csrf&gt; &amp;scope=profile</pre>
+    </div>
+  </div>
+
+  <div class="ep">
+    <div class="ep-head"><span class="verb post">POST</span><span class="ep-path">/sso/token</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body">
+      <div class="why">Our server exchanges the one-time code (Bearer API key) for the member + a session handle.</div>
+      <div class="lbl">Body → Response</div>
+      <pre>{ <span class="k">"code"</span>: <span class="s">"&lt;one-time&gt;"</span> }   →   { <span class="k">"member"</span>: { …§3.2 }, <span class="k">"sessionId"</span>: <span class="s">"…"</span>, <span class="k">"expiresIn"</span>: 3600 }</pre>
+      <div class="why small muted">If your portal already speaks OIDC, we can consume standard Authorization Code + PKCE instead — tell us which (D1).</div>
+    </div>
+  </div>
+
+  <div class="ep">
+    <div class="ep-head"><span class="verb post">POST</span><span class="ep-path">/auth/introspect</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body">
+      <div class="why">Validate any portal-issued token the browser presents.</div>
+      <div class="lbl">Body → Response</div>
+      <pre>{ <span class="k">"token"</span>: <span class="s">"…"</span> }   →   { <span class="k">"active"</span>: true, <span class="k">"member"</span>: { …§3.2 } }</pre>
+    </div>
+  </div>
+
+  <!-- 3.2 verify -->
+  <h2 class="sub"><span class="n">3.2</span> Membership verification</h2>
+  <div class="box"><div class="bt">Already wired on our side</div>
+    Our event-registration "I'm a member" path and the <code>/membership</code> verify box already call this through
+    <code>server/utils/portalClient.js</code> — they go live the moment this endpoint exists.</div>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/verify</span><span class="ep-tag p1">P1</span></div>
+    <div class="ep-body">
+      <div class="why">Confirm a membership number (or email) belongs to a real, active member.</div>
+      <div class="lbl">Query</div>
+      <pre>?membershipNumber=NIQS/12345     <span class="c">// or</span>     ?email=jane@example.com</pre>
+      <div class="lbl">200 Response</div>
+      <pre>{
+  <span class="k">"valid"</span>: true,
+  <span class="k">"member"</span>: {
+    <span class="k">"membershipNumber"</span>: <span class="s">"NIQS/12345"</span>, <span class="k">"fullName"</span>: <span class="s">"QS Jane Doe"</span>,
+    <span class="k">"email"</span>: <span class="s">"jane@example.com"</span>, <span class="k">"membershipType"</span>: <span class="s">"corporate"</span>,
+    <span class="k">"status"</span>: <span class="s">"active"</span>, <span class="k">"expiresOn"</span>: <span class="s">"2026-12-31"</span>,
+    <span class="k">"chapter"</span>: <span class="s">"Lagos"</span>, <span class="k">"cpdBalance"</span>: 42
+  }
+}     <span class="c">// { "valid": false } when no active member matches</span></pre>
+    </div>
+  </div>
+
+  <!-- 3.3 profile -->
+  <h2 class="sub"><span class="n">3.3</span> Member profile</h2>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/:membershipNumber</span><span class="ep-tag p1">P1</span></div>
+    <div class="ep-body">
+      <div class="why">Fuller authorised record — powers the member's profile screen in the portal area of the website.</div>
+      <div class="lbl">200 Response</div>
+      <pre>{ <span class="k">"member"</span>: { …§3.2 fields, plus
+   <span class="k">"phone"</span>: <span class="s">"080…"</span>, <span class="k">"address"</span>: <span class="s">"…"</span>, <span class="k">"photoUrl"</span>: <span class="s">"https://…"</span>,
+   <span class="k">"firmName"</span>: <span class="s">"Greenfield QS Ltd"</span>, <span class="k">"gender"</span>: <span class="s">"female"</span>,
+   <span class="k">"dateOfBirth"</span>: <span class="s">"1990-04-12"</span>, <span class="k">"yearOfRegistration"</span>: 2016 } }</pre>
+    </div>
+  </div>
+
+  <!-- 3.4 directory -->
+  <h2 class="sub"><span class="n">3.4</span> Registered-QS directory search <span style="font-weight:500;font-size:9pt;color:var(--muted)">— powers four views from one endpoint</span></h2>
+  <div class="box navy"><div class="bt">This single endpoint delivers four of NIQS's requested lists</div>
+    <b>All registered QS</b>, <b>QS in each state chapter</b>, <b>YQSF members</b> and <b>WAQSN (female) members</b>
+    are the <b>same search with different filters</b>. The portal owns the individual register; the website renders the views.
+    (The website's existing <code>/search-qs-firms</code> covers <em>companies</em> only — the individual register is new and yours.)</div>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/search</span><span class="ep-tag p1">P1</span></div>
+    <div class="ep-body">
+      <div class="why">Search / list the register with filters. Return only publicly displayable fields (no email/phone in lists).</div>
+      <div class="lbl">Query parameters</div>
+      <pre>?q=             <span class="c">// name or membership number (free text)</span>
+&amp;state=Lagos      <span class="c">// → "QS in this state chapter"</span>
+&amp;chapter=lagos    <span class="c">// chapter slug or id (see D3)</span>
+&amp;type=corporate   <span class="c">// membershipType</span>
+&amp;status=active    <span class="c">// default active</span>
+&amp;gender=female    <span class="c">// → WAQSN view</span>
+&amp;forum=yqsf|waqsn <span class="c">// portal applies the segment rule server-side (§7)</span>
+&amp;sort=name|recent &amp;page=1 &amp;pageSize=24</pre>
+      <div class="lbl">200 Response</div>
+      <pre>{
+  <span class="k">"results"</span>: [
+    { <span class="k">"membershipNumber"</span>: <span class="s">"NIQS/12345"</span>, <span class="k">"fullName"</span>: <span class="s">"QS Jane Doe"</span>,
+      <span class="k">"membershipType"</span>: <span class="s">"corporate"</span>, <span class="k">"status"</span>: <span class="s">"active"</span>,
+      <span class="k">"state"</span>: <span class="s">"Lagos"</span>, <span class="k">"chapter"</span>: <span class="s">"Lagos"</span>, <span class="k">"gender"</span>: <span class="s">"female"</span>,
+      <span class="k">"isYqsf"</span>: false, <span class="k">"firmName"</span>: <span class="s">"Greenfield QS Ltd"</span>, <span class="k">"photoUrl"</span>: null }
+  ],
+  <span class="k">"total"</span>: 134, <span class="k">"page"</span>: 1, <span class="k">"pageSize"</span>: 24
+}</pre>
+      <table class="tbl tbl-sm" style="margin-top:7pt">
+        <tr><th>NIQS list requested</th><th>Call</th></tr>
+        <tr><td>All registered QS (national register)</td><td><code>/members/search</code> (no segment filter)</td></tr>
+        <tr><td>Registered QS in each state chapter</td><td><code>/members/search?chapter=&lt;slug&gt;</code> &nbsp;or&nbsp; <code>?state=&lt;state&gt;</code></td></tr>
+        <tr><td>YQSF members (Young QS Forum)</td><td><code>/members/search?forum=yqsf</code></td></tr>
+        <tr><td>Female members for WAQSN</td><td><code>/members/search?forum=waqsn</code> &nbsp;or&nbsp; <code>?gender=female</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3.5 stats -->
+  <h2 class="sub"><span class="n">3.5</span> Directory statistics (counters)</h2>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/stats</span><span class="ep-tag p1">P1</span></div>
+    <div class="ep-body">
+      <div class="why">Powers every counter: YQSF "Young Members", per-chapter totals, WAQSN total, homepage figures. Cacheable (e.g. hourly).</div>
+      <div class="lbl">200 Response</div>
+      <pre>{
+  <span class="k">"total"</span>: 10240, <span class="k">"active"</span>: 9120,
+  <span class="k">"byType"</span>:    { <span class="k">"corporate"</span>: 5400, <span class="k">"graduate"</span>: 2600, <span class="k">"fellow"</span>: 720, … },
+  <span class="k">"byState"</span>:   { <span class="k">"Lagos"</span>: 1820, <span class="k">"FCT"</span>: 940, <span class="k">"Rivers"</span>: 510 },
+  <span class="k">"byChapter"</span>: { <span class="k">"lagos"</span>: 1820, <span class="k">"abuja"</span>: 940 },
+  <span class="k">"female"</span>: 2310, <span class="k">"male"</span>: 7930,
+  <span class="k">"yqsf"</span>: 2400, <span class="k">"waqsn"</span>: 2310, <span class="k">"updatedAt"</span>: <span class="s">"2026-06-19T00:00:00Z"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- 3.6 CPD -->
+  <h2 class="sub"><span class="n">3.6</span> CPD ledger</h2>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/:membershipNumber/cpd</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body">
+      <div class="why">Read the member's lifetime CPD for the portal dashboard tile.</div>
+      <div class="lbl">200 Response</div>
+      <pre>{ <span class="k">"balance"</span>: 47, <span class="k">"entries"</span>: [ { <span class="k">"title"</span>: <span class="s">"Digital Cost Management"</span>, <span class="k">"points"</span>: 5,
+   <span class="k">"earnedOn"</span>: <span class="s">"2026-08-14"</span>, <span class="k">"source"</span>: <span class="s">"niqs-website"</span> } ] }</pre>
+    </div>
+  </div>
+  <div class="ep">
+    <div class="ep-head"><span class="verb post">POST</span><span class="ep-path">/members/:membershipNumber/cpd</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body">
+      <div class="why">The website <b>posts</b> CPD a member earns by attending a website event. Idempotent on <code>reference</code>.</div>
+      <div class="lbl">Body → Response</div>
+      <pre>{ <span class="k">"source"</span>: <span class="s">"niqs-website"</span>, <span class="k">"eventId"</span>: <span class="s">"665f…"</span>, <span class="k">"eventTitle"</span>: <span class="s">"…"</span>,
+  <span class="k">"points"</span>: 5, <span class="k">"earnedOn"</span>: <span class="s">"2026-08-14"</span>, <span class="k">"reference"</span>: <span class="s">"&lt;our registration id&gt;"</span> }
+  →  { <span class="k">"ok"</span>: true, <span class="k">"cpdId"</span>: <span class="s">"…"</span>, <span class="k">"newBalance"</span>: 47 }   <span class="c">// 409 on duplicate = success</span></pre>
+    </div>
+  </div>
+
+  <!-- 3.7 results -->
+  <h2 class="sub"><span class="n">3.7</span> Examination results (per member)</h2>
+  <div class="box small">Note: the website's <code>ExamResult</code> data is only <em>public sitting announcements</em> (e.g. "TPC — March 2024, results published June 2024"). <b>Per-member results are yours.</b></div>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/:membershipNumber/results</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body">
+      <div class="lbl">200 Response</div>
+      <pre>{ <span class="k">"results"</span>: [ { <span class="k">"examType"</span>: <span class="s">"TPC"</span>, <span class="k">"sitting"</span>: <span class="s">"March 2024"</span>,
+   <span class="k">"status"</span>: <span class="s">"passed"</span>, <span class="k">"grade"</span>: <span class="s">"—"</span>, <span class="k">"resultUrl"</span>: <span class="s">"https://…"</span> } ] }</pre>
+    </div>
+  </div>
+
+  <!-- 3.8 id card -->
+  <h2 class="sub"><span class="n">3.8</span> Digital ID card</h2>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/:membershipNumber/id-card</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body">
+      <div class="why">Return a ready card (PDF/image URL) or the fields for the website to render. Confirm which (D8).</div>
+      <div class="lbl">200 Response</div>
+      <pre>{ <span class="k">"cardUrl"</span>: <span class="s">"https://portal.niqsng.org/cards/NIQS-12345.pdf"</span>,
+  <span class="k">"validThru"</span>: <span class="s">"2026-12-31"</span> }</pre>
+    </div>
+  </div>
+
+  <!-- 3.9 payments -->
+  <h2 class="sub"><span class="n">3.9</span> Payments &amp; member purchases <span style="font-weight:500;font-size:9pt;color:var(--muted)">— dues · exams · events · store</span></h2>
+  <p>The website's <code>/payment</code> and <code>/membership</code> pages are static placeholders today. The portal owns money.</p>
+
+  <h3 class="sub3">Phase 1 — hosted checkout deep link (fastest)</h3>
+  <div class="ep">
+    <div class="ep-head"><span class="verb url">LINK</span><span class="ep-path">/pay?item&amp;membershipNumber&amp;ref</span><span class="ep-tag p1">P1</span></div>
+    <div class="ep-body">
+      <div class="why">Our "Pay / Renew" buttons deep-link to your hosted checkout, prefilled. After payment, redirect back to us.</div>
+      <pre>https://portal.niqsng.org/pay?item=dues&amp;membershipNumber=NIQS/12345&amp;ref=&lt;our-ref&gt;
+   <span class="c">// on success → redirect to  https://niqs.org.ng/payment/success?ref=&lt;our-ref&gt;</span></pre>
+      <div class="why small muted">Current standing (paid / expired) is then read from <code>/members/verify</code> (<code>status</code>, <code>expiresOn</code>).</div>
+    </div>
+  </div>
+
+  <h3 class="sub3">Phase 2 — payment API (optional, if NIQS wants payment inside the website)</h3>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/:membershipNumber/invoices</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body"><div class="lbl">200 Response</div>
+      <pre>[ { <span class="k">"id"</span>: <span class="s">"inv_1"</span>, <span class="k">"item"</span>: <span class="s">"Annual dues 2026"</span>, <span class="k">"amount"</span>: 50000,
+    <span class="k">"currency"</span>: <span class="s">"NGN"</span>, <span class="k">"dueOn"</span>: <span class="s">"2026-01-31"</span>, <span class="k">"status"</span>: <span class="s">"unpaid"</span> } ]</pre></div>
+  </div>
+  <div class="ep">
+    <div class="ep-head"><span class="verb post">POST</span><span class="ep-path">/payments/checkout</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body"><div class="lbl">Body → Response</div>
+      <pre>{ <span class="k">"item"</span>: <span class="s">"dues"</span>, <span class="k">"membershipNumber"</span>: <span class="s">"NIQS/12345"</span>, <span class="k">"ref"</span>: <span class="s">"&lt;our-ref&gt;"</span> }
+   →  { <span class="k">"checkoutUrl"</span>: <span class="s">"https://portal.niqsng.org/checkout/…"</span> }</pre>
+      <div class="why small muted">Plus a <code>payment.succeeded</code> webhook to the website (Section&nbsp;5). Catalog/price ownership — see D5.</div>
+    </div>
+  </div>
+
+  <!-- 3.10 jobs -->
+  <h2 class="sub"><span class="n">3.10</span> Job application support</h2>
+  <p>The <b>job board is website-owned</b> (search &amp; listings already work). Only the <b>apply</b> step needs you:
+     member identity via SSO (§3.1) and, optionally, the member's stored CV so they can "apply with my NIQS CV".</p>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/:membershipNumber/documents</span><span class="ep-tag p2">P2</span></div>
+    <div class="ep-body"><div class="why">Optional — only if the portal stores member CVs / documents.</div>
+      <div class="lbl">200 Response</div>
+      <pre>[ { <span class="k">"type"</span>: <span class="s">"cv"</span>, <span class="k">"url"</span>: <span class="s">"https://…/cv.pdf"</span>, <span class="k">"updatedAt"</span>: <span class="s">"2026-05-01"</span> } ]</pre>
+      <div class="why small muted">Applications themselves are stored by the website, keyed by <code>membershipNumber</code> (recommended — D6).</div>
+    </div>
+  </div>
+
+  <!-- 3.11 library -->
+  <h2 class="sub"><span class="n">3.11</span> Digital Library — progress tracking <span style="font-weight:500;font-size:9pt;color:var(--muted)">(future / "coming soon")</span></h2>
+  <p>Forward-looking and non-blocking; captured so the contract is ready when the library is built. Member progress must live with the member record.</p>
+  <div class="ep">
+    <div class="ep-head"><span class="verb get">GET</span><span class="ep-path">/members/:membershipNumber/library/progress</span><span class="ep-tag p3">P3</span></div>
+    <div class="ep-body"><div class="lbl">200 Response</div>
+      <pre>{ <span class="k">"items"</span>: [ { <span class="k">"resourceId"</span>: <span class="s">"r_88"</span>, <span class="k">"title"</span>: <span class="s">"BIM for QS"</span>,
+   <span class="k">"percent"</span>: 100, <span class="k">"completedOn"</span>: <span class="s">"2026-09-01"</span>, <span class="k">"points"</span>: 3 } ] }</pre></div>
+  </div>
+  <div class="ep">
+    <div class="ep-head"><span class="verb post">POST</span><span class="ep-path">/members/:membershipNumber/library/progress</span><span class="ep-tag p3">P3</span></div>
+    <div class="ep-body"><div class="lbl">Body</div>
+      <pre>{ <span class="k">"source"</span>: <span class="s">"niqs-website"</span>, <span class="k">"resourceId"</span>: <span class="s">"r_88"</span>, <span class="k">"title"</span>: <span class="s">"BIM for QS"</span>,
+  <span class="k">"percent"</span>: 100, <span class="k">"points"</span>: 3, <span class="k">"earnedOn"</span>: <span class="s">"2026-09-01"</span>, <span class="k">"reference"</span>: <span class="s">"…"</span> }</pre>
+      <div class="why small muted">If library completion grants CPD, reuse §3.6 instead of a parallel ledger (D10).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 4. MATRIX ============================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">4</span> Endpoint Summary Matrix</h1>
+  <table class="tbl tbl-sm">
+    <tr><th style="width:6%">#</th><th style="width:10%">Method</th><th style="width:40%">Path</th><th>Purpose</th><th class="ctr" style="width:9%">Phase</th></tr>
+    <tr><td>1</td><td>GET</td><td><code>/sso/authorize</code></td><td>Start member login (redirect)</td><td class="ctr">P2</td></tr>
+    <tr><td>2</td><td>POST</td><td><code>/sso/token</code></td><td>Exchange code → member + session</td><td class="ctr">P2</td></tr>
+    <tr><td>3</td><td>POST</td><td><code>/auth/introspect</code></td><td>Validate a portal token</td><td class="ctr">P2</td></tr>
+    <tr><td>4</td><td>GET</td><td><code>/members/verify</code></td><td>Verify membership number / email</td><td class="ctr">P1</td></tr>
+    <tr><td>5</td><td>GET</td><td><code>/members/:no</code></td><td>Full member profile</td><td class="ctr">P1</td></tr>
+    <tr><td>6</td><td>GET</td><td><code>/members/search</code></td><td>Directory — all / state / YQSF / WAQSN</td><td class="ctr">P1</td></tr>
+    <tr><td>7</td><td>GET</td><td><code>/members/stats</code></td><td>Directory counters</td><td class="ctr">P1</td></tr>
+    <tr><td>8</td><td>GET</td><td><code>/members/:no/cpd</code></td><td>Read CPD ledger</td><td class="ctr">P2</td></tr>
+    <tr><td>9</td><td>POST</td><td><code>/members/:no/cpd</code></td><td>Post CPD from website events</td><td class="ctr">P2</td></tr>
+    <tr><td>10</td><td>GET</td><td><code>/members/:no/results</code></td><td>Per-member exam results</td><td class="ctr">P2</td></tr>
+    <tr><td>11</td><td>GET</td><td><code>/members/:no/id-card</code></td><td>Digital ID card</td><td class="ctr">P2</td></tr>
+    <tr><td>12</td><td>LINK</td><td><code>/pay?item&amp;…</code></td><td>Hosted checkout deep link</td><td class="ctr">P1</td></tr>
+    <tr><td>13</td><td>GET</td><td><code>/members/:no/invoices</code></td><td>Member invoices/dues</td><td class="ctr">P2</td></tr>
+    <tr><td>14</td><td>POST</td><td><code>/payments/checkout</code></td><td>Create a checkout session</td><td class="ctr">P2</td></tr>
+    <tr><td>15</td><td>GET</td><td><code>/members/:no/documents</code></td><td>Member CV/documents (jobs)</td><td class="ctr">P2</td></tr>
+    <tr><td>16</td><td>GET</td><td><code>/members/:no/library/progress</code></td><td>Read library progress</td><td class="ctr">P3</td></tr>
+    <tr><td>17</td><td>POST</td><td><code>/members/:no/library/progress</code></td><td>Post library progress</td><td class="ctr">P3</td></tr>
+  </table>
+</section>
+
+<!-- ============================== 5. WEBHOOKS ============================== -->
+<section>
+  <h1 class="sec"><span class="n">5</span> Webhooks the Portal calls on the Website</h1>
+  <p>So the website can invalidate sessions/caches and reflect changes in real time. Sign each request with a shared secret:
+     <code>X-NIQS-Signature: sha256=&lt;hmac(secret, rawBody)&gt;</code>.</p>
+  <table class="tbl">
+    <tr><th style="width:42%">Website endpoint (we build)</th><th>Event payload</th></tr>
+    <tr><td><code>POST /api/portal/webhooks/membership</code></td>
+        <td><code>{ event: "member.updated|member.suspended|member.renewed", membershipNumber, status, occurredAt }</code></td></tr>
+    <tr><td><code>POST /api/portal/webhooks/payment</code></td>
+        <td><code>{ event: "payment.succeeded", membershipNumber, item, amount, ref, occurredAt }</code></td></tr>
+  </table>
+  <div class="box small">For SSO return, the website also exposes <code>GET /login/portal/callback</code> (browser) and
+     <code>POST /api/auth/portal/exchange</code> (server). We will share exact URLs &amp; the webhook secret during integration.</div>
+</section>
+
+<!-- ============================== 6. FIELD MAPPING ============================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">6</span> Data Field Mapping (Website &harr; Portal)</h1>
+  <table class="tbl">
+    <tr><th style="width:38%">Website model</th><th style="width:30%">Portal field</th><th>Notes</th></tr>
+    <tr><td><code>User.membershipId</code> / <code>Registration.membershipNumber</code></td><td><code>membershipNumber</code></td><td>Canonical key (D2).</td></tr>
+    <tr><td><code>membershipType</code></td><td><code>membershipType</code></td><td>Identical enum (§2.2).</td></tr>
+    <tr><td><code>firstName</code> + <code>lastName</code></td><td><code>fullName</code></td><td>We split/join as needed.</td></tr>
+    <tr><td><code>email</code></td><td><code>email</code></td><td>Lowercased.</td></tr>
+    <tr><td><code>Member.chapter</code> (→ <code>Chapter.name/slug/state</code>)</td><td><code>chapter</code> / <code>state</code></td><td>Agree matching key (D3).</td></tr>
+    <tr><td><code>Member.gender</code></td><td><code>gender</code></td><td>Required for WAQSN (§7).</td></tr>
+    <tr><td><code>Member.dateOfBirth</code></td><td><code>dateOfBirth</code> / <code>yearOfRegistration</code></td><td>Needed to compute YQSF (§7).</td></tr>
+    <tr><td>—</td><td><code>status</code>, <code>expiresOn</code>, <code>cpdBalance</code></td><td>Portal-owned; website reads.</td></tr>
+    <tr><td><code>Registration.cpdPoints</code> (per event)</td><td>CPD ledger entry</td><td>Website posts (§3.6).</td></tr>
+  </table>
+</section>
+
+<!-- ============================== 7. SEGMENTS ============================== -->
+<section>
+  <h1 class="sec"><span class="n">7</span> Segment Rules — YQSF &amp; WAQSN</h1>
+  <p>These business rules must be defined by NIQS and computed by the portal (so the <code>forum=</code> filter,
+     the <code>isYqsf</code> flag and the counts are consistent everywhere).</p>
+
+  <div class="box"><div class="bt">YQSF — Young Quantity Surveyors Forum</div>
+    The website states membership is for QS <b>under 40 years of age</b> <b>or</b> <b>within their first ten years of
+    professional practice</b>, and members <b>auto-exit at 40</b>. To compute <code>forum=yqsf</code> / <code>isYqsf</code> /
+    the <code>yqsf</code> count, the portal must store <b>date of birth</b> and/or <b>year of first registration/practice</b>.
+    <i>Confirm the exact rule (D4).</i></div>
+
+  <div class="box"><div class="bt">WAQSN — Women Association of QS Nigeria</div>
+    Is WAQSN <b>all female members</b> (derive from <code>gender</code>), or a <b>separately enrolled</b> subgroup some
+    women opt into? If the latter, expose it as <code>forum=waqsn</code>; otherwise <code>gender=female</code> suffices.
+    Either way the portal must store <b>gender</b>. <i>Confirm (D4).</i></div>
+</section>
+
+<!-- ============================== 8. SECURITY ============================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">8</span> Security &amp; Operational Requirements</h1>
+  <ul>
+    <li><b>API keys</b> live only in the website server environment — never shipped to the browser. All portal calls are server-side proxied.</li>
+    <li><b>HTTPS</b> everywhere; optional <b>IP allowlist</b> for server-to-server traffic.</li>
+    <li><b>Webhooks</b> signed with a shared secret (HMAC-SHA256 over the raw body).</li>
+    <li><b>Token TTLs:</b> SSO session &le; 1&nbsp;hour (refresh via re-exchange); one-time codes &le; 5&nbsp;minutes.</li>
+    <li><b>PII minimisation:</b> directory <em>search</em> returns only public fields; email/phone require an authorised profile call.</li>
+    <li><b>CORS:</b> allowlist the website origins (production + Vercel preview deployments) for any browser-facing endpoints.</li>
+    <li><b>Rate limiting + idempotency:</b> agree <code>429</code> behaviour + retry/backoff; CPD &amp; library posts idempotent on <code>reference</code>.</li>
+    <li><b>Environments:</b> provide <b>staging</b> and <b>production</b> base URLs and a separate API key for each.</li>
+  </ul>
+</section>
+
+<!-- ============================== 9. DECISIONS + PHASES ============================== -->
+<section>
+  <h1 class="sec"><span class="n">9</span> Open Decisions &amp; Phased Delivery</h1>
+
+  <h2 class="sub"><span class="n">9.1</span> Decisions needed from NIQS / the Portal team</h2>
+  <div class="decision"><span class="did">D1</span><span class="dq">SSO style</span> — redirect + code exchange (recommended) or full OIDC? And is the member area website-rendered or a deep link into your portal UI?</div>
+  <div class="decision"><span class="did">D2</span><span class="dq">Membership-number format</span> — confirm canonical form (e.g. <code>NIQS/12345</code>).</div>
+  <div class="decision"><span class="did">D3</span><span class="dq">Chapter matching key</span> — match members to chapters by chapter id/slug or by state string?</div>
+  <div class="decision"><span class="did">D4</span><span class="dq">YQSF &amp; WAQSN rules</span> — confirm the YQSF age/practice rule + which fields you store; confirm WAQSN = all female vs opt-in subgroup (§7).</div>
+  <div class="decision"><span class="did">D5</span><span class="dq">Payment catalog</span> — do prices/SKUs live in the portal (we read them) or stay website-managed item codes?</div>
+  <div class="decision"><span class="did">D6</span><span class="dq">Job applications</span> — stored website-side (recommended) or posted to the portal? Will you expose member CVs?</div>
+  <div class="decision"><span class="did">D7</span><span class="dq">API base URL</span> + how keys are issued per environment (staging + production).</div>
+  <div class="decision"><span class="did">D8</span><span class="dq">ID card</span> — does the portal render the card (return a URL) or return fields for the website to render?</div>
+  <div class="decision"><span class="did">D9</span><span class="dq">QS Firm directory</span> — stays website-managed or moves to the portal?</div>
+  <div class="decision"><span class="did">D10</span><span class="dq">Digital Library</span> — content ownership; do completions grant CPD?</div>
+
+  <h2 class="sub"><span class="n">9.2</span> Minimum to unblock launch (priority order)</h2>
+  <table class="tbl">
+    <tr><th style="width:8%">Order</th><th style="width:40%">Deliver</th><th>Unlocks</th></tr>
+    <tr><td><b>1</b></td><td>Directory <b>search</b> + <b>stats</b> (#6, #7)</td><td>All four registered-QS lists + every counter + the <code>/membership</code> verify box</td></tr>
+    <tr><td><b>2</b></td><td>Member <b>verify</b> (#4)</td><td>Event-registration member path (already wired) + payment standing</td></tr>
+    <tr><td><b>3</b></td><td><b>SSO</b> (#1–3)</td><td>Real member login + gates job apply &amp; the dashboard</td></tr>
+    <tr><td><b>4</b></td><td>Member <b>profile</b> (#5)</td><td>Profile screen in the member area</td></tr>
+    <tr><td><b>5</b></td><td><b>Payments</b> — deep link (#12), then API (#13–14)</td><td>Dues/exam/event purchases + "up to date" status</td></tr>
+    <tr><td><b>6</b></td><td>CPD / results / ID card / library</td><td>Remaining dashboard tiles; library when scheduled</td></tr>
+  </table>
+</section>
+
+<!-- ============================== 10. CHECKLIST ============================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">10</span> What We Need From You — Checklist</h1>
+
+  <h2 class="sub"><span class="n">10.1</span> To begin integration</h2>
+  <ul>
+    <li>API <b>base URLs</b> — staging &amp; production.</li>
+    <li>An <b>API key</b> per environment (server-to-server).</li>
+    <li>Answers to <b>decisions D1–D10</b> (Section&nbsp;9.1) — especially the YQSF/WAQSN rules, which block those views.</li>
+    <li>The <b>P1 endpoints</b> on staging first: <code>/members/search</code>, <code>/members/stats</code>, <code>/members/verify</code>.</li>
+    <li>For SSO (P2): <code>client_id</code>, allowed <code>redirect_uri</code>s (production + Vercel previews), token TTLs.</li>
+    <li>For webhooks (P3): the shared <b>HMAC secret</b>.</li>
+  </ul>
+
+  <h2 class="sub"><span class="n">10.2</span> Our side is ready</h2>
+  <div class="box navy">
+    The website already ships an <b>env-gated client</b> (<code>server/utils/portalClient.js</code>) implementing
+    verify / profile / search / firms / CPD. It safely no-ops until configured, so nothing breaks before you go live.
+    When you're ready we set:
+  </div>
+  <pre>PORTAL_API_URL=https://portal.niqsng.org/api/v1
+PORTAL_API_KEY=********
+PORTAL_SSO_URL=https://portal.niqsng.org/sso/authorize       <span class="c"># Phase 2</span>
+PORTAL_OAUTH_CLIENT_ID=NIQS_WEBSITE                          <span class="c"># Phase 2</span>
+PORTAL_WEBHOOK_SECRET=********                               <span class="c"># Phase 3</span></pre>
+
+  <div class="box" style="margin-top:14pt">
+    <div class="bt">Contact</div>
+    <b>ADLM Studio</b> — NIQS website team. Please direct API questions, the staging base URL and the API key to the
+    ADLM technical contact. We can join a kick-off call to walk through Sections&nbsp;3 and&nbsp;9 together.
+  </div>
+
+  <p class="small muted" style="margin-top:16pt; text-align:center; border-top:1px solid var(--line); padding-top:9pt;">
+    End of document &nbsp;·&nbsp; NIQS Membership Portal — API Integration Requirements v1.0 &nbsp;·&nbsp;
+    Prepared by ADLM Studio &nbsp;·&nbsp; 19 June 2026 &nbsp;·&nbsp; Confidential
+  </p>
+</section>
+
+</body>
+</html>
