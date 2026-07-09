@@ -311,6 +311,12 @@ const Navbar = () => {
               <Link to="/npc" className="ddi">
                 National Policy Committee
               </Link>
+              <Link to="/national-bodies" className="ddi">
+                National Body Chairmen
+              </Link>
+              <Link to="/board-of-trustees" className="ddi">
+                Board of Trustees
+              </Link>
               <Link to="/past-presidents" className="ddi">
                 Past Presidents
               </Link>
@@ -456,6 +462,12 @@ const Navbar = () => {
         </Link>
         <Link to="/council" className="ml-sub" onClick={closeMenu}>
           National Executive Council
+        </Link>
+        <Link to="/national-bodies" className="ml-sub" onClick={closeMenu}>
+          National Body Chairmen
+        </Link>
+        <Link to="/board-of-trustees" className="ml-sub" onClick={closeMenu}>
+          Board of Trustees
         </Link>
         <Link to="/past-presidents" className="ml-sub" onClick={closeMenu}>
           Past Presidents
