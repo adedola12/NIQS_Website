@@ -1,14 +1,18 @@
-// Render the API-requirements HTML to a branded PDF using the installed Chrome.
-// Usage: node render.js
+// Render a branded HTML document to PDF using the installed Chrome.
+// Usage: node render.js [input.html] [output.pdf] ["footer title"]
+// With no args it builds the Portal API requirements PDF (default).
 const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer-core');
 
 const HERE = __dirname;
 const REPO = path.resolve(HERE, '..', '..');
-const HTML = path.join(HERE, 'portal-api-requirements.html');
 const LOGO = path.join(REPO, 'client', 'public', 'NIQS-LOGO-PNG-NAV.png');
-const OUT  = path.join(REPO, 'docs', 'NIQS-Portal-API-Integration-Requirements.pdf');
+
+const argv = process.argv.slice(2);
+const HTML = argv[0] ? path.resolve(argv[0]) : path.join(HERE, 'portal-api-requirements.html');
+const OUT  = argv[1] ? path.resolve(argv[1]) : path.join(REPO, 'docs', 'NIQS-Portal-API-Integration-Requirements.pdf');
+const FOOTER_TITLE = argv[2] || 'Membership Portal — API Integration Requirements';
 
 const CHROME_CANDIDATES = [
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -35,7 +39,7 @@ if (!chrome) { console.error('No Chrome/Edge found'); process.exit(1); }
     <div style="width:100%; font-family:'Segoe UI',Arial,sans-serif; font-size:7pt; color:#9aa3b2;
                 padding:0 14mm; display:flex; justify-content:space-between; align-items:center;">
       <span style="color:#0B1F4B; font-weight:700;">NIQS &times; ADLM</span>
-      <span>Membership Portal — API Integration Requirements</span>
+      <span>${FOOTER_TITLE}</span>
       <span>Confidential &nbsp;·&nbsp; Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
     </div>`;
 

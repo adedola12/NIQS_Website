@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NIQS Website — Go-Live &amp; Onboarding Plan</title>
+<style>
+  :root{
+    --navy:#0B1F4B; --navy2:#132660; --navy3:#1a3280;
+    --gold:#C9974A; --gold2:#D9AB60; --goldl:#EBC87A; --goldxl:#f6efe0;
+    --ink:#1c2532; --muted:#5b6573; --muted2:#8a93a3;
+    --line:#e3e7ee; --line2:#eef1f6; --soft:#f6f8fb;
+    --green:#1a7f4b; --greenbg:#e6f4ec; --greenbd:#b8e0c8;
+    --amber:#b45309; --amberbg:#fdf3e3; --amberbd:#f0d8a8;
+    --red:#b91c1c; --redbg:#fbe9e9; --redbd:#f3c9c9;
+  }
+  *{ box-sizing:border-box; }
+  html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); font-size:9.4pt; line-height:1.6; margin:0; background:#fff;
+  }
+  .cover{ background:#fff; }
+  h1,h2,h3,h4{ font-weight:700; color:var(--navy); margin:0; line-height:1.25; }
+  p{ margin:0 0 7pt; }
+  em{ font-style:normal; color:var(--gold); font-weight:700; }
+  code{ font-family:"Consolas","Courier New",monospace; font-size:8.6pt; background:var(--soft);
+        border:1px solid var(--line); border-radius:3px; padding:0.5pt 3pt; color:#1f3a6b; }
+
+  /* COVER */
+  .cover{ height:247mm; display:flex; flex-direction:column; break-after:page; }
+  .cover-band{ background:var(--navy); color:#fff; padding:9pt 14pt; display:flex;
+    justify-content:space-between; align-items:center; border-bottom:3px solid var(--gold); }
+  .cover-band .l{ font-weight:800; letter-spacing:.16em; font-size:9pt; }
+  .cover-band .l b{ color:var(--gold); }
+  .cover-band .r{ font-size:6.6pt; letter-spacing:.14em; color:var(--goldl); font-weight:700; text-transform:uppercase; }
+  .cover-body{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:0 24pt; justify-content:center; }
+  .crest{ width:128px; height:auto; margin-bottom:14pt; }
+  .inst{ font-size:11pt; font-weight:700; color:var(--navy); letter-spacing:.04em; }
+  .inst-sub{ font-size:7.6pt; color:var(--muted); letter-spacing:.22em; text-transform:uppercase; margin-top:2pt; }
+  .rule{ width:64px; height:3px; background:var(--gold); border-radius:2px; margin:20pt auto 18pt; }
+  .doc-kicker{ font-size:8pt; font-weight:800; letter-spacing:.26em; text-transform:uppercase; color:var(--gold); margin-bottom:9pt; }
+  .doc-title{ font-size:26pt; line-height:1.12; color:var(--navy); letter-spacing:-.01em; max-width:430pt; }
+  .doc-subtitle{ font-size:11pt; color:var(--muted); font-weight:500; margin-top:11pt; max-width:390pt; line-height:1.5; }
+  .meta-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; width:100%; max-width:470pt;
+    margin-top:30pt; border:1px solid var(--line); border-radius:7px; overflow:hidden; }
+  .meta-cell{ padding:9pt 11pt; border-right:1px solid var(--line); text-align:left; }
+  .meta-cell:last-child{ border-right:none; }
+  .meta-cell .k{ font-size:6.4pt; letter-spacing:.14em; text-transform:uppercase; color:var(--muted2); font-weight:700; }
+  .meta-cell .v{ font-size:9pt; font-weight:700; color:var(--navy); margin-top:3pt; }
+  .cover-foot{ background:var(--soft); border-top:1px solid var(--line); padding:8pt 14pt; font-size:7.2pt; color:var(--muted); text-align:center; }
+  .cover-foot b{ color:var(--navy); }
+
+  /* SECTIONS */
+  section{ padding:0 2pt; }
+  .pb{ break-before:page; }
+  h1.sec{ font-size:15pt; padding-bottom:6pt; margin-bottom:11pt; border-bottom:2px solid var(--gold);
+    display:flex; align-items:baseline; gap:9pt; }
+  h1.sec .n{ color:var(--gold); font-size:13pt; }
+  h2.sub{ font-size:11pt; margin:14pt 0 6pt; color:var(--navy2); }
+  h2.sub .n{ color:var(--gold); margin-right:5pt; }
+  h3.sub3{ font-size:9.6pt; margin:10pt 0 4pt; color:var(--navy3); }
+  .lead{ font-size:9.6pt; color:#3a4555; }
+  ul,ol{ margin:0 0 8pt; padding-left:16pt; }
+  li{ margin-bottom:3.5pt; }
+
+  /* TABLES */
+  table.tbl{ width:100%; border-collapse:collapse; margin:6pt 0 11pt; font-size:8.5pt; }
+  table.tbl th{ background:var(--navy); color:#fff; text-align:left; padding:5.5pt 7pt; font-weight:600;
+    font-size:7.6pt; letter-spacing:.03em; border:1px solid var(--navy); }
+  table.tbl td{ padding:5pt 7pt; border:1px solid var(--line); vertical-align:top; }
+  table.tbl tr:nth-child(even) td{ background:var(--soft); }
+  table.tbl td b{ color:var(--navy); }
+  .tbl-sm{ font-size:8pt; }
+  .ctr{ text-align:center; }
+  pre{ background:#0f1c3a; color:#e6ecf7; border-radius:6px; padding:8pt 10pt; margin:3pt 0 8pt;
+    font-family:"Consolas","Courier New",monospace; font-size:7.9pt; line-height:1.5;
+    white-space:pre-wrap; word-break:break-word; border-left:3px solid var(--gold); }
+  pre .k{ color:var(--goldl); } pre .c{ color:#7f8db0; font-style:italic; }
+
+  /* RAG STATUS PILLS */
+  .rag{ display:inline-block; font-size:6.8pt; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+    padding:2pt 7pt; border-radius:20px; white-space:nowrap; }
+  .rag.g{ background:var(--greenbg); color:var(--green); border:1px solid var(--greenbd); }
+  .rag.a{ background:var(--amberbg); color:var(--amber); border:1px solid var(--amberbd); }
+  .rag.r{ background:var(--redbg); color:var(--red); border:1px solid var(--redbd); }
+  .own{ display:inline-block; font-size:6.6pt; font-weight:700; padding:1.5pt 6pt; border-radius:4px; white-space:nowrap; }
+  .own.niqs{ background:#eef2fb; color:var(--navy3); border:1px solid #cdd9f3; }
+  .own.adlm{ background:var(--goldxl); color:var(--amber); border:1px solid var(--amberbd); }
+  .own.portal{ background:#f1eef9; color:#6d28d9; border:1px solid #ddd2f3; }
+
+  /* CALLOUTS */
+  .box{ border:1px solid var(--line); border-left:4px solid var(--gold); background:#fffdf8;
+    border-radius:6px; padding:8pt 11pt; margin:8pt 0 11pt; font-size:8.8pt; break-inside:avoid; }
+  .box.navy{ border-left-color:var(--navy); background:var(--soft); }
+  .box.warn{ border-left-color:var(--red); background:var(--redbg); }
+  .box .bt{ font-weight:800; color:var(--navy); font-size:8.6pt; margin-bottom:3pt; }
+  .box.warn .bt{ color:var(--red); }
+
+  /* CHECKLIST */
+  ul.chk{ list-style:none; padding-left:2pt; margin:5pt 0 10pt; }
+  ul.chk li{ position:relative; padding-left:18pt; margin-bottom:4.5pt; }
+  ul.chk li::before{ content:""; position:absolute; left:0; top:1.5pt; width:9pt; height:9pt;
+    border:1.5px solid var(--gold); border-radius:2.5px; background:#fff; }
+
+  .muted{ color:var(--muted); } .small{ font-size:8pt; } .nowrap{ white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<!-- ===================== COVER ===================== -->
+<div class="cover">
+  <div class="cover-band">
+    <div class="l">ADLM<b>·</b>STUDIO</div>
+    <div class="r">For NIQS Secretariat &amp; IT</div>
+  </div>
+  <div class="cover-body">
+    <img class="crest" src="__LOGO_DATA_URI__" alt="NIQS crest">
+    <div class="inst">Nigerian Institute of Quantity Surveyors</div>
+    <div class="inst-sub">Official Website</div>
+    <div class="rule"></div>
+    <div class="doc-kicker">Go-Live &amp; Onboarding Plan</div>
+    <h1 class="doc-title">Taking the NIQS Website from Staging to Public Launch</h1>
+    <div class="doc-subtitle">
+      Everything required to replace placeholder content, upgrade hosting for speed, activate dormant
+      services, harden security and onboard the Secretariat — organised as a launch checklist.
+    </div>
+    <div class="meta-grid">
+      <div class="meta-cell"><div class="k">Prepared by</div><div class="v">ADLM Studio</div></div>
+      <div class="meta-cell"><div class="k">For</div><div class="v">NIQS Secretariat</div></div>
+      <div class="meta-cell"><div class="k">Version</div><div class="v">1.0</div></div>
+      <div class="meta-cell"><div class="k">Date</div><div class="v">20 Jun 2026</div></div>
+    </div>
+  </div>
+  <div class="cover-foot">
+    <b>Current staging:</b> niqs-website.vercel.app &nbsp;·&nbsp; <b>Client:</b> Vercel &nbsp;·&nbsp;
+    <b>API:</b> Render &nbsp;·&nbsp; <b>Database:</b> MongoDB Atlas
+  </div>
+</div>
+
+<!-- ===================== 0. CONTROL + TOC ===================== -->
+<section>
+  <h1 class="sec"><span class="n">0</span> Document Control &amp; Contents</h1>
+  <table class="tbl">
+    <tr><th style="width:22%">Field</th><th>Detail</th></tr>
+    <tr><td><b>Document</b></td><td>NIQS Website — Go-Live &amp; Onboarding Plan</td></tr>
+    <tr><td><b>Status</b></td><td>Draft v1.0 — issued to the NIQS Secretariat for action</td></tr>
+    <tr><td><b>Prepared by</b></td><td>ADLM Studio (website vendor)</td></tr>
+    <tr><td><b>Purpose</b></td><td>List every task, decision and credential required to launch the website properly — and to hand it over to NIQS to run.</td></tr>
+    <tr><td><b>Related</b></td><td>Membership Portal — API Integration Requirements (companion document)</td></tr>
+  </table>
+
+  <div class="box navy">
+    <div class="bt">How to read this document</div>
+    Each area shows a status — <span class="rag g">Ready</span> done · <span class="rag a">In progress</span> partly done /
+    needs a decision · <span class="rag r">Action needed</span> not started — and an owner —
+    <span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span> <span class="own portal">Portal team</span>.
+    Section&nbsp;2 is the at-a-glance dashboard; Section&nbsp;14 is the cut-over runbook; Section&nbsp;15 is the consolidated list of what we need from NIQS.
+  </div>
+
+  <h2 class="sub">Contents</h2>
+  <table class="tbl tbl-sm">
+    <tr><td style="width:6%"><b>1</b></td><td>Where we are today</td><td style="width:6%"><b>9</b></td><td>Security &amp; accounts (hardening)</td></tr>
+    <tr><td><b>2</b></td><td>Readiness snapshot (dashboard)</td><td><b>10</b></td><td>SEO, analytics &amp; legal</td></tr>
+    <tr><td><b>3</b></td><td>Hosting &amp; performance</td><td><b>11</b></td><td>Backups &amp; monitoring</td></tr>
+    <tr><td><b>4</b></td><td>Domain, DNS &amp; SSL</td><td><b>12</b></td><td>Pre-launch QA checklist</td></tr>
+    <tr><td><b>5</b></td><td>Content readiness (placeholders)</td><td><b>13</b></td><td>Onboarding &amp; handover</td></tr>
+    <tr><td><b>6</b></td><td>Email / SMTP activation</td><td><b>14</b></td><td>Go-live runbook &amp; rollback</td></tr>
+    <tr><td><b>7</b></td><td>Payments</td><td><b>15</b></td><td>What we need from NIQS</td></tr>
+    <tr><td><b>8</b></td><td>Membership portal integration</td><td></td><td></td></tr>
+  </table>
+</section>
+
+<!-- ===================== 1. TODAY ===================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">1</span> Where We Are Today</h1>
+  <p class="lead">
+    The NIQS website is <b>built and deployed</b>. The public site, the full admin content-management panel, and the
+    member-portal shell are complete and running on a temporary staging address. What remains is not development —
+    it is <b>launch readiness</b>: real content, production-grade hosting, switching on dormant services, security
+    hardening, and handover to the Secretariat.
+  </p>
+  <table class="tbl">
+    <tr><th style="width:26%">Layer</th><th style="width:24%">Where it runs</th><th>Notes</th></tr>
+    <tr><td><b>Web client</b> (what visitors see)</td><td>Vercel — <code>niqs-website.vercel.app</code></td><td>Fast global CDN. Needs the official domain.</td></tr>
+    <tr><td><b>API server</b> (data &amp; admin)</td><td>Render — <b>free plan</b></td><td>Free plan sleeps when idle → slow first load. Upgrade needed (§3).</td></tr>
+    <tr><td><b>Database</b></td><td>MongoDB Atlas</td><td>Confirm tier &amp; backups (§3.3).</td></tr>
+    <tr><td><b>Media / uploads</b></td><td>Cloudinary / Cloudflare R2</td><td>Confirm credentials set in production (§3.4).</td></tr>
+    <tr><td><b>Auto-deploy</b></td><td>Push to <code>main</code></td><td>One push ships both client &amp; server automatically.</td></tr>
+  </table>
+  <div class="box"><div class="bt">In one line</div>
+    The site works — but it is showing <b>placeholder content</b> on <b>free-tier hosting</b>, with email, payments and
+    the member portal <b>switched off</b>. This plan turns all of that on.</div>
+</section>
+
+<!-- ===================== 2. SNAPSHOT ===================== -->
+<section>
+  <h1 class="sec"><span class="n">2</span> Readiness Snapshot</h1>
+  <table class="tbl">
+    <tr><th style="width:22%">Area</th><th style="width:15%">Status</th><th>What's needed</th><th style="width:13%">Owner</th></tr>
+    <tr><td><b>Application build</b></td><td><span class="rag g">Ready</span></td><td>Public site + admin panel + portal shell complete.</td><td><span class="own adlm">ADLM</span></td></tr>
+    <tr><td><b>Content &amp; imagery</b></td><td><span class="rag r">Action needed</span></td><td>Replace placeholder text &amp; ~120 stock images with real NIQS material.</td><td><span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span></td></tr>
+    <tr><td><b>Hosting &amp; speed</b></td><td><span class="rag a">In progress</span></td><td>Upgrade Render off the free plan to remove slow cold-starts.</td><td><span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span></td></tr>
+    <tr><td><b>Media storage</b></td><td><span class="rag a">In progress</span></td><td>Confirm Cloudinary/R2 keys in production so uploads persist.</td><td><span class="own adlm">ADLM</span></td></tr>
+    <tr><td><b>Domain &amp; SSL</b></td><td><span class="rag r">Action needed</span></td><td>Choose official domain; point DNS; auto-SSL.</td><td><span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span></td></tr>
+    <tr><td><b>Email (SMTP)</b></td><td><span class="rag r">Action needed</span></td><td>Provide mailbox credentials — confirmations &amp; resets are dormant.</td><td><span class="own niqs">NIQS</span></td></tr>
+    <tr><td><b>Payments</b></td><td><span class="rag r">Action needed</span></td><td>Choose gateway or route via portal; currently placeholder.</td><td><span class="own niqs">NIQS</span></td></tr>
+    <tr><td><b>Member portal</b></td><td><span class="rag a">In progress</span></td><td>Awaiting portal API (separate document); env-gated &amp; safe meanwhile.</td><td><span class="own portal">Portal team</span></td></tr>
+    <tr><td><b>Security &amp; accounts</b></td><td><span class="rag a">In progress</span></td><td>Remove test seeds, set strong secrets, create real admins.</td><td><span class="own adlm">ADLM</span> <span class="own niqs">NIQS</span></td></tr>
+    <tr><td><b>SEO, analytics, legal</b></td><td><span class="rag a">In progress</span></td><td>Analytics, sitemap, privacy/terms, OG tags on real domain.</td><td><span class="own adlm">ADLM</span> <span class="own niqs">NIQS</span></td></tr>
+    <tr><td><b>Backups &amp; monitoring</b></td><td><span class="rag a">In progress</span></td><td>Database backups + uptime/error monitoring.</td><td><span class="own adlm">ADLM</span></td></tr>
+  </table>
+</section>
+
+<!-- ===================== 3. HOSTING ===================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">3</span> Hosting &amp; Performance</h1>
+
+  <h2 class="sub"><span class="n">3.1</span> API server (Render) — <span class="rag a">upgrade off the free plan</span></h2>
+  <div class="box warn"><div class="bt">This is the main cause of slowness today</div>
+    On Render's <b>free plan</b>, the server <b>goes to sleep after ~15 minutes of inactivity</b>. The next visitor then
+    waits <b>30–60&nbsp;seconds</b> while it wakes up — pages, images and admin actions all stall on that first request.
+    The free plan also has limited memory/CPU and <b>no persistent disk</b>.</div>
+  <p><b>Recommended:</b> upgrade the Render service to a paid <b>always-on</b> plan (Starter tier). This removes cold-starts
+     entirely — the single biggest, cheapest speed win. Also set <code>NODE_ENV=production</code> and choose a region
+     close to Nigeria/your database.</p>
+
+  <h2 class="sub"><span class="n">3.2</span> Web client (Vercel)</h2>
+  <p>Already served from a fast global CDN — no speed concern. Actions: attach the official domain (§4) and confirm the
+     Vercel plan is appropriate for an organisation (the free Hobby tier is for non-commercial use; confirm whether Pro is required).</p>
+
+  <h2 class="sub"><span class="n">3.3</span> Database (MongoDB Atlas)</h2>
+  <ul>
+    <li>Confirm the cluster tier. The free <code>M0</code> tier has limited performance and <b>no automated backups</b> — a small paid tier is recommended for a production institute site.</li>
+    <li>Lock <b>Network Access</b> to Render's egress addresses (or secure it properly) and keep a strong database user/password.</li>
+    <li>Pick a region close to the API server to minimise latency.</li>
+  </ul>
+
+  <h2 class="sub"><span class="n">3.4</span> Media storage — <span class="rag a">confirm cloud keys in production</span></h2>
+  <div class="box"><div class="bt">Why this matters</div>
+    Uploaded images/files (news photos, flyers, journals, brand assets) stream to <b>Cloudinary</b> (&lt;10&nbsp;MB) or
+    <b>Cloudflare R2</b> (≥10&nbsp;MB). If those credentials are <b>not set in production</b>, the system falls back to the
+    server's local disk — which Render <b>wipes on every redeploy</b>, so uploaded media would silently disappear.
+    <b>Action:</b> verify the Cloudinary/R2 keys are present in the Render production environment.</div>
+
+  <h2 class="sub"><span class="n">3.5</span> Production environment variables</h2>
+  <p>Set these on the Render service before launch (values to be supplied by NIQS / ADLM):</p>
+  <pre><span class="c"># Core</span>
+NODE_ENV=production
+MONGO_URI=…                 <span class="c"># Atlas connection string</span>
+JWT_SECRET=…  JWT_REFRESH_SECRET=…   <span class="c"># strong, unique — not the sample values</span>
+CLIENT_URL=https://&lt;official-domain&gt;     <span class="c"># also fixes CORS</span>
+PUBLIC_URL=https://&lt;official-domain&gt;     <span class="c"># used in email links</span>
+
+<span class="c"># Media (so uploads persist + load fast)</span>
+CLOUDINARY_CLOUD_NAME=…  CLOUDINARY_API_KEY=…  CLOUDINARY_API_SECRET=…
+R2_ACCOUNT_ID=…  R2_ACCESS_KEY_ID=…  R2_SECRET_ACCESS_KEY=…  R2_BUCKET_NAME=…  R2_PUBLIC_URL=…
+
+<span class="c"># Email (§6) and Portal (§8) — add when ready</span>
+SMTP_HOST=…  SMTP_PORT=…  SMTP_USER=…  SMTP_PASS=…  SMTP_FROM=…
+PORTAL_API_URL=…  PORTAL_API_KEY=…</pre>
+
+  <h2 class="sub"><span class="n">3.6</span> Indicative monthly cost</h2>
+  <table class="tbl tbl-sm">
+    <tr><th>Service</th><th>For</th><th>Indicative cost*</th></tr>
+    <tr><td>Render — Starter (always-on API)</td><td>Removes cold-starts</td><td>~$7 / month</td></tr>
+    <tr><td>MongoDB Atlas — small paid tier</td><td>Performance + backups</td><td>~$9–25 / month</td></tr>
+    <tr><td>Cloudinary / Cloudflare R2</td><td>Media hosting + CDN</td><td>Free tier likely sufficient initially</td></tr>
+    <tr><td>Vercel</td><td>Web hosting</td><td>Free, or ~$20/mo if Pro required</td></tr>
+    <tr><td>Domain (.org.ng)</td><td>Official address</td><td>~$10–20 / year</td></tr>
+  </table>
+  <p class="small muted">*Indicative only — confirm current vendor pricing. Overall a modest monthly running cost for a national institute website.</p>
+</section>
+
+<!-- ===================== 4. DOMAIN ===================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">4</span> Domain, DNS &amp; SSL</h1>
+  <p>The site currently lives on <code>niqs-website.vercel.app</code>. For launch it needs the official NIQS address.</p>
+  <ul class="chk">
+    <li><b>Decide the official domain</b> — e.g. <code>niqs.org.ng</code> vs <code>niqsng.org</code>. (This also affects email, social-preview links and the portal integration, so confirm one canonical domain.)</li>
+    <li>Provide access to the <b>domain registrar / DNS</b> so records can be pointed to Vercel.</li>
+    <li>Point DNS (A / CNAME) to Vercel — <b>SSL (https) is provisioned automatically</b>.</li>
+    <li>Add the domain to the server's allowed origins (<code>CLIENT_URL</code>) so the site can talk to the API.</li>
+    <li>Update the social-preview tags (<code>og:url</code>, <code>og:image</code>) — currently they point to the vercel.app address.</li>
+    <li>Align the email sending domain (SPF / DKIM) with §6.</li>
+  </ul>
+</section>
+
+<!-- ===================== 5. CONTENT ===================== -->
+<section>
+  <h1 class="sec"><span class="n">5</span> Content Readiness <span style="font-size:9pt;color:var(--muted);font-weight:500">— replacing placeholders</span></h1>
+  <p class="lead">The biggest launch task. The site is fully built but populated with sample text and stock photos so it looks complete. Real NIQS content must replace it.</p>
+
+  <h2 class="sub"><span class="n">5.1</span> Imagery — <span class="rag r">~120 stock photos to replace</span></h2>
+  <p>Around <b>120 placeholder (stock) images</b> across <b>27 pages</b> — page banners and section photos — should be replaced with
+     genuine NIQS photography (events, conferences, leadership, chapters, members at work). Priority pages: Home, About,
+     President, Council/NEC, Chapters, YQSF, WAQSN, Membership, News, Events.</p>
+
+  <h2 class="sub"><span class="n">5.2</span> Sample / demo data shown until real data is added</h2>
+  <table class="tbl tbl-sm">
+    <tr><th style="width:24%">Where</th><th>What's showing now</th><th>Action</th></tr>
+    <tr><td>Jobs board</td><td>6 fabricated listings (Julius Berger, Dangote, etc.) appear when no real jobs exist</td><td>Post real vacancies via admin; demo list disappears automatically</td></tr>
+    <tr><td>YQSF page</td><td>Hard-coded stats ("2,400+ young members", "10+ awards")</td><td>Confirm real figures (set via Site Settings)</td></tr>
+    <tr><td>Homepage figures</td><td>"10,000+ members", "37 state chapters"</td><td>Confirm accuracy</td></tr>
+    <tr><td>WAQSN page</td><td>"Visit WAQSN" link disabled until set</td><td>Provide the WAQSN website URL</td></tr>
+  </table>
+
+  <h2 class="sub"><span class="n">5.3</span> "Coming soon" features visible to the public</h2>
+  <p>These show a "coming soon" state: <b>online payments</b>, the member-portal tiles (<b>results, ID card, CPD records, payment history</b>),
+     and parts of Research / Webinars / Workshop materials. For each, decide: populate now, hide until ready, or keep the "coming soon" label.</p>
+
+  <h2 class="sub"><span class="n">5.4</span> Admin-managed content to populate</h2>
+  <p>All of the following are entered through the admin panel (no developer needed). Each needs real NIQS content before launch:</p>
+  <table class="tbl tbl-sm">
+    <tr><th style="width:50%">Section</th><th>Section</th></tr>
+    <tr><td>President (profile, photo, message)</td><td>News &amp; announcements</td></tr>
+    <tr><td>National Executive Council / Exco</td><td>Events &amp; calendar</td></tr>
+    <tr><td>National Practice Committee (NPC)</td><td>QS Connect journal issues</td></tr>
+    <tr><td>Past Presidents</td><td>Examination results (public sittings)</td></tr>
+    <tr><td>State Chapters (37 — officers, contacts)</td><td>Webinars &amp; workshop materials</td></tr>
+    <tr><td>Partners / sponsors</td><td>Brand materials</td></tr>
+    <tr><td>QS Firms directory</td><td>Contact information</td></tr>
+    <tr><td>About &amp; Reciprocity copy</td><td>Site settings (links, figures)</td></tr>
+  </table>
+</section>
+
+<!-- ===================== 6. EMAIL ===================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">6</span> Email / SMTP Activation <span class="rag r" style="font-size:7pt">Action needed</span></h1>
+  <p>Outgoing email is fully coded but <b>dormant until credentials are provided</b>. Without it: event-registration
+     confirmations don't send, members can't receive their CPD "I attended" links, and admin password-reset links are
+     only written to the server log instead of emailed.</p>
+  <table class="tbl tbl-sm">
+    <tr><th style="width:26%">Item</th><th style="width:24%">Variable</th><th>Example</th></tr>
+    <tr><td>SMTP host</td><td><code>SMTP_HOST</code></td><td><code>smtp.zoho.com</code> / host relay</td></tr>
+    <tr><td>Port</td><td><code>SMTP_PORT</code></td><td><code>587</code> (TLS) or <code>465</code> (SSL)</td></tr>
+    <tr><td>Username</td><td><code>SMTP_USER</code></td><td><code>events@niqs.org.ng</code></td></tr>
+    <tr><td>Password</td><td><code>SMTP_PASS</code></td><td>app-specific password preferred</td></tr>
+    <tr><td>From address</td><td><code>SMTP_FROM</code></td><td><code>NIQS Events &lt;events@niqs.org.ng&gt;</code></td></tr>
+  </table>
+  <div class="box small">Also confirm the domain's <b>SPF / DKIM / DMARC</b> records permit this sender, so mail is not flagged as spam.</div>
+</section>
+
+<!-- ===================== 7. PAYMENTS ===================== -->
+<section>
+  <h1 class="sec"><span class="n">7</span> Payments <span class="rag r" style="font-size:7pt">Decision needed</span></h1>
+  <p>The Payments and Membership pages currently display fee tables with a placeholder "payment coming soon" button. To go live with online payment, NIQS must choose one of:</p>
+  <table class="tbl">
+    <tr><th style="width:32%">Option</th><th>What it needs</th></tr>
+    <tr><td><b>A. Payment gateway on the website</b> (Paystack / Flutterwave — Nigeria)</td><td>A merchant account + API keys. Best if the website collects dues/exam/event fees directly.</td></tr>
+    <tr><td><b>B. Route payments through the membership portal</b></td><td>The portal owns dues; the website links to its checkout (see the companion portal document, §3.9). Best if the portal already handles money.</td></tr>
+  </table>
+  <p class="small muted">Recommendation: if the membership portal will own dues/renewals, use Option&nbsp;B for member payments and reserve Option&nbsp;A only if the website needs to take standalone payments (e.g. public event tickets).</p>
+</section>
+
+<!-- ===================== 8. PORTAL ===================== -->
+<section>
+  <h1 class="sec"><span class="n">8</span> Membership Portal Integration</h1>
+  <p>The member experience — login, the registered-QS directories, dues status, CPD, ID card — depends on the membership
+     portal's API, which the <b>portal team</b> is building. This is fully specified in the companion document
+     <b>"Membership Portal — API Integration Requirements"</b>.</p>
+  <ul>
+    <li>The website's portal client is already built and <b>env-gated</b> — it stays safely inert until the portal is ready, so it does not block a content launch.</li>
+    <li>When the portal team delivers, we simply set the <code>PORTAL_*</code> credentials and the member features come alive.</li>
+    <li><b>A content/marketing launch can go ahead now</b>; the full member portal switches on once the API is available.</li>
+  </ul>
+</section>
+
+<!-- ===================== 9. SECURITY ===================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">9</span> Security &amp; Accounts (Pre-Launch Hardening)</h1>
+  <ul class="chk">
+    <li><b>Remove the test/seed endpoints.</b> A setup endpoint currently lets anyone create a <b>test member account</b> (with credentials visible in the code). This must be removed and the test account deleted before launch. The one-time admin-seed endpoint should also be removed once real admins exist.</li>
+    <li><b>Set strong, unique secrets</b> in production (<code>JWT_SECRET</code>, <code>JWT_REFRESH_SECRET</code>) — not the sample values.</li>
+    <li><b>Set <code>NODE_ENV=production</code></b> so login cookies are issued securely (HTTPS-only).</li>
+    <li><b>Create real admin accounts</b> for Secretariat staff with the correct roles (national, state-chapter, WAQSN/YQSF sub-admins) and hand over credentials securely. Remove any test admins.</li>
+    <li><b>Verify sign-in works on the production domain</b> (the website and API run on different addresses — confirm member/admin login and sessions behave correctly once the official domain is live).</li>
+    <li><b>Decide on the "Built by ADLM" credit badge</b> shown on every page — keep as a credit, or remove for launch.</li>
+    <li><i>Optional hardening:</i> rate-limiting on login and public forms; basic abuse protection on file uploads.</li>
+  </ul>
+</section>
+
+<!-- ===================== 10. SEO/LEGAL ===================== -->
+<section>
+  <h1 class="sec"><span class="n">10</span> SEO, Analytics &amp; Legal</h1>
+  <ul class="chk">
+    <li>Add <b>web analytics</b> (Google Analytics 4 or Plausible) — none is installed yet, so visits aren't measured.</li>
+    <li>Add <b>robots.txt</b> and a <b>sitemap.xml</b>; submit the site to <b>Google Search Console</b> for indexing.</li>
+    <li>Update social-preview tags (<code>og:url</code>, <code>og:image</code>) to the official domain; confirm the favicon.</li>
+    <li>Publish a <b>Privacy Policy</b> and <b>Terms of Use</b> — important given member data, contact/flyer forms and (future) payments; align with Nigeria's <b>NDPR</b> data-protection rules.</li>
+    <li>Add a brief <b>cookie notice</b> if analytics is enabled.</li>
+  </ul>
+</section>
+
+<!-- ===================== 11. BACKUPS ===================== -->
+<section>
+  <h1 class="sec"><span class="n">11</span> Backups &amp; Monitoring</h1>
+  <ul class="chk">
+    <li>Enable <b>automated database backups</b> (a paid Atlas tier includes them) so member and content data is recoverable.</li>
+    <li>Set up <b>uptime monitoring</b> with alerts (e.g. UptimeRobot / Better Stack) so any outage is noticed immediately.</li>
+    <li><i>Optional:</i> error tracking (e.g. Sentry) to catch issues proactively.</li>
+  </ul>
+</section>
+
+<!-- ===================== 12. QA ===================== -->
+<section>
+  <h1 class="sec"><span class="n">12</span> Pre-Launch QA Checklist</h1>
+  <ul class="chk">
+    <li>Test every form end-to-end: contact, event registration, flyer request, member sign-up / login / password reset.</li>
+    <li>Test admin create/edit/delete for each content type.</li>
+    <li>Check the site on <b>mobile</b> and across major browsers.</li>
+    <li>Check for broken links and that all images load from cloud storage (not the temporary local path).</li>
+    <li>Confirm <b>email delivery</b> once SMTP is set (§6), and the <b>payment flow</b> once the gateway is chosen (§7).</li>
+    <li>Run a performance/Lighthouse pass after the hosting upgrade.</li>
+  </ul>
+</section>
+
+<!-- ===================== 13. ONBOARDING ===================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">13</span> Onboarding &amp; Handover to NIQS</h1>
+  <ul class="chk">
+    <li><b>Admin training session</b> — walk the Secretariat through managing content (news, events, leadership, chapters, journals, etc.) via the admin panel.</li>
+    <li><b>Secure credential handover</b> — admin logins, plus access to hosting (Vercel, Render), the database and media accounts as agreed.</li>
+    <li>Provide a short <b>"how to update each section"</b> guide alongside this document and the portal API document.</li>
+    <li>Agree <b>ownership of ongoing content updates</b> and a <b>support / maintenance arrangement</b> (point of contact, response times, update cadence).</li>
+  </ul>
+</section>
+
+<!-- ===================== 14. RUNBOOK ===================== -->
+<section>
+  <h1 class="sec"><span class="n">14</span> Go-Live Runbook &amp; Rollback</h1>
+  <p>Recommended order of cut-over:</p>
+  <table class="tbl tbl-sm">
+    <tr><th style="width:8%">Step</th><th>Action</th></tr>
+    <tr><td><b>1</b></td><td>Approve hosting budget; upgrade Render (always-on) and the Atlas tier.</td></tr>
+    <tr><td><b>2</b></td><td>Set all production environment variables (database, secrets, <code>NODE_ENV</code>, CORS/domain, media, email).</td></tr>
+    <tr><td><b>3</b></td><td>Configure the official domain + DNS + SSL; update CORS and social tags.</td></tr>
+    <tr><td><b>4</b></td><td>Populate real content and images; confirm demo/sample data is replaced.</td></tr>
+    <tr><td><b>5</b></td><td>Harden security: remove seed endpoints, set secrets, create real admin accounts.</td></tr>
+    <tr><td><b>6</b></td><td>Add analytics, sitemap, and legal pages.</td></tr>
+    <tr><td><b>7</b></td><td>Full QA pass (§12).</td></tr>
+    <tr><td><b>8</b></td><td>Announce launch and monitor closely for the first days.</td></tr>
+  </table>
+  <div class="box navy"><div class="bt">Rollback safety</div>
+    Both Vercel and Render keep previous deployments — if anything goes wrong, we can roll back to the last good
+    version almost instantly. Keep DNS TTL low during cut-over for a fast switch.</div>
+</section>
+
+<!-- ===================== 15. WHAT WE NEED ===================== -->
+<section class="pb">
+  <h1 class="sec"><span class="n">15</span> What We Need From NIQS</h1>
+  <p>To move from staging to launch, please provide / decide the following:</p>
+  <table class="tbl">
+    <tr><th style="width:34%">Item</th><th>Detail</th></tr>
+    <tr><td><b>Official domain + DNS access</b></td><td>Confirm the domain and give access to the registrar (§4).</td></tr>
+    <tr><td><b>Real content &amp; photos</b></td><td>Text and high-resolution images for each section, or sign-off to keep selected stock (§5).</td></tr>
+    <tr><td><b>Email credentials</b></td><td>SMTP mailbox (e.g. <code>events@…</code>) + SPF/DKIM confirmation (§6).</td></tr>
+    <tr><td><b>Payments decision</b></td><td>Gateway choice + merchant account/keys, or "route via portal" (§7).</td></tr>
+    <tr><td><b>Hosting budget approval</b></td><td>Render upgrade + Atlas tier + domain — modest monthly cost (§3.6).</td></tr>
+    <tr><td><b>Legal content</b></td><td>Privacy Policy &amp; Terms text, or approval for us to draft (§10).</td></tr>
+    <tr><td><b>Admin users</b></td><td>Names, emails and roles of staff who will manage the site (§9, §13).</td></tr>
+    <tr><td><b>Portal API</b></td><td>From the portal team — per the companion document (§8).</td></tr>
+  </table>
+
+  <div class="box"><div class="bt">In short</div>
+    Development is done. With the items above — chiefly <b>real content</b>, the <b>hosting upgrade</b>, the <b>domain</b>,
+    and <b>email</b> — the NIQS website is ready to launch as a fast, professional, fully owned platform.</div>
+
+  <p class="small muted" style="margin-top:16pt; text-align:center; border-top:1px solid var(--line); padding-top:9pt;">
+    End of document &nbsp;·&nbsp; NIQS Website — Go-Live &amp; Onboarding Plan v1.0 &nbsp;·&nbsp;
+    Prepared by ADLM Studio &nbsp;·&nbsp; 20 June 2026
+  </p>
+</section>
+
+</body>
+</html>
