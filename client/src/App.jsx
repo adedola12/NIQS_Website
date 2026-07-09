@@ -55,6 +55,8 @@ import About from './pages/public/About';
 import President from './pages/public/President';
 import Council from './pages/public/Council';
 import NPC from './pages/public/NPC';
+import NationalBodies from './pages/public/NationalBodies';
+import Trustees from './pages/public/Trustees';
 import PastPresidents from './pages/public/PastPresidents';
 import Chapters from './pages/public/Chapters';
 import ChapterDetail from './pages/public/ChapterDetail';
@@ -185,6 +187,8 @@ export default function App() {
         <Route path="/president" element={<PublicPage element={<President />} />} />
         <Route path="/council" element={<PublicPage element={<Council />} />} />
         <Route path="/npc" element={<PublicPage element={<NPC />} />} />
+        <Route path="/national-bodies" element={<PublicPage element={<NationalBodies />} />} />
+        <Route path="/board-of-trustees" element={<PublicPage element={<Trustees />} />} />
         <Route path="/past-presidents" element={<PublicPage element={<PastPresidents />} />} />
         <Route path="/chapters" element={<PublicPage element={<Chapters />} />} />
         <Route path="/chapters/:slug" element={<PublicPage element={<ChapterDetail />} />} />

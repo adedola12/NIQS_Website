@@ -9,7 +9,7 @@ const excoSchema = new mongoose.Schema({
   bio: { type: String },
   email: { type: String, trim: true },
   phone: { type: String },
-  scope: { type: String, enum: ['national', 'npc', 'chapter'], default: 'national' },
+  scope: { type: String, enum: ['national', 'npc', 'body-heads', 'bot', 'chapter'], default: 'national' },
   chapter: { type: mongoose.Schema.Types.ObjectId, ref: 'Chapter', default: null },
   order: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true }

@@ -141,12 +141,14 @@ export default function ManageExco() {
       key: 'scope',
       label: 'Scope',
       render: (val) => {
-        const map = { national: 'NEC (National)', npc: 'NPC Committee', chapter: 'Chapter' };
+        const map = { national: 'NEC (National)', npc: 'NPC Committee', 'body-heads': 'Body Chairmen', bot: 'Board of Trustees', chapter: 'Chapter' };
+        const bg = { npc: '#fef3c7', 'body-heads': '#d1fae5', bot: '#ffe4e6', chapter: '#ede9fe' };
+        const fg = { npc: '#92400e', 'body-heads': '#065f46', bot: '#9f1239', chapter: '#5b21b6' };
         return (
           <span style={{
             padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700,
-            background: val === 'npc' ? '#fef3c7' : val === 'chapter' ? '#ede9fe' : '#dbeafe',
-            color: val === 'npc' ? '#92400e' : val === 'chapter' ? '#5b21b6' : '#1e40af',
+            background: bg[val] || '#dbeafe',
+            color: fg[val] || '#1e40af',
           }}>
             {map[val] || val}
           </span>
@@ -172,7 +174,7 @@ export default function ManageExco() {
 
   return (
     <div>
-      <AdminHeader title="Manage Exco Members (NEC &amp; NPC)" breadcrumbs={['Exco Members']} />
+      <AdminHeader title="Manage Exco Members (NEC, NPC, Bodies &amp; BOT)" breadcrumbs={['Exco Members']} />
 
       <div style={{ padding: '24px 28px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
@@ -237,6 +239,8 @@ export default function ManageExco() {
                 <select value={form.scope} onChange={(e) => setForm({ ...form, scope: e.target.value })} disabled={isStateAdmin} style={{ ...inputStyle, opacity: isStateAdmin ? 0.6 : 1 }}>
                   <option value="national">NEC — National Executive Council</option>
                   <option value="npc">NPC — National Policy Committee</option>
+                  <option value="body-heads">National Body Chairmen</option>
+                  <option value="bot">Incorporated Board of Trustees</option>
                   <option value="chapter">Chapter Exco</option>
                 </select>
               </FormField>
