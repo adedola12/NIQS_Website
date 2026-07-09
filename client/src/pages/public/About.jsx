@@ -61,12 +61,12 @@ export default function About() {
           <div className="tc2">
             <div className="rl">
               <div className="ey">Our Story</div>
-              <h2 className="sh">55 Years Shaping Nigeria's <em>Built Environment</em></h2>
+              <h2 className="sh">Shaping Nigeria's <em>Built Environment</em> Since 1969</h2>
               <p style={{ fontSize: '.9rem', lineHeight: 1.88, color: 'var(--text2)', marginBottom: '1rem' }}>
-                Founded in 1969 when fewer than 20 qualified quantity surveyors existed across Nigeria, NIQS has grown into a vibrant institution of over 10,000 members, with 4,000+ corporate practitioners working across Nigeria and internationally.
+                The Nigerian Institute of Quantity Surveyors was founded in 1969 by a group of Nigerians who trained, qualified and practiced in the United Kingdom but who, upon returning to Nigeria, sensed the urgent need to develop the profession of Quantity Surveying in Nigeria by establishing a parallel body to the Royal Institution of Chartered Surveyors of the United Kingdom.
               </p>
               <p style={{ fontSize: '.9rem', lineHeight: 1.88, color: 'var(--text2)', marginBottom: '1.5rem' }}>
-                With chapters in all 36 states and the FCT, and reciprocity agreements with leading international QS bodies, NIQS places Nigerian professionals on the global stage.
+                The profession of Quantity Surveying is practiced in Nigeria along the same pattern as in the United Kingdom and other Commonwealth countries. In America, they are known as Cost Engineers, and Quantity Surveying functions are carried out in other countries under a variety of names — the role is universal.
               </p>
               <Link to="/membership" className="btn bp">Join NIQS Today</Link>
             </div>
@@ -90,12 +90,12 @@ export default function About() {
             <div className="val">
               <div className="vali">🎯</div>
               <h4>Our Vision</h4>
-              <p>To be the profession responsible for total cost and procurement management for client objectives in all capital projects — from conception to commissioning, across all sectors of the economy.</p>
+              <p>To be the profession in Nigeria responsible for total cost and procurement management, for the achievement of client's objectives in all types of capital projects and developments, from conception to commissioning and maintenance, in all sectors of the economy, for the attainment of sustainable National development.</p>
             </div>
             <div className="val">
               <div className="vali">🚀</div>
               <h4>Our Mission</h4>
-              <p>Contributing to sustainable national development by promoting world-class cost and procurement management expertise through developing unique and distinctive professional competencies.</p>
+              <p>Contributing to sustainable development of Nigeria by promoting the patronage of our world-class construction cost services and procurement management experts that meet client needs and expectations through the development of unique and distinctive competencies of the profession.</p>
             </div>
             <div className="val">
               <div className="vali">💎</div>
