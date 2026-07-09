@@ -25,7 +25,7 @@ export default function News() {
     if (activeCategory !== 'All') params.append('category', activeCategory);
     API.get(`/news?${params}`)
       .then(res => {
-        const data = res.data?.data || res.data;
+        const data = res.data?.news || res.data?.data || res.data;
         if (Array.isArray(data) && data.length) {
           setNews(data);
           if (res.data?.totalPages) setTotalPages(res.data.totalPages);

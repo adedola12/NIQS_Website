@@ -507,9 +507,13 @@
   .leader-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; margin-top: 2rem; }
   .lcard { background: #fff; border: 1px solid var(--color-bdr); border-radius: 14px; overflow: hidden; transition: .28s; text-align: center; }
   .lcard:hover { transform: translateY(-4px); box-shadow: var(--sh2); border-color: var(--borderg); }
-  .lcard-img { width: 100%; height: 230px; object-fit: cover; object-position: center top; display: block; transition: .35s; }
+  /* 4:4.6 portrait box, anchored 25% from the top — studio portraits carry
+     the face in the upper third, so a fixed landscape crop beheads them. */
+  .lcard-img { width: 100%; aspect-ratio: 4 / 4.6; height: auto; object-fit: cover; object-position: center 25%; display: block; transition: .35s; }
   .lcard:hover .lcard-img { transform: scale(1.04); }
   .lcard-img-wrap { overflow: hidden; }
+  .lcard { overflow: visible; }
+  .lcard .lcard-img-wrap { border-radius: 14px 14px 0 0; }
   .lcard-body { padding: 1.4rem; }
   .lcard-name { font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: var(--color-navy); margin-bottom: .2rem; letter-spacing: -.02em; }
   .lcard-role { font-size: .68rem; font-weight: 700; color: var(--color-gold); letter-spacing: .08em; text-transform: uppercase; }

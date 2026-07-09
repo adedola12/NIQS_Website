@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PageHero from '../../components/common/PageHero';
+import LeaderCard from '../../components/common/LeaderCard';
 import API from '../../api/axios';
 
 const roles = [
@@ -13,10 +14,21 @@ const roles = [
 
 export default function WAQSN() {
   const [waqsnUrl, setWaqsnUrl] = useState('');
+  const [chair, setChair] = useState(null);
 
   useEffect(() => {
     API.get('/site-settings')
       .then(res => { if (res.data?.waqsnUrl) setWaqsnUrl(res.data.waqsnUrl); })
+      .catch(() => {});
+    /* The WAQSN Chairperson sits on the NEC — pull her record from there. */
+    API.get('/exco?scope=national')
+      .then(res => {
+        const data = res.data?.exco || res.data?.data || res.data;
+        if (Array.isArray(data)) {
+          const found = data.find(m => (m.title || '').toUpperCase().includes('WAQSN'));
+          if (found) setChair(found);
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -56,13 +68,19 @@ export default function WAQSN() {
       <section style={{ background: 'var(--color-off)' }}>
         <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '5rem' }}>
           <div className="tc2">
-            {/* Image — left */}
+            {/* Image — left: the WAQSN Chairperson's portrait once loaded */}
             <div>
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&q=80&fit=crop"
-                alt="Women QS professionals"
-                style={{ width: '100%', borderRadius: 16, objectFit: 'cover', maxHeight: 420, border: '1px solid var(--color-bdr)', display: 'block' }}
+                src={chair?.image || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&q=80&fit=crop'}
+                alt={chair ? chair.name : 'Women QS professionals'}
+                style={{ width: '100%', borderRadius: 16, objectFit: 'cover', objectPosition: 'center 20%', maxHeight: 420, border: '1px solid var(--color-bdr)', display: 'block' }}
               />
+              {chair && (
+                <div style={{ marginTop: '.8rem', textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.95rem', color: 'var(--color-navy)' }}>{chair.name}</div>
+                  <div style={{ fontSize: '.68rem', fontWeight: 700, color: 'var(--color-gold)', letterSpacing: '.08em', textTransform: 'uppercase', marginTop: 2 }}>{chair.title}</div>
+                </div>
+              )}
             </div>
 
             {/* Text — right */}
@@ -102,6 +120,25 @@ export default function WAQSN() {
           </div>
         </div>
       </section>
+
+      {/* ── Leadership ── */}
+      {chair && (
+        <section style={{ background: '#fff' }}>
+          <div className="ct" style={{ paddingTop: '4.5rem', paddingBottom: '1rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: 620, margin: '0 auto 2rem' }}>
+              <div className="ey" style={{ justifyContent: 'center' }}>Leadership</div>
+              <h2 className="sh" style={{ textAlign: 'center' }}>Meet the <em>Chairperson</em></h2>
+              <p className="sd" style={{ maxWidth: '100%', textAlign: 'center' }}>
+                WAQSN is led nationally by the Chairperson, who also represents the association
+                on the NIQS National Executive Council.
+              </p>
+            </div>
+            <div style={{ maxWidth: 320, margin: '0 auto' }}>
+              <LeaderCard member={chair} />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── What WAQSN Does ── */}
       <section style={{ background: '#fff' }}>

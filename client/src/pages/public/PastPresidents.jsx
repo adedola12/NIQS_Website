@@ -2,23 +2,25 @@ import { useState, useEffect } from 'react';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
 
-/* ── Placeholder portraits — diverse face-crop images ── */
-const FALLBACK = [
-  { _id: '1',  name: 'Surv. [President Name], FNIQS', term: '2020 – 2024', info: 'Immediate Past President', linkedIn: '', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80&fit=crop&crop=face', order: 0 },
-  { _id: '2',  name: 'Surv. [President Name], FNIQS', term: '2016 – 2020', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80&fit=crop&crop=face', order: 1 },
-  { _id: '3',  name: 'Surv. [President Name], FNIQS', term: '2012 – 2016', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80&fit=crop&crop=face', order: 2 },
-  { _id: '4',  name: 'Surv. [President Name], FNIQS', term: '2008 – 2012', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80&fit=crop&crop=face', order: 3 },
-  { _id: '5',  name: 'Surv. [President Name], FNIQS', term: '2004 – 2008', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80&fit=crop&crop=face', order: 4 },
-  { _id: '6',  name: 'Surv. [President Name], FNIQS', term: '2000 – 2004', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80&fit=crop&crop=face', order: 5 },
-  { _id: '7',  name: 'Surv. [President Name], FNIQS', term: '1996 – 2000', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80&fit=crop&crop=face', order: 6 },
-  { _id: '8',  name: 'Surv. [President Name], FNIQS', term: '1992 – 1996', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1480429370139-e0132c086e2a?w=200&q=80&fit=crop&crop=face', order: 7 },
-  { _id: '9',  name: 'Surv. [President Name], FNIQS', term: '1988 – 1992', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=200&q=80&fit=crop&crop=face', order: 8 },
-  { _id: '10', name: 'Surv. [President Name], FNIQS', term: '1984 – 1988', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80&fit=crop&crop=face', order: 9 },
-  { _id: '11', name: 'Surv. [President Name], FNIQS', term: '1980 – 1984', info: 'Past President',           linkedIn: '', image: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&q=80&fit=crop&crop=face', order: 10 },
-  { _id: '12', name: 'Surv. [President Name], FNIQS', term: '1969 – 1980', info: 'Founding President',       linkedIn: '', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=80&fit=crop&crop=face', order: 11 },
-];
 
-const DEFAULT_PORTRAIT = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80&fit=crop&crop=face';
+/* Initials avatar for presidents whose portrait hasn't been provided yet —
+   never a stock stranger's face. */
+function InitialsAvatar({ name }) {
+  const initials = (name || '')
+    .replace(/^(QS|Surv\.?|Chief|High Chief|Dr\.?|Prof\.?)\s+/gi, '')
+    .split(/\s+/)
+    .filter(w => /^[A-Za-z]/.test(w))
+    .slice(0, 2)
+    .map(w => w[0].toUpperCase())
+    .join('');
+  return (
+    <div style={{
+      width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'linear-gradient(160deg, #0B1F4B 0%, #12306e 100%)',
+      color: 'rgba(255,255,255,.85)', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.3rem',
+    }}>{initials || 'QS'}</div>
+  );
+}
 
 /* LinkedIn SVG icon — shown on hover if URL is set */
 function LinkedInIcon() {
@@ -30,15 +32,17 @@ function LinkedInIcon() {
 }
 
 export default function PastPresidents() {
-  const [presidents, setPresidents] = useState(FALLBACK);
+  const [presidents, setPresidents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     API.get('/past-presidents')
       .then(res => {
-        const data = res.data;
+        const data = res.data?.pastPresidents || res.data?.data || res.data;
         if (Array.isArray(data) && data.length > 0) setPresidents(data);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -59,16 +63,19 @@ export default function PastPresidents() {
             who each contributed uniquely to the growth of the profession.
           </p>
 
+          {loading && presidents.length === 0 && (
+            <div style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--color-txt-3)', fontSize: '.85rem' }}>
+              Loading past presidents…
+            </div>
+          )}
           <div className="pp-grid">
             {presidents.map(p => (
               <div className="ppcard" key={p._id}>
-                {/* Circular portrait */}
+                {/* Circular portrait — initials when no photo is on file */}
                 <div className="ppcard-img-wrap">
-                  <img
-                    src={p.image || DEFAULT_PORTRAIT}
-                    alt={p.name}
-                    onError={e => { e.currentTarget.src = DEFAULT_PORTRAIT; }}
-                  />
+                  {p.image
+                    ? <img src={p.image} alt={p.name} />
+                    : <InitialsAvatar name={p.name} />}
                 </div>
 
                 {/* Name — clickable if linkedIn URL is set */}

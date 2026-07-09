@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
+import LeaderCard from '../../components/common/LeaderCard';
 import API from '../../api/axios';
 
 const ZONE_MAP = {
@@ -15,13 +16,6 @@ const ZONE_MAP = {
   'rivers':'South South','sokoto':'North West','taraba':'North East','yobe':'North East',
   'zamfara':'North West',
 };
-
-const PLACEHOLDER_LEADERS = [
-  { _id: 'l1', name: 'Surv. [Chairman Name], MNIQS', title: 'Chapter Chairman',   state: '', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fit=crop&crop=face' },
-  { _id: 'l2', name: 'Surv. [Vice Chair], MNIQS',   title: 'Vice Chairman',       state: '', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80&fit=crop&crop=face' },
-  { _id: 'l3', name: 'Surv. [Secretary], MNIQS',    title: 'Chapter Secretary',   state: '', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80&fit=crop&crop=face' },
-  { _id: 'l4', name: 'Surv. [Treasurer], MNIQS',    title: 'Chapter Treasurer',   state: '', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80&fit=crop&crop=face' },
-];
 
 export default function ChapterDetail() {
   const { slug } = useParams();
@@ -50,7 +44,7 @@ export default function ChapterDetail() {
             })
             .catch(() => {});
           API.get(`/events?chapter=${data._id}&limit=3`)
-            .then(r => { const d = r.data?.data || r.data; if (Array.isArray(d)) setEvents(d); })
+            .then(r => { const d = r.data?.events || r.data?.data || r.data; if (Array.isArray(d)) setEvents(d); })
             .catch(() => {});
         }
       })
@@ -85,7 +79,6 @@ export default function ChapterDetail() {
     );
   }
 
-  const leaders = exco.length > 0 ? exco : PLACEHOLDER_LEADERS;
   const heroImg = chapter?.image || 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1400&q=80&fit=crop';
 
   return (
@@ -180,25 +173,21 @@ export default function ChapterDetail() {
           <p className="sd" style={{ marginBottom: '2rem' }}>
             The executive committee leading {chapter?.name || `${stateName} Chapter`} in the current administration.
           </p>
-          <div className="leader-grid">
-            {leaders.map(m => (
-              <div className="lcard" key={m._id}>
-                <div className="lcard-img-wrap">
-                  <img
-                    className="lcard-img"
-                    src={m.image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fit=crop&crop=face'}
-                    alt={m.name}
-                    onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fit=crop&crop=face'; }}
-                  />
-                </div>
-                <div className="lcard-body">
-                  <div className="lcard-name">{m.name}</div>
-                  <div className="lcard-role">{m.title}</div>
-                  {m.state && <div className="lcard-state">{m.state}</div>}
-                </div>
-              </div>
-            ))}
-          </div>
+          {exco.length > 0 ? (
+            <div className="leader-grid">
+              {exco.map(m => <LeaderCard key={m._id} member={m} />)}
+            </div>
+          ) : (
+            <div style={{
+              padding: '3rem 2rem', textAlign: 'center', background: '#fff',
+              borderRadius: 14, border: '1px dashed var(--color-bdr)',
+            }}>
+              <p style={{ fontSize: '.85rem', color: 'var(--color-txt-2)', margin: 0 }}>
+                Executive details for this chapter will be published once confirmed by the
+                National Secretariat.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

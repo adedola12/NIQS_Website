@@ -22,7 +22,7 @@ export default function Events() {
   useEffect(() => {
     API.get('/events')
       .then(res => {
-        const data = res.data?.data || res.data;
+        const data = res.data?.events || res.data?.data || res.data;
         if (Array.isArray(data) && data.length) setEvents(data);
       })
       .catch(() => {});

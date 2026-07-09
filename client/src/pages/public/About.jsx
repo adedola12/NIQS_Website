@@ -3,23 +3,6 @@ import { Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
-const fallbackPartners = [
-  {
-    _id: null,
-    tier: 'platinum',
-    name: 'Julius Berger Nigeria Plc',
-    industry: 'Construction & Engineering',
-    description: 'A leading construction and engineering group operating across Nigeria\'s infrastructure, energy, and building sectors.',
-  },
-  {
-    _id: null,
-    tier: 'platinum',
-    name: 'Dangote Construction Ltd',
-    industry: 'Infrastructure Development',
-    description: 'One of Nigeria\'s foremost infrastructure conglomerates with significant investments in roads, bridges, and real estate development.',
-  },
-];
-
 export default function About() {
   const [partners, setPartners]   = useState([]);
   const [loadingP, setLoadingP]   = useState(true);
@@ -34,16 +17,16 @@ export default function About() {
       .finally(() => setLoadingP(false));
   }, []);
 
-  // Show up to 2 featured partners; prefer platinum, then gold; fall back to placeholders
+  // Show up to 2 featured partners; prefer platinum, then gold
   const featured = (() => {
     if (loadingP) return [];
     const sorted = [...partners].sort((a, b) => {
       const order = { platinum: 0, gold: 1, silver: 2, bronze: 3, associate: 4 };
       return (order[a.tier] ?? 5) - (order[b.tier] ?? 5);
     });
-    return sorted.length > 0 ? sorted.slice(0, 2) : fallbackPartners;
+    return sorted.slice(0, 2);
   })();
-  const isPlaceholder = !loadingP && partners.length === 0;
+  const noPartnersYet = !loadingP && partners.length === 0;
 
   return (
     <>
@@ -156,11 +139,6 @@ export default function About() {
               <div className="ey">Strategic Partners</div>
               <h2 className="sh" style={{ marginBottom: 0 }}>Partners in <em>Excellence</em></h2>
             </div>
-            {isPlaceholder && (
-              <span style={{ fontSize: '.75rem', color: 'var(--color-txt-3)', background: 'var(--color-bdr)', padding: '4px 14px', borderRadius: 20, fontWeight: 600 }}>
-                Sample — replaced when admin adds partners
-              </span>
-            )}
           </div>
           <p className="sd" style={{ marginBottom: '2rem' }}>
             NIQS works alongside organisations committed to raising the bar in Nigeria's construction industry.
@@ -168,23 +146,31 @@ export default function About() {
 
           {loadingP ? (
             <div style={{ padding: '2rem 0', color: 'var(--color-txt-3)', fontSize: '.85rem' }}>Loading partners…</div>
+          ) : noPartnersYet ? (
+            <div style={{
+              background: 'linear-gradient(135deg, #0B1F4B 0%, #12306e 100%)',
+              borderRadius: 16, padding: '3rem 2.5rem', textAlign: 'center',
+            }}>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.4rem', color: '#fff', marginBottom: '.6rem', letterSpacing: '-.02em' }}>
+                Become a Foundation Partner of the New NIQS
+              </h3>
+              <p style={{ fontSize: '.88rem', color: 'rgba(255,255,255,.75)', maxWidth: 620, margin: '0 auto 1.5rem', lineHeight: 1.8 }}>
+                We are inviting organisations that share our commitment to excellence in the built
+                environment to partner with the Institute. Reach over 10,000 quantity surveying
+                professionals across all 36 states and the FCT.
+              </p>
+              <div style={{ display: 'flex', gap: '.8rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link to="/partnership" className="btn bp">Explore Partnership Tiers</Link>
+                <Link to="/contact" className="btn bo" style={{ borderColor: 'rgba(255,255,255,.4)', color: '#fff' }}>Contact the Secretariat</Link>
+              </div>
+            </div>
           ) : (
-            featured.map((p, idx) => {
-              const tierLabel = p.tier ? p.tier.charAt(0).toUpperCase() + p.tier.slice(0) + ' Partner' : 'Partner';
+            featured.map(p => {
+              const tierLabel = p.tier ? p.tier.charAt(0).toUpperCase() + p.tier.slice(1) + ' Partner' : 'Partner';
               const badgeLabel = p.tier === 'platinum' ? '💎 Platinum Partner' : p.tier === 'gold' ? '🥇 Gold Partner' : tierLabel;
 
               const cardInner = (
-                <div
-                  className="gpc"
-                  key={p._id || idx}
-                  style={{ opacity: isPlaceholder ? 0.75 : 1, position: 'relative', cursor: p._id ? 'pointer' : 'default' }}
-                >
-                  {isPlaceholder && (
-                    <span style={{ position: 'absolute', top: 10, right: 12, fontSize: '.55rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', background: 'rgba(201,151,74,.15)', color: 'var(--color-gold)', padding: '3px 8px', borderRadius: 4, zIndex: 1, border: '1px solid rgba(201,151,74,.3)' }}>
-                      Sample
-                    </span>
-                  )}
-
+                <div className="gpc" style={{ position: 'relative', cursor: 'pointer' }}>
                   {/* Logo / initial panel */}
                   {p.logo ? (
                     <img className="gpimg" src={p.logo} alt={p.name} style={{ objectFit: 'contain', background: '#fff', padding: '1.5rem' }} />
@@ -203,17 +189,14 @@ export default function About() {
                       <div style={{ fontSize: '.76rem', color: 'var(--color-txt-3)', fontWeight: 600, marginBottom: '.5rem', letterSpacing: '.02em' }}>{p.industry}</div>
                     )}
                     {p.description && <p>{p.description}</p>}
-                    {p._id
-                      ? <span className="gpl">View partner profile →</span>
-                      : <span style={{ fontSize: '.8rem', color: 'var(--color-txt-3)', fontStyle: 'italic' }}>Profile available once admin adds partner details</span>
-                    }
+                    <span className="gpl">View partner profile →</span>
                   </div>
                 </div>
               );
 
-              return p._id
-                ? <Link key={p._id} to={`/partnership/${p._id}`} style={{ textDecoration: 'none', display: 'block' }}>{cardInner}</Link>
-                : <div key={idx}>{cardInner}</div>;
+              return (
+                <Link key={p._id} to={`/partnership/${p._id}`} style={{ textDecoration: 'none', display: 'block' }}>{cardInner}</Link>
+              );
             })
           )}
 

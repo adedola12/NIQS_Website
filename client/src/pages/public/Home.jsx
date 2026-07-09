@@ -67,24 +67,18 @@ function monthYear(d) {
   try { return new Date(d).toLocaleDateString('en-NG', { month: 'short', year: 'numeric' }); } catch { return ''; }
 }
 
-const fallbackPartners = [
-  { _id: null, name: 'Julius Berger Nigeria Plc', industry: 'Construction & Engineering', tier: 'platinum', logo: null },
-  { _id: null, name: 'Dangote Construction Ltd', industry: 'Infrastructure Development', tier: 'platinum', logo: null },
-  { _id: null, name: 'CCECC Nigeria Ltd', industry: 'Civil Engineering & Roads', tier: 'platinum', logo: null },
-];
-
 const principles = [
   {
     icon: '👁️',
     label: 'Our Vision',
-    title: 'A World-Class QS Profession',
-    body: 'To be the foremost professional body driving excellence in quantity surveying and construction cost management across Nigeria and West Africa.',
+    title: 'Total Cost & Procurement Management',
+    body: "To be the profession in Nigeria responsible for total cost and procurement management, for the achievement of client's objectives in all types of capital projects and developments, in all sectors of the economy.",
   },
   {
     icon: '🎯',
     label: 'Our Mission',
     title: 'Advancing the Profession',
-    body: 'To promote, regulate, and advance the practice of quantity surveying; protect the public interest; and develop a globally competitive pool of professionals.',
+    body: 'Contributing to sustainable development of Nigeria by promoting the patronage of our world-class construction cost services and procurement management experts that meet client needs and expectations.',
   },
   {
     icon: '⚖️',
@@ -97,18 +91,34 @@ const principles = [
 export default function Home() {
   const [news, setNews] = useState(fallbackNews);
   const [events, setEvents] = useState(fallbackEvents);
+  const [hasUpcoming, setHasUpcoming] = useState(true);
   const [platinumPartners, setPlatinumPartners] = useState([]);
   const [tickerItems, setTickerItems] = useState(defaultTickerItems);
 
   useEffect(() => {
     API.get('/news?limit=3').then(res => {
-      if (res.data?.data?.length) setNews(res.data.data);
-      else if (res.data?.length) setNews(res.data);
+      const data = res.data?.news || res.data?.data || res.data;
+      if (Array.isArray(data) && data.length) setNews(data);
     }).catch(() => {});
 
+    /* Prefer upcoming events; when none are scheduled, show the most recent
+       ones instead of demo placeholders. The endpoint returns { events, total,
+       page, pages }. */
+    const unwrapEvents = (res) => res.data?.events || res.data?.data || res.data || [];
     API.get('/events?limit=3&upcoming=true').then(res => {
-      const data = res.data?.data || res.data || [];
-      if (data.length) setEvents(data);
+      const data = unwrapEvents(res);
+      if (data.length) {
+        setEvents(data);
+        setHasUpcoming(true);
+      } else {
+        return API.get('/events?limit=3').then(r => {
+          const recent = unwrapEvents(r);
+          if (recent.length) {
+            setEvents(recent);
+            setHasUpcoming(false);
+          }
+        });
+      }
     }).catch(() => {});
 
     API.get('/partners?tier=platinum&limit=3').then(res => {
@@ -122,8 +132,7 @@ export default function Home() {
       API.get('/events?upcoming=true&limit=10').catch(() => ({ data: [] })),
     ]).then(([settingsRes, eventsRes]) => {
       const customItems = Array.isArray(settingsRes.data?.bannerItems) ? settingsRes.data.bannerItems : [];
-      /* The events endpoint can return either an array or { data: [...] } depending on the route shape. */
-      const rawEvts = eventsRes.data?.data ?? eventsRes.data;
+      const rawEvts = eventsRes.data?.events ?? eventsRes.data?.data ?? eventsRes.data;
       const upcomingEvts = Array.isArray(rawEvts) ? rawEvts : [];
 
       // Build event ticker entries for future events
@@ -312,7 +321,9 @@ export default function Home() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div className="ey">Calendar</div>
-              <h2 className="sh" style={{ marginBottom: 0 }}>Upcoming <em>Events</em></h2>
+              <h2 className="sh" style={{ marginBottom: 0 }}>
+                {hasUpcoming ? <>Upcoming <em>Events</em></> : <>Recent <em>Events</em></>}
+              </h2>
             </div>
             <Link to="/events" className="btn bo">Full Calendar &rarr;</Link>
           </div>
@@ -339,53 +350,61 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── PLATINUM PARTNERS ── */}
-      {(() => {
-        const displayPartners = platinumPartners.length > 0 ? platinumPartners : fallbackPartners;
-        const isPlaceholder = platinumPartners.length === 0;
-        return (
-          <section style={{ background: 'var(--color-off)' }}>
-            <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-                <div>
-                  <div className="ey">Our Network</div>
-                  <h2 className="sh" style={{ marginBottom: 0 }}>Platinum <em>Partners</em></h2>
-                </div>
-                <Link to="/partnership" className="btn bo">All Partners &rarr;</Link>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.2rem' }}>
-                {displayPartners.map((p, idx) => {
-                  const card = (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.8rem', padding: '1.5rem', background: '#fff', borderRadius: 14, border: `1px solid ${isPlaceholder ? 'var(--color-bdr)' : 'var(--color-bdr)'}`, boxShadow: '0 1px 4px rgba(0,0,0,.05)', opacity: isPlaceholder ? 0.65 : 1, position: 'relative' }}>
-                      {isPlaceholder && (
-                        <span style={{ position: 'absolute', top: 10, right: 10, fontSize: '.58rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', background: 'var(--color-bdr)', color: 'var(--color-txt-3)', padding: '2px 7px', borderRadius: 4 }}>Sample</span>
-                      )}
-                      <div style={{ height: 56, width: 56, borderRadius: 10, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-bdr)' }}>
-                        {p.logo
-                          ? <img src={p.logo} alt={p.name} style={{ height: 50, maxWidth: '100%', objectFit: 'contain' }} />
-                          : <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.4rem', color: '#d1d5db' }}>{p.name[0]}</span>
-                        }
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.9rem', color: 'var(--color-navy)' }}>{p.name}</div>
-                        {p.industry && <div style={{ fontSize: '.75rem', color: 'var(--color-txt-3)', marginTop: 2 }}>{p.industry}</div>}
-                      </div>
-                    </div>
-                  );
-                  return p._id
-                    ? <Link key={p._id} to={`/partnership/${p._id}`} style={{ textDecoration: 'none' }}>{card}</Link>
-                    : <div key={idx}>{card}</div>;
-                })}
-              </div>
-              {isPlaceholder && (
-                <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '.8rem', color: 'var(--color-txt-3)' }}>
-                  Partner logos appear here once added by the admin. <Link to="/contact" style={{ color: 'var(--color-gold)', fontWeight: 600 }}>Enquire about partnership →</Link>
-                </p>
-              )}
+      {/* ── PARTNERS — real logos once available; a call for partners until then ── */}
+      <section style={{ background: 'var(--color-off)' }}>
+        <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <div className="ey">Our Network</div>
+              <h2 className="sh" style={{ marginBottom: 0 }}>
+                {platinumPartners.length > 0 ? <>Platinum <em>Partners</em></> : <>Partner With <em>NIQS</em></>}
+              </h2>
             </div>
-          </section>
-        );
-      })()}
+            <Link to="/partnership" className="btn bo">
+              {platinumPartners.length > 0 ? 'All Partners →' : 'Partnership Opportunities →'}
+            </Link>
+          </div>
+
+          {platinumPartners.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.2rem' }}>
+              {platinumPartners.map(p => (
+                <Link key={p._id} to={`/partnership/${p._id}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.8rem', padding: '1.5rem', background: '#fff', borderRadius: 14, border: '1px solid var(--color-bdr)', boxShadow: '0 1px 4px rgba(0,0,0,.05)' }}>
+                    <div style={{ height: 56, width: 56, borderRadius: 10, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-bdr)' }}>
+                      {p.logo
+                        ? <img src={p.logo} alt={p.name} style={{ height: 50, maxWidth: '100%', objectFit: 'contain' }} />
+                        : <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.4rem', color: '#d1d5db' }}>{p.name[0]}</span>
+                      }
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.9rem', color: 'var(--color-navy)' }}>{p.name}</div>
+                      {p.industry && <div style={{ fontSize: '.75rem', color: 'var(--color-txt-3)', marginTop: 2 }}>{p.industry}</div>}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div style={{
+              background: 'linear-gradient(135deg, #0B1F4B 0%, #12306e 100%)',
+              borderRadius: 16, padding: '3rem 2.5rem', textAlign: 'center',
+            }}>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.5rem', color: '#fff', marginBottom: '.6rem', letterSpacing: '-.02em' }}>
+                Become a Foundation Partner of the New NIQS
+              </h3>
+              <p style={{ fontSize: '.88rem', color: 'rgba(255,255,255,.75)', maxWidth: 620, margin: '0 auto 1.5rem', lineHeight: 1.8 }}>
+                NIQS is opening its platform to organisations committed to raising the bar in
+                Nigeria's construction industry. Partner with the home of over 10,000 quantity
+                surveying professionals and put your brand before the industry's decision-makers.
+              </p>
+              <div style={{ display: 'flex', gap: '.8rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link to="/partnership" className="btn bp">Explore Partnership Tiers</Link>
+                <Link to="/contact" className="btn bo" style={{ borderColor: 'rgba(255,255,255,.4)', color: '#fff' }}>Contact the Secretariat</Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* ── QUOTE ── */}
       <section style={{ background: '#fff', padding: '4rem 0' }}>
