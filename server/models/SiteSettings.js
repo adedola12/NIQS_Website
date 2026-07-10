@@ -19,6 +19,10 @@ const siteSettingsSchema = new mongoose.Schema({
   /* YQSF stats (admin-editable; shown on YQSF public page) */
   yqsfCpdEvents:  { type: String, trim: true, default: '' }, // e.g. "40"
   yqsfTotalAwards:{ type: String, trim: true, default: '' }, // e.g. "10+"
+  yqsfUnder40Count: { type: String, trim: true, default: '' }, // registered QS under 40
+
+  /* WAQSN stats (admin-editable; shown on WAQSN public page) */
+  waqsnFemaleQSCount: { type: String, trim: true, default: '' }, // registered female QS
 
   /* Homepage banner / ticker items — shown in the scrolling ticker bar */
   bannerItems:    { type: [String], default: [] },

@@ -108,18 +108,24 @@ export default function ChapterDetail() {
                 {chapter?.about || `The ${stateName} State Chapter of the Nigerian Institute of Quantity Surveyors coordinates professional activities, organises CPD events, and supports member welfare within the state.`}
               </p>
 
-              {/* Stats row */}
-              <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                {chapter?.memberCount > 0 && (
-                  <div style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 90 }}>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.04em' }}>{chapter.memberCount}</div>
-                    <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Members</div>
+              {/* Stats row — shown for every chapter; QS/firm counts are admin-editable */}
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                <div style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 110 }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.04em' }}>
+                    {chapter?.memberCount > 0 ? chapter.memberCount.toLocaleString() : '—'}
                   </div>
-                )}
+                  <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Registered QS</div>
+                </div>
+                <div style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 110 }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.04em' }}>
+                    {chapter?.firmCount > 0 ? chapter.firmCount.toLocaleString() : '—'}
+                  </div>
+                  <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>QS Firms</div>
+                </div>
                 {chapter?.zone && (
-                  <div style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 90 }}>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '.9rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.02em' }}>{chapter.zone}</div>
-                    <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Zone</div>
+                  <div style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 110 }}>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '.9rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.02em', paddingTop: '.5rem' }}>{chapter.zone}</div>
+                    <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em', marginTop: '.35rem' }}>Zone</div>
                   </div>
                 )}
               </div>

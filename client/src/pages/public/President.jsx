@@ -4,28 +4,29 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
 
-/* ── Placeholder — mirrors HTML file exactly ── */
-const FALLBACK = {
-  name: 'Arc. Dr. [President Name]',
-  title: 'President, NIQS',
-  tenure: 'Elected 2023 – Present',
-  linkedIn: '',
-  photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fit=crop&crop=face',
-  backgroundImage: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=1400&q=80&fit=crop',
-  paragraph1: 'It is my honour to serve as President of the Nigerian Institute of Quantity Surveyors at this critical juncture. The construction industry is undergoing significant transformation, and NIQS is well-positioned to lead that change.',
-  paragraph2: 'Our focus rests on three pillars: strengthening professional standards, expanding access to quality education and examination, and deepening international partnerships that give our members global relevance.',
-  quote: '"Together, we will build a stronger, more impactful NIQS for the benefit of our members and Nigerian society."',
-};
-
 export default function President() {
-  const [data, setData] = useState(FALLBACK);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     API.get('/president')
       .then(res => { if (res.data?._id) setData(res.data); })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading || !data) {
+    return (
+      <>
+        <PageHero label="Leadership" title="The President" titleHighlight="President"
+          backgroundImage="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1400&q=80&fit=crop" />
+        <div className="ct" style={{ padding: '5rem 0', textAlign: 'center', color: 'var(--text3)', fontSize: '.9rem' }}>
+          {loading ? 'Loading the President’s message…' : 'The President’s profile will be available shortly.'}
+        </div>
+      </>
+    );
+  }
 
   /* Name is a link if LinkedIn URL is set, otherwise plain text */
   const NameEl = data.linkedIn ? (

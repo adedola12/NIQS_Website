@@ -19,6 +19,7 @@ const DEFAULTS = { cpdEvents: '40', totalAwards: '10+' };
 export default function YQSF() {
   const [cpdEvents,    setCpdEvents]    = useState(DEFAULTS.cpdEvents);
   const [totalAwards,  setTotalAwards]  = useState(DEFAULTS.totalAwards);
+  const [under40,      setUnder40]      = useState('');
   const [chair, setChair] = useState(null);
 
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function YQSF() {
       .then(res => {
         if (res.data?.yqsfCpdEvents)   setCpdEvents(res.data.yqsfCpdEvents);
         if (res.data?.yqsfTotalAwards) setTotalAwards(res.data.yqsfTotalAwards);
+        if (res.data?.yqsfUnder40Count) setUnder40(res.data.yqsfUnder40Count);
       })
       .catch(() => {});
     /* The YQSF Chairman sits on the NEC — pull his record from there. */
@@ -44,10 +46,10 @@ export default function YQSF() {
      Will be auto-calculated from Member portal users whose dateOfBirth < 40 years ago.
      Members >= 40 will automatically exit YQSF membership. */
   const stats = [
-    { n: '2,400+', l: 'Young Members',  note: true  }, // wired later
-    { n: '37',     l: 'State Chapters', note: false },
-    { n: cpdEvents,    l: 'CPD Events/Year', note: false },
-    { n: totalAwards,  l: 'Total Awards',    note: false },
+    { n: under40 || '—', l: 'Registered QS Under 40' },
+    { n: '37',           l: 'State Chapters' },
+    { n: cpdEvents,      l: 'CPD Events/Year' },
+    { n: totalAwards,    l: 'Total Awards' },
   ];
 
   return (

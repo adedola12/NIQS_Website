@@ -14,11 +14,15 @@ const roles = [
 
 export default function WAQSN() {
   const [waqsnUrl, setWaqsnUrl] = useState('');
+  const [femaleQS, setFemaleQS] = useState('');
   const [chair, setChair] = useState(null);
 
   useEffect(() => {
     API.get('/site-settings')
-      .then(res => { if (res.data?.waqsnUrl) setWaqsnUrl(res.data.waqsnUrl); })
+      .then(res => {
+        if (res.data?.waqsnUrl) setWaqsnUrl(res.data.waqsnUrl);
+        if (res.data?.waqsnFemaleQSCount) setFemaleQS(res.data.waqsnFemaleQSCount);
+      })
       .catch(() => {});
     /* The WAQSN Chairperson sits on the NEC — pull her record from there. */
     API.get('/exco?scope=national')
@@ -103,19 +107,22 @@ export default function WAQSN() {
                 drivers of Nigeria's built environment.
               </p>
 
-              {waqsnUrl ? (
-                <a href={waqsnUrl} target="_blank" rel="noopener noreferrer" className="btn bp">
-                  Visit WAQSN →
-                </a>
-              ) : (
-                <span
-                  className="btn bp"
-                  style={{ opacity: .35, cursor: 'default', pointerEvents: 'none' }}
-                  title="WAQSN website link not yet configured"
-                >
-                  Visit WAQSN →
-                </span>
-              )}
+              {/* Registered female QS stat */}
+              <div style={{ display: 'flex', gap: '1rem', margin: '0 0 1.8rem', flexWrap: 'wrap' }}>
+                <div style={{ background: 'var(--color-off)', borderRadius: 12, padding: '1rem 1.4rem', minWidth: 150 }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.9rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.04em' }}>
+                    {femaleQS || '—'}
+                  </div>
+                  <div style={{ fontSize: '.66rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Registered Female QS</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '.8rem', flexWrap: 'wrap' }}>
+                <a href="/membership" className="btn bp">Join WAQSN →</a>
+                {waqsnUrl && (
+                  <a href={waqsnUrl} target="_blank" rel="noopener noreferrer" className="btn bo">Visit WAQSN Website →</a>
+                )}
+              </div>
             </div>
           </div>
         </div>

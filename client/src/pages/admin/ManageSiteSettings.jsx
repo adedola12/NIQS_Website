@@ -49,6 +49,8 @@ const EMPTY = {
   instagramUrl: '',
   yqsfCpdEvents: '',
   yqsfTotalAwards: '',
+  yqsfUnder40Count: '',
+  waqsnFemaleQSCount: '',
   phone1: '',
   phone2: '',
   email1: '',
@@ -187,6 +189,16 @@ export default function ManageSiteSettings() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.5rem' }}>
           <Field label="CPD Events / Year" name="yqsfCpdEvents" value={form.yqsfCpdEvents} onChange={handleChange} placeholder="e.g. 40" />
           <Field label="Total Awards So Far" name="yqsfTotalAwards" value={form.yqsfTotalAwards} onChange={handleChange} placeholder="e.g. 10+" />
+          <Field label="Registered QS Under 40" name="yqsfUnder40Count" value={form.yqsfUnder40Count} onChange={handleChange} placeholder="e.g. 2,400+" />
+        </div>
+
+        {/* ── WAQSN Stats ── */}
+        <SectionLabel>WAQSN Stats</SectionLabel>
+        <p style={{ fontSize: '.75rem', color: 'var(--color-txt-3)', marginBottom: '1.2rem', marginTop: '-.6rem' }}>
+          Displayed on the WAQSN public page. Leave blank to show a dash until the figure is confirmed.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.5rem' }}>
+          <Field label="Registered Female QS" name="waqsnFemaleQSCount" value={form.waqsnFemaleQSCount} onChange={handleChange} placeholder="e.g. 1,200+" />
         </div>
 
         {/* ── Contact Details ── */}

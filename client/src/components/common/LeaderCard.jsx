@@ -1,5 +1,20 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+
+/* Derive a chapter page link from a chapter-chairman title, e.g.
+   "Nasarawa State Chapter Chairman" / "Lagos Chapter Chairman" / "FCT Chapter
+   Chairman" → "/chapters/nasarawa-chapter". Returns null for non-chapter roles
+   or the bare "Chapter Chairman" (already on the chapter page). */
+function chapterLinkFromTitle(title) {
+  if (!title || !/chapter chairman/i.test(title)) return null;
+  const state = title
+    .replace(/\s*(state\s+)?chapter chairman.*/i, '')
+    .trim();
+  if (!state) return null;
+  const slug = state.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  return `/chapters/${slug}-chapter`;
+}
 
 /* Fallback shown when a member has no portrait yet — initials on brand navy,
    never a stock stranger's face. */
@@ -33,9 +48,14 @@ function Initials({ name }) {
  * Portrait keeps a 4:4.6 ratio anchored near the face (studio portraits have
  * the head in the upper third); hovering pops up the full uncropped image.
  */
-export default function LeaderCard({ member }) {
+export default function LeaderCard({ member, linkTo }) {
   const [hovered, setHovered] = useState(false);
   const m = member;
+  const href = linkTo || chapterLinkFromTitle(m.title);
+
+  const nameEl = href
+    ? <Link to={href} className="lcard-name" style={{ color: 'var(--color-navy)', textDecoration: 'none', borderBottom: '1.5px solid var(--color-gold)', cursor: 'pointer' }}>{m.name}</Link>
+    : <div className="lcard-name">{m.name}</div>;
 
   return (
     <motion.div
@@ -63,9 +83,14 @@ export default function LeaderCard({ member }) {
         )}
       </div>
       <div className="lcard-body">
-        <div className="lcard-name">{m.name}</div>
+        {nameEl}
         <div className="lcard-role">{m.title}</div>
         {m.state && <div className="lcard-state">{m.state}</div>}
+        {href && (
+          <Link to={href} style={{ display: 'inline-block', marginTop: '.4rem', fontSize: '.66rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--color-gold)', textDecoration: 'none' }}>
+            View chapter →
+          </Link>
+        )}
         {(m.email || m.phone) && (
           <div style={{ marginTop: '.5rem', display: 'flex', flexDirection: 'column', gap: 2 }}>
             {m.email && (

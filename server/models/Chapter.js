@@ -13,7 +13,8 @@ const chapterSchema = new mongoose.Schema({
   website:     { type: String, trim: true, default: '' },
   about:       { type: String, default: '' },
   image:       { type: String, default: '' },
-  memberCount: { type: Number, default: 0 },
+  memberCount: { type: Number, default: 0 },   // registered QS in the chapter
+  firmCount:   { type: Number, default: 0 },   // registered QS firms in the chapter
   isActive:    { type: Boolean, default: true }
 }, { timestamps: true });
 
