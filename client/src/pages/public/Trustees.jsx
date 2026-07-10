@@ -1,26 +1,11 @@
 import { useState, useEffect } from 'react';
 import PageHero from '../../components/common/PageHero';
+import LeaderCard from '../../components/common/LeaderCard';
 import API from '../../api/axios';
 
-const FALLBACK = [
-  { _id: '1', name: 'QS [Trustee Name], FNIQS, PPNIQS', title: 'Chairman', order: 0 },
-  { _id: '2', name: 'QS [Trustee Name], FNIQS', title: 'Member', order: 1 },
-  { _id: '3', name: 'QS [Trustee Name], FNIQS', title: 'Member', order: 2 },
-];
-
-function initials(name) {
-  return name
-    .replace(/^QS\s+/i, '')
-    .replace(/,.*$/, '')
-    .split(/\s+/)
-    .filter(w => /^[A-Za-z]/.test(w))
-    .slice(0, 2)
-    .map(w => w[0].toUpperCase())
-    .join('');
-}
-
 export default function Trustees() {
-  const [members, setMembers] = useState(FALLBACK);
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     API.get('/exco?scope=bot')
@@ -30,7 +15,8 @@ export default function Trustees() {
           setMembers(data.filter(m => m.isActive !== false));
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -51,34 +37,15 @@ export default function Trustees() {
             its long-term interests, drawn from NIQS's most distinguished Fellows and Past Presidents.
           </p>
 
-          <div className="leader-grid">
-            {members.map(m => (
-              <div className="lcard" key={m._id}>
-                <div className="lcard-img-wrap">
-                  {m.image ? (
-                    <img className="lcard-img" src={m.image} alt={m.name} />
-                  ) : (
-                    <div
-                      className="lcard-img"
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: 'linear-gradient(135deg, #0B1F4B 0%, #16306e 100%)',
-                        color: 'var(--color-gold)', fontFamily: 'var(--font-heading)',
-                        fontSize: '2.6rem', fontWeight: 700, letterSpacing: '.04em',
-                      }}
-                    >
-                      {initials(m.name)}
-                    </div>
-                  )}
-                </div>
-                <div className="lcard-body">
-                  <div className="lcard-name">{m.name}</div>
-                  <div className="lcard-role">{m.title}</div>
-                  {m.state && <div className="lcard-state">{m.state}</div>}
-                </div>
-              </div>
-            ))}
-          </div>
+          {loading && members.length === 0 ? (
+            <div style={{ padding: '3rem 0', textAlign: 'center', color: 'var(--color-txt-3)', fontSize: '.85rem' }}>
+              Loading board of trustees…
+            </div>
+          ) : (
+            <div className="leader-grid">
+              {members.map(m => <LeaderCard key={m._id} member={m} />)}
+            </div>
+          )}
         </div>
       </section>
     </>

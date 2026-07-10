@@ -1,33 +1,11 @@
 import { useState, useEffect } from 'react';
 import PageHero from '../../components/common/PageHero';
+import LeaderCard from '../../components/common/LeaderCard';
 import API from '../../api/axios';
 
-const FALLBACK = [
-  {
-    _id: '1',
-    name: 'QS [Chairman Name], FNIQS',
-    title: 'Chairman, Fellows Forum',
-    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80&fit=crop&crop=face',
-    order: 0,
-  },
-  {
-    _id: '2',
-    name: 'QS [Chairman Name], FNIQS',
-    title: 'DG, NIQS Foundation',
-    image: 'https://images.unsplash.com/photo-1480429370139-e0132c086e2a?w=400&q=80&fit=crop&crop=face',
-    order: 1,
-  },
-  {
-    _id: '3',
-    name: 'QS [Chairman Name], FNIQS',
-    title: 'Chairman, Examination Board',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80&fit=crop&crop=face',
-    order: 2,
-  },
-];
-
 export default function NationalBodies() {
-  const [members, setMembers] = useState(FALLBACK);
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     API.get('/exco?scope=body-heads')
@@ -37,7 +15,8 @@ export default function NationalBodies() {
           setMembers(data.filter(m => m.isActive !== false));
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -59,24 +38,15 @@ export default function NationalBodies() {
             Examination Board and The Quantity Surveyor Journal.
           </p>
 
-          <div className="leader-grid">
-            {members.map(m => (
-              <div className="lcard" key={m._id}>
-                <div className="lcard-img-wrap">
-                  <img
-                    className="lcard-img"
-                    src={m.image || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80&fit=crop&crop=face'}
-                    alt={m.name}
-                  />
-                </div>
-                <div className="lcard-body">
-                  <div className="lcard-name">{m.name}</div>
-                  <div className="lcard-role">{m.title}</div>
-                  {m.state && <div className="lcard-state">{m.state}</div>}
-                </div>
-              </div>
-            ))}
-          </div>
+          {loading && members.length === 0 ? (
+            <div style={{ padding: '3rem 0', textAlign: 'center', color: 'var(--color-txt-3)', fontSize: '.85rem' }}>
+              Loading national body chairmen…
+            </div>
+          ) : (
+            <div className="leader-grid">
+              {members.map(m => <LeaderCard key={m._id} member={m} />)}
+            </div>
+          )}
         </div>
       </section>
     </>

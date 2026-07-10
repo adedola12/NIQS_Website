@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
 
@@ -18,6 +19,7 @@ const FALLBACK = {
 
 export default function President() {
   const [data, setData] = useState(FALLBACK);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     API.get('/president')
@@ -57,23 +59,59 @@ export default function President() {
 
             {/* ── LEFT — portrait + name card ── */}
             <div className="rl" style={{ textAlign: 'center' }}>
-              <div style={{ position: 'relative', display: 'inline-block' }}>
-                <img
+              <motion.div
+                style={{ position: 'relative', display: 'inline-block' }}
+                onHoverStart={() => setHovered(true)}
+                onHoverEnd={() => setHovered(false)}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+                whileHover={{ y: -5 }}
+              >
+                <motion.img
                   src={data.photo}
                   alt="NIQS President"
+                  animate={{ scale: hovered ? 1.04 : 1 }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
                   style={{
                     borderRadius: 16,
                     width: '100%',
                     maxWidth: 320,
                     height: 400,
                     objectFit: 'cover',
-                    objectPosition: 'top',
+                    objectPosition: 'center 25%',
                     boxShadow: 'var(--sh2)',
                     border: '3px solid var(--borderg)',
                     display: 'block',
                   }}
                 />
-              </div>
+
+                {/* Full uncropped portrait pops up on hover — same as NEC cards */}
+                <AnimatePresence>
+                  {hovered && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.86, y: 14 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 8 }}
+                      transition={{ duration: 0.22, ease: 'easeOut' }}
+                      style={{
+                        position: 'absolute', left: '50%', bottom: 'calc(100% + 10px)',
+                        transform: 'translateX(-50%)', zIndex: 60, pointerEvents: 'none',
+                        background: '#fff', borderRadius: 12, padding: 6,
+                        boxShadow: '0 18px 50px rgba(11,31,75,.35)',
+                        border: '1px solid var(--borderg)',
+                      }}
+                    >
+                      <img
+                        src={data.photo}
+                        alt={data.name}
+                        style={{ display: 'block', maxWidth: 280, maxHeight: 340, width: 'auto', height: 'auto', objectFit: 'contain', borderRadius: 8 }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
               <div style={{ marginTop: '1.2rem' }}>
                 <h3 style={{
                   fontFamily: "'Bricolage Grotesque', sans-serif",
