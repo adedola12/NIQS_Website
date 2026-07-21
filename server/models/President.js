@@ -33,6 +33,14 @@ const presidentSchema = new mongoose.Schema({
     default: '"Together, we will build a stronger, more impactful NIQS for the benefit of our members and Nigerian society."'
   },
 
+  /* Inaugural / presidential speech — full text shown on the President page
+     when speechBody is non-empty. Blocks are separated by blank lines; a block
+     whose first line starts with "1." style numbering renders as a programme
+     heading with its following lines as the body. */
+  speechTitle: { type: String, default: '' },
+  speechSubtitle: { type: String, default: '' },
+  speechBody: { type: String, default: '' },
+
   /* Singleton sentinel — always the same value so findOne works cleanly */
   _singleton: { type: String, default: 'president', unique: true, immutable: true },
 

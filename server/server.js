@@ -1,4 +1,5 @@
-require("dotenv").config();
+// Anchor to server/.env so the app works when launched from the repo root too
+require("dotenv").config({ path: require("path").join(__dirname, ".env") });
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");

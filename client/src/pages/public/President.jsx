@@ -189,6 +189,77 @@ export default function President() {
           </div>
         </div>
       </section>
+
+      {/* ── INAUGURAL SPEECH — shown only when the admin has published one ── */}
+      {data.speechBody && (
+        <section style={{ background: 'var(--off)', padding: '4rem 0' }}>
+          <div className="ct" style={{ maxWidth: 820 }}>
+            <div className="ey" style={{ textAlign: 'center' }}>From the President&rsquo;s Desk</div>
+            <h2 className="sh" style={{ textAlign: 'center' }}>
+              {data.speechTitle || <>The President&rsquo;s <em>Address</em></>}
+            </h2>
+            {data.speechSubtitle && (
+              <p style={{
+                textAlign: 'center', color: 'var(--text3)', fontSize: '.78rem',
+                fontWeight: 600, letterSpacing: '.04em', marginTop: '.4rem', marginBottom: '2.2rem',
+              }}>
+                {data.speechSubtitle}
+              </p>
+            )}
+            <SpeechBody text={data.speechBody} />
+          </div>
+        </section>
+      )}
     </>
+  );
+}
+
+/* Renders the speech: blocks separated by blank lines; a block whose first
+   line starts with "N." becomes a numbered programme card. */
+function SpeechBody({ text }) {
+  const blocks = text.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+  return (
+    <div>
+      {blocks.map((block, i) => {
+        const lines = block.split('\n');
+        const m = lines[0].match(/^(\d+)\.\s*(.+)$/);
+        if (m) {
+          const body = lines.slice(1).join(' ').trim();
+          return (
+            <div key={i} style={{
+              background: '#fff', border: '1px solid var(--borderg)', borderRadius: 12,
+              padding: '1.1rem 1.3rem', marginBottom: '.85rem', display: 'flex', gap: '1rem',
+            }}>
+              <div style={{
+                flexShrink: 0, width: 34, height: 34, borderRadius: '50%',
+                background: 'var(--navy)', color: 'var(--gold)', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                fontSize: '.8rem', fontWeight: 800,
+              }}>
+                {m[1]}
+              </div>
+              <div>
+                <h4 style={{
+                  fontSize: '.82rem', fontWeight: 800, color: 'var(--navy)',
+                  letterSpacing: '.03em', textTransform: 'uppercase', margin: '0 0 .35rem',
+                }}>
+                  {m[2]}
+                </h4>
+                {body && (
+                  <p style={{ fontSize: '.86rem', lineHeight: 1.8, color: 'var(--text2)', margin: 0 }}>
+                    {body}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        }
+        return (
+          <p key={i} style={{ fontSize: '.9rem', lineHeight: 1.88, color: 'var(--text2)', marginBottom: '1.1rem' }}>
+            {block}
+          </p>
+        );
+      })}
+    </div>
   );
 }

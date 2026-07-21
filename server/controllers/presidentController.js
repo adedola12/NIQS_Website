@@ -22,7 +22,8 @@ exports.updatePresident = async (req, res) => {
     const {
       name, title, tenure, linkedIn,
       photo, backgroundImage,
-      paragraph1, paragraph2, quote
+      paragraph1, paragraph2, quote,
+      speechTitle, speechSubtitle, speechBody
     } = req.body;
 
     const president = await President.findOneAndUpdate(
@@ -31,6 +32,9 @@ exports.updatePresident = async (req, res) => {
         name, title, tenure, linkedIn,
         photo, backgroundImage,
         paragraph1, paragraph2, quote,
+        ...(speechTitle !== undefined && { speechTitle }),
+        ...(speechSubtitle !== undefined && { speechSubtitle }),
+        ...(speechBody !== undefined && { speechBody }),
         updatedBy: req.admin._id,
       },
       { new: true, upsert: true, runValidators: false }

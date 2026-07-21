@@ -13,6 +13,9 @@ const DEFAULTS = {
   paragraph1: 'It is my honour to serve as President of the Nigerian Institute of Quantity Surveyors at this critical juncture. The construction industry is undergoing significant transformation, and NIQS is well-positioned to lead that change.',
   paragraph2: 'Our focus rests on three pillars: strengthening professional standards, expanding access to quality education and examination, and deepening international partnerships that give our members global relevance.',
   quote: '"Together, we will build a stronger, more impactful NIQS for the benefit of our members and Nigerian society."',
+  speechTitle: '',
+  speechSubtitle: '',
+  speechBody: '',
 };
 
 export default function ManagePresident() {
@@ -36,6 +39,9 @@ export default function ManagePresident() {
             paragraph1: d.paragraph1 || DEFAULTS.paragraph1,
             paragraph2: d.paragraph2 || DEFAULTS.paragraph2,
             quote: d.quote || DEFAULTS.quote,
+            speechTitle: d.speechTitle || '',
+            speechSubtitle: d.speechSubtitle || '',
+            speechBody: d.speechBody || '',
           });
           setLastUpdated(d.updatedAt);
         }
@@ -138,6 +144,24 @@ export default function ManagePresident() {
           </Field>
           <Field label="Featured Quote (displayed in gold-bordered block)">
             <textarea value={form.quote} onChange={e => f('quote', e.target.value)} rows={3} style={{ ...inputStyle, resize: 'vertical' }} placeholder='"Quote text here."' />
+          </Field>
+
+          {/* ── INAUGURAL SPEECH ── */}
+          <SectionTitle>Inaugural Speech / Address</SectionTitle>
+          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: '10px 14px', marginBottom: 14, fontSize: 12.5, color: '#92400e' }}>
+            Shown on the public President page below the message. Leave the speech text empty to hide the section.
+            Separate paragraphs with a blank line. A paragraph starting with <strong>1.</strong>, <strong>2.</strong> … renders as a numbered programme card — put the heading on the first line and the description on the following lines.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+            <Field label="Speech Title">
+              <input value={form.speechTitle} onChange={e => f('speechTitle', e.target.value)} style={inputStyle} placeholder="Acceptance Speech & Proposed Programmes…" />
+            </Field>
+            <Field label="Speech Subtitle (speaker / date line)">
+              <input value={form.speechSubtitle} onChange={e => f('speechSubtitle', e.target.value)} style={inputStyle} placeholder="Delivered by … · November 22, 2025" />
+            </Field>
+          </div>
+          <Field label="Speech Text">
+            <textarea value={form.speechBody} onChange={e => f('speechBody', e.target.value)} rows={18} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'monospace', fontSize: 13 }} placeholder={'Opening paragraph…\n\n1. FIRST PROGRAMME HEADING\nDescription of the programme…\n\n2. SECOND PROGRAMME HEADING\nDescription…'} />
           </Field>
 
           {/* ── ACTIONS ── */}
