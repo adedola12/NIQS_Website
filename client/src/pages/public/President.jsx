@@ -160,8 +160,8 @@ export default function President() {
 
             {/* ── RIGHT — message ── */}
             <div className="rr">
-              <div className="ey">Presidential Message</div>
-              <h2 className="sh">A Message from the <em>President</em></h2>
+              <div className="ey">Leadership</div>
+              <h2 className="sh">Meet the <em>President</em></h2>
 
               <p style={{ fontSize: '.9rem', lineHeight: 1.88, color: 'var(--text2)', marginBottom: '1rem' }}>
                 {data.paragraph1}
@@ -183,7 +183,21 @@ export default function President() {
                 </p>
               </div>
 
-              <Link to="/council" className="btn bp">Meet the Full Council</Link>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.7rem' }}>
+                {data.speechBody && (
+                  <a
+                    href="#inaugural-speech"
+                    className="btn bp"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('inaugural-speech')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    Read Full Inaugural Speech
+                  </a>
+                )}
+                <Link to="/council" className="btn bo">Meet the Full Council</Link>
+              </div>
             </div>
 
           </div>
@@ -192,7 +206,7 @@ export default function President() {
 
       {/* ── INAUGURAL SPEECH — shown only when the admin has published one ── */}
       {data.speechBody && (
-        <section style={{ background: 'var(--off)', padding: '4rem 0' }}>
+        <section id="inaugural-speech" style={{ background: 'var(--off)', padding: '4rem 0', scrollMarginTop: 90 }}>
           <div className="ct" style={{ maxWidth: 820 }}>
             <div className="ey" style={{ textAlign: 'center' }}>From the President&rsquo;s Desk</div>
             <h2 className="sh" style={{ textAlign: 'center' }}>
