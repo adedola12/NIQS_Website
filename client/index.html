@@ -11,11 +11,13 @@
     />
     <title>NIQS — Nigerian Institute of Quantity Surveyors</title>
 
-    <!-- Favicon / browser tab & taskbar icon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/NIQS-LOGO-PNG-NAV.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/NIQS-LOGO-PNG-NAV.png" />
-    <link rel="apple-touch-icon" href="/NIQS-LOGO-PNG-NAV.png" />
-    <link rel="shortcut icon" href="/NIQS-LOGO-PNG-NAV.png" />
+    <!-- Favicon / browser tab & taskbar icon.
+         NIQS-LOGO-SQUARE.png is the crest re-centred on a square canvas — the nav
+         PNG's crest sits left of its own centre, so it looked off-axis as an icon. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/NIQS-LOGO-SQUARE.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/NIQS-LOGO-SQUARE.png" />
+    <link rel="apple-touch-icon" href="/NIQS-LOGO-SQUARE.png" />
+    <link rel="shortcut icon" href="/NIQS-LOGO-SQUARE.png" />
 
     <!-- Browser chrome colour (tab bar on mobile) -->
     <meta name="theme-color" content="#0B1F4B" />
@@ -28,15 +30,22 @@
     <meta property="og:site_name" content="NIQS" />
     <meta property="og:title" content="NIQS — Nigerian Institute of Quantity Surveyors" />
     <meta property="og:description" content="Nigeria's professional construction cost managers since 1969. Connecting 10,000+ members across 37 state chapters." />
-    <meta property="og:image" content="https://niqs-website.vercel.app/NIQS-LOGO-PNG-NAV.png" />
-    <meta property="og:image:alt" content="NIQS Logo" />
+    <!-- Purpose-built card rather than the bare logo: it is opaque (a transparent
+         PNG composites against whatever colour the client picks) and lays the crest
+         out inside the centre square, so scrapers that crop to a square — WhatsApp's
+         small card especially — keep the crest centred instead of clipping it. -->
+    <meta property="og:image" content="https://niqs-website.vercel.app/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Nigerian Institute of Quantity Surveyors — established 1969" />
     <meta property="og:url" content="https://niqs-website.vercel.app" />
 
     <!-- Twitter card -->
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="NIQS — Nigerian Institute of Quantity Surveyors" />
     <meta name="twitter:description" content="Nigeria's professional construction cost managers since 1969." />
-    <meta name="twitter:image" content="https://niqs-website.vercel.app/NIQS-LOGO-PNG-NAV.png" />
+    <meta name="twitter:image" content="https://niqs-website.vercel.app/og-image.jpg" />
   </head>
   <body>
     <!-- NIQS branded preloader — visible until React mounts (removed in main.jsx) -->
