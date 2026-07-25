@@ -123,6 +123,33 @@ GET /firms/search?q=&state=&page=1&pageSize=20
 ```
 Mirror of §4.3 for companies (`name, regNumber, state, city, address, phone, email, website`).
 
+### 4.6 Per-chapter membership counts
+
+```
+GET /stats/chapters
+```
+**200**
+```json
+{
+  "asOf": "2026-07-25",
+  "chapters": [
+    { "state": "Katsina", "registeredQs": 128, "firms": 9 },
+    { "state": "Osun",    "registeredQs": 214, "firms": 17 }
+  ]
+}
+```
+
+Feeds the "Registered QS" and "QS Firms" tiles on each `/chapters/:slug` page. One
+call covering all 37 chapters — not 37 paginated `/members/search?state=` calls just
+to read `total`. The website caches the response and re-fetches daily; a stale figure
+is fine, a missing chapter is fine (the tile is simply hidden).
+
+Until this exists the counts are entered by hand per chapter in the website admin, and
+any chapter left at `0` renders no tile rather than a placeholder.
+
+> Omit `firms` if §9 lands on the website keeping the QS Firm directory — the website
+> can then count its own `QSFirm` records by state.
+
 ---
 
 ## 5. SSO / member login (Phase 2)
@@ -183,6 +210,7 @@ Webhook body (Phase 3): `{ "event": "member.updated|member.suspended|member.rene
 4. **Membership number format** + the canonical `membershipType` / `status` vocabularies.
 5. **API base URL** + how keys are issued per environment (staging + prod).
 6. Does CPD post-back happen **on attendance** (our flow) or should the portal **pull** it? (We propose push, §4.4.)
+7. **Chapter counts (§4.6)** — can the portal expose per-chapter registered-QS/firm totals, or does NIQS supply the register as a one-off export for the website to count and cache? Either unblocks the chapter-page stat tiles; today they are hand-entered.
 
 ---
 
