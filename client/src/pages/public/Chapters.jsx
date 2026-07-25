@@ -97,6 +97,22 @@ export default function Chapters() {
                 <div className="chcard">
                   <h4>{c.name}</h4>
                   <p>{c.zone ? `${c.zone} Zone` : 'Nigeria'}</p>
+                  {c.chairperson && (
+                    <p style={{ marginTop: 4, color: 'var(--color-txt-2)', fontWeight: 600 }}>{c.chairperson}</p>
+                  )}
+                  {/* A chapter with about copy has had its full profile + exco published,
+                      so flag it — otherwise every card looks identical and the completed
+                      ones are impossible to find in a 35-chapter grid. */}
+                  {c.about && (
+                    <span style={{
+                      display: 'inline-block', marginTop: 8, padding: '2px 8px', borderRadius: 20,
+                      background: 'var(--color-off)', border: '1px solid var(--color-bdr-gold)',
+                      fontSize: '.6rem', fontWeight: 700, letterSpacing: '.06em',
+                      textTransform: 'uppercase', color: 'var(--color-gold)',
+                    }}>
+                      Full profile
+                    </span>
+                  )}
                 </div>
               </Link>
             ))}
