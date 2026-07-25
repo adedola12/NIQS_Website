@@ -42,13 +42,20 @@ async function fetchWithRetry(url, tries = 6) {
     .lean();
 
   const manifest = [];
+  const failed = [];
+  console.log(`${records.length} chapter portraits to export\n`);
   for (const r of records) {
     const chapterSlug = slug((r.chapter && r.chapter.name) || 'unknown');
     const file = `${chapterSlug}__${slug(r.name)}.jpg`;
-    let buf;
-    try { buf = await fetchWithRetry(r.image); }
-    catch (e) { console.warn(`!! failed ${file}: ${e.message}`); continue; }
-    fs.writeFileSync(path.join(outDir, file), buf);
+    const dest = path.join(outDir, file);
+    /* Resumable: a flaky link means a run can lose portraits, so re-running
+       only fetches what is not already on disk. */
+    if (!fs.existsSync(dest) || fs.statSync(dest).size === 0) {
+      let buf;
+      try { buf = await fetchWithRetry(r.image); }
+      catch (e) { failed.push(`${file}: ${e.message}`); console.warn(`   !! failed ${file}: ${e.message}`); continue; }
+      fs.writeFileSync(dest, buf);
+    }
     manifest.push({
       file,
       excoId: String(r._id),
@@ -64,6 +71,11 @@ async function fetchWithRetry(url, tries = 6) {
   }
 
   fs.writeFileSync(path.join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
-  console.log(`\n${manifest.length} portraits → ${outDir}`);
+  console.log(`\n${manifest.length}/${records.length} portraits → ${outDir}`);
+  if (failed.length) {
+    console.log(`${failed.length} FAILED — re-run to retry just these:`);
+    failed.forEach(f => console.log(`   ${f}`));
+    process.exitCode = 1;
+  }
   await mongoose.disconnect();
 })().catch((e) => { console.error(e); process.exit(1); });
