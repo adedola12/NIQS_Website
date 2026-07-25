@@ -24,7 +24,11 @@ export default function ChapterDetail() {
   const [events,  setEvents]    = useState([]);
   const [loading, setLoading]   = useState(true);
 
-  const stateName = slug
+  /* Chapter slugs are stored as "<state>-chapter" (e.g. "cross-river-chapter"),
+     so strip the suffix before deriving the state name / zone. */
+  const stateSlug = slug.replace(/-chapter$/, '');
+
+  const stateName = stateSlug
     .split('-')
     .map(w => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ')
@@ -52,10 +56,10 @@ export default function ChapterDetail() {
         setChapter({
           name: `${stateName} Chapter`,
           state: stateName,
-          zone: ZONE_MAP[slug] || '',
+          zone: ZONE_MAP[stateSlug] || '',
           address: `NIQS ${stateName} Chapter Secretariat`,
           about: `The ${stateName} State Chapter of the Nigerian Institute of Quantity Surveyors coordinates professional activities, organises CPD events, advocates for the profession, and supports member welfare within the state.`,
-          email: `${slug}@niqs.org.ng`,
+          email: `${stateSlug}@niqs.org.ng`,
           phone: '+234 800 000 0000',
           memberCount: 0,
           image: '',
@@ -80,6 +84,13 @@ export default function ChapterDetail() {
   }
 
   const heroImg = chapter?.image || 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1400&q=80&fit=crop';
+
+  const stats = [
+    chapter?.memberCount > 0 && { label: 'Registered QS', value: chapter.memberCount.toLocaleString() },
+    chapter?.firmCount   > 0 && { label: 'QS Firms',      value: chapter.firmCount.toLocaleString() },
+    exco.length          > 0 && { label: 'Executives',    value: exco.length },
+    chapter?.zone            && { label: 'Zone',          value: chapter.zone, small: true },
+  ].filter(Boolean);
 
   return (
     <>
@@ -108,27 +119,24 @@ export default function ChapterDetail() {
                 {chapter?.about || `The ${stateName} State Chapter of the Nigerian Institute of Quantity Surveyors coordinates professional activities, organises CPD events, and supports member welfare within the state.`}
               </p>
 
-              {/* Stats row — shown for every chapter; QS/firm counts are admin-editable */}
-              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                <div style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 110 }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.04em' }}>
-                    {chapter?.memberCount > 0 ? chapter.memberCount.toLocaleString() : '—'}
-                  </div>
-                  <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Registered QS</div>
+              {/* Stats row — only figures we actually hold are shown, so a chapter
+                  whose counts the secretariat has not supplied never renders a
+                  row of dashes. QS/firm counts are admin-editable. */}
+              {stats.length > 0 && (
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                  {stats.map(s => (
+                    <div key={s.label} style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 110 }}>
+                      <div style={{
+                        fontFamily: 'var(--font-heading)', fontWeight: 800, color: 'var(--color-navy)',
+                        fontSize: s.small ? '.9rem' : '1.6rem',
+                        letterSpacing: s.small ? '-.02em' : '-.04em',
+                        paddingTop: s.small ? '.5rem' : 0,
+                      }}>{s.value}</div>
+                      <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em', marginTop: s.small ? '.35rem' : 0 }}>{s.label}</div>
+                    </div>
+                  ))}
                 </div>
-                <div style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 110 }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.04em' }}>
-                    {chapter?.firmCount > 0 ? chapter.firmCount.toLocaleString() : '—'}
-                  </div>
-                  <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>QS Firms</div>
-                </div>
-                {chapter?.zone && (
-                  <div style={{ background: 'var(--color-off)', borderRadius: 10, padding: '.8rem 1.2rem', textAlign: 'center', minWidth: 110 }}>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '.9rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.02em', paddingTop: '.5rem' }}>{chapter.zone}</div>
-                    <div style={{ fontSize: '.65rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em', marginTop: '.35rem' }}>Zone</div>
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* Contact info */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '.7rem' }}>
@@ -164,7 +172,9 @@ export default function ChapterDetail() {
               <img
                 src={chapter?.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=700&q=80&fit=crop'}
                 alt={chapter?.name}
-                style={{ width: '100%', height: 340, objectFit: 'cover', borderRadius: 14, boxShadow: 'var(--sh)' }}
+                /* Chapter images are chairman portraits — anchor near the face so a
+                   landscape crop never cuts the head off. */
+                style={{ width: '100%', height: 340, objectFit: 'cover', objectPosition: 'center 22%', borderRadius: 14, boxShadow: 'var(--sh)' }}
               />
             </div>
           </div>

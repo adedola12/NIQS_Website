@@ -21,6 +21,7 @@ const emptyForm = {
   about:       '',
   image:       '',
   memberCount: 0,
+  firmCount:   0,
   isActive:    true,
 };
 
@@ -77,6 +78,7 @@ export default function ManageChapters() {
       about:       row.about       || '',
       image:       row.image       || '',
       memberCount: row.memberCount ?? 0,
+      firmCount:   row.firmCount   ?? 0,
       isActive:    row.isActive !== false,
     });
     setShowModal(true);
@@ -86,7 +88,11 @@ export default function ManageChapters() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const payload = { ...form, memberCount: Number(form.memberCount) };
+      const payload = {
+        ...form,
+        memberCount: Number(form.memberCount) || 0,
+        firmCount:   Number(form.firmCount)   || 0,
+      };
       if (editing) {
         await API.put(`/chapters/${editing._id}`, payload);
         toast.success('Chapter updated');
@@ -121,6 +127,7 @@ export default function ManageChapters() {
     { key: 'zone', label: 'Zone', render: (v) => v || '--' },
     { key: 'chairperson', label: 'Chair', render: (v) => v || '--' },
     { key: 'memberCount', label: 'Members', render: (v) => v || '--' },
+    { key: 'firmCount', label: 'Firms', render: (v) => v || '--' },
     { key: 'isActive', label: 'Active',
       render: (v) => <span style={{ color: v !== false ? '#059669' : '#dc2626', fontWeight: 600, fontSize: 13 }}>{v !== false ? 'Yes' : 'No'}</span>
     },
@@ -183,10 +190,19 @@ export default function ManageChapters() {
                   {ZONES.map(z => <option key={z} value={z}>{z}</option>)}
                 </select>
               </FormField>
-              <FormField label="Member Count">
+              <FormField label="Registered QS">
                 <input type="number" value={form.memberCount} onChange={e => setForm({ ...form, memberCount: e.target.value })} style={inputStyle} min="0" placeholder="0" />
               </FormField>
             </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <FormField label="QS Firms">
+                <input type="number" value={form.firmCount} onChange={e => setForm({ ...form, firmCount: e.target.value })} style={inputStyle} min="0" placeholder="0" />
+              </FormField>
+              <div />
+            </div>
+            <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 14, marginTop: -6 }}>
+              💡 Leave a count at 0 and that statistic is simply hidden on the public chapter page — no placeholder dash is shown.
+            </p>
 
             {/* CONTACT */}
             <SectionLabel>Contact Details</SectionLabel>
