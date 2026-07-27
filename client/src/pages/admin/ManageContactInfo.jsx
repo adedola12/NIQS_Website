@@ -14,7 +14,7 @@ const ROLE_BODY = {
 
 const BODY_LABELS = {
   national: 'NIQS National Secretariat',
-  waqsn:    'WAQSN — Women Assoc. of QS Nigeria',
+  waqsn:    'WAQSN — Women Association of Quantity Surveyors in Nigeria',
   yqsf:     'Young QS Forum (YQSF)',
 };
 

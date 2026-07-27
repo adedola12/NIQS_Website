@@ -152,7 +152,7 @@ export default function ManageSiteSettings() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.5rem' }}>
           <div>
             <Field
-              label="WAQSN Website URL (Women Assoc. of QS Nigeria)"
+              label="WAQSN Website URL (Women Association of Quantity Surveyors in Nigeria)"
               name="waqsnUrl"
               value={form.waqsnUrl}
               onChange={handleChange}

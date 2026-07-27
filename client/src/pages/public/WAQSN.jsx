@@ -40,8 +40,8 @@ export default function WAQSN() {
     <>
       <PageHero
         label="Women in QS"
-        title="Women Association of QS Nigeria"
-        titleHighlight="QS Nigeria"
+        title="Women Association of Quantity Surveyors in Nigeria"
+        titleHighlight="Quantity Surveyors in Nigeria"
         backgroundImage="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1400&q=80&fit=crop"
       />
 

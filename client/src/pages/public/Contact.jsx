@@ -14,7 +14,7 @@ const FALLBACK = {
     twitterUrl: '', facebookUrl: '', linkedinUrl: '',
   },
   waqsn: {
-    label: 'WAQSN (Women Assoc. of QS Nigeria)',
+    label: 'WAQSN (Women Association of Quantity Surveyors in Nigeria)',
     phone1: '', phone2: '',
     email1: 'waqsn@niqs.org.ng', email2: '',
     address: 'c/o NIQS National Secretariat,\nAbuja, FCT, Nigeria',
