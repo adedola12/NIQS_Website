@@ -56,8 +56,8 @@ export default function YQSF() {
     <>
       <PageHero
         label="Young Professionals"
-        title="Young QS Forum"
-        titleHighlight="Young QS"
+        title="Young Quantity Surveyors Forum"
+        titleHighlight="Quantity Surveyors"
         backgroundImage="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1400&q=80&fit=crop"
       />
 
@@ -162,7 +162,7 @@ export default function YQSF() {
       <section style={{ background: '#fff' }}>
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
           <div className="ctaw">
-            <h2>Join the <em>Young QS Forum</em></h2>
+            <h2>Join the <em>Young Quantity Surveyors Forum</em></h2>
             <p>
               Are you a young quantity surveyor looking to accelerate your career? Join the YQSF
               community and connect with peers and mentors across Nigeria.

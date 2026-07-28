@@ -184,7 +184,7 @@ export default function ManageSiteSettings() {
         {/* ── YQSF Stats ── */}
         <SectionLabel>YQSF Stats</SectionLabel>
         <p style={{ fontSize: '.75rem', color: 'var(--color-txt-3)', marginBottom: '1.2rem', marginTop: '-.6rem' }}>
-          These values are displayed on the Young QS Forum public page. Leave blank to show the default placeholder values.
+          These values are displayed on the Young Quantity Surveyors Forum public page. Leave blank to show the default placeholder values.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.5rem' }}>
           <Field label="CPD Events / Year" name="yqsfCpdEvents" value={form.yqsfCpdEvents} onChange={handleChange} placeholder="e.g. 40" />

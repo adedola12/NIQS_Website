@@ -22,7 +22,7 @@ const FALLBACK = {
     twitterUrl: '', facebookUrl: '', linkedinUrl: '',
   },
   yqsf: {
-    label: 'Young QS Forum (YQSF)',
+    label: 'YQSF (Young Quantity Surveyors Forum)',
     phone1: '', phone2: '',
     email1: 'yqsf@niqs.org.ng', email2: '',
     address: 'c/o NIQS National Secretariat,\nAbuja, FCT, Nigeria',
