@@ -20,7 +20,11 @@ export default function YQSF() {
   const [cpdEvents,    setCpdEvents]    = useState(DEFAULTS.cpdEvents);
   const [totalAwards,  setTotalAwards]  = useState(DEFAULTS.totalAwards);
   const [under40,      setUnder40]      = useState('');
-  const [chair, setChair] = useState(null);
+  const [council, setCouncil] = useState([]);
+
+  /* The Chairman heads the council and also sits on the NEC. His council record
+     is the one to show here — same portrait treatment as the rest of the EC. */
+  const chair = council.find(m => (m.title || '').toLowerCase() === 'chairman') || null;
 
   useEffect(() => {
     API.get('/site-settings')
@@ -30,16 +34,26 @@ export default function YQSF() {
         if (res.data?.yqsfUnder40Count) setUnder40(res.data.yqsfUnder40Count);
       })
       .catch(() => {});
-    /* The YQSF Chairman sits on the NEC — pull his record from there. */
-    API.get('/exco?scope=national')
+
+    API.get('/exco?scope=yqsf')
       .then(res => {
         const data = res.data?.exco || res.data?.data || res.data;
-        if (Array.isArray(data)) {
-          const found = data.find(m => (m.title || '').toUpperCase().includes('YQSF'));
-          if (found) setChair(found);
+        if (Array.isArray(data) && data.length) {
+          setCouncil(data.filter(m => m.isActive !== false));
+          return;
         }
+        throw new Error('empty');
       })
-      .catch(() => {});
+      /* Before the forum's own EC was published the page borrowed the Chairman
+         from the NEC. Keep that as the fallback so the section never empties. */
+      .catch(() => API.get('/exco?scope=national')
+        .then(res => {
+          const data = res.data?.exco || res.data?.data || res.data;
+          if (!Array.isArray(data)) return;
+          const found = data.find(m => (m.title || '').toUpperCase().includes('YQSF'));
+          if (found) setCouncil([{ ...found, title: 'Chairman' }]);
+        })
+        .catch(() => {}));
   }, []);
 
   /* Young Members count is a future TODO:
@@ -102,20 +116,34 @@ export default function YQSF() {
       </section>
 
       {/* Leadership */}
-      {chair && (
+      {council.length > 0 && (
         <section style={{ background: 'var(--color-off)' }}>
           <div className="ct" style={{ paddingTop: '4.5rem', paddingBottom: '4.5rem' }}>
             <div style={{ textAlign: 'center', maxWidth: 620, margin: '0 auto 2rem' }}>
               <div className="ey" style={{ justifyContent: 'center' }}>Leadership</div>
-              <h2 className="sh" style={{ textAlign: 'center' }}>Meet the <em>Chairman</em></h2>
+              <h2 className="sh" style={{ textAlign: 'center' }}>
+                {council.length > 1
+                  ? <>The <em>Executive Council</em></>
+                  : <>Meet the <em>Chairman</em></>}
+              </h2>
               <p className="sd" style={{ maxWidth: '100%', textAlign: 'center' }}>
-                The YQSF is led nationally by the Chairman, who also represents young
-                professionals on the NIQS National Executive Council.
+                {council.length > 1
+                  ? 'The YQSF is led nationally by its Chairman — who also represents young '
+                    + 'professionals on the NIQS National Executive Council — supported by two '
+                    + 'deputies and a coordinator for each of the six geopolitical zones.'
+                  : 'The YQSF is led nationally by the Chairman, who also represents young '
+                    + 'professionals on the NIQS National Executive Council.'}
               </p>
             </div>
-            <div style={{ maxWidth: 320, margin: '0 auto' }}>
-              <LeaderCard member={chair} />
-            </div>
+            {council.length > 1 ? (
+              <div className="leader-grid">
+                {council.map(m => <LeaderCard key={m._id} member={m} />)}
+              </div>
+            ) : (
+              <div style={{ maxWidth: 320, margin: '0 auto' }}>
+                <LeaderCard member={council[0]} />
+              </div>
+            )}
           </div>
         </section>
       )}
