@@ -22,8 +22,9 @@ Setup (one-off):
 Usage:
   python normalizePortraits.py <inputDir> <outDir> [--model u2net] [--alpha-matting]
 
-<inputDir> holds <name>.jpg source portraits; <outDir> gets 960x1200 JPEGs of the
-same name.
+<inputDir> holds <name>.jpg/.jpeg/.png source portraits; <outDir> gets 960x1200
+JPEGs named <name>.jpg. Sources that already carry a cut-out (a PNG with a real
+alpha channel) keep it rather than being re-matted here.
 
 Note: --alpha-matting sounds like it should help and does the opposite here — it
 shredded the mattes badly enough to decapitate subjects. Left in place because the
@@ -77,18 +78,8 @@ def detect_face(det, bgr):
 
 # ─────────────────────────── matting ───────────────────────────
 
-def cutout(session, pil_img, alpha_matting=False):
-    """RGBA subject with a cleaned, slightly feathered alpha."""
-    if alpha_matting:
-        out = remove(pil_img, session=session, alpha_matting=True,
-                     alpha_matting_foreground_threshold=240,
-                     alpha_matting_background_threshold=15,
-                     alpha_matting_erode_size=11)
-    else:
-        out = remove(pil_img, session=session)
-    rgba = np.asarray(out.convert('RGBA')).copy()
-    a = rgba[:, :, 3]
-
+def clean_alpha(a):
+    """Harden, de-speck, tighten and feather a subject mask."""
     # A pale gown against a pale backdrop comes back semi-transparent rather than
     # missing — the torso is there at alpha 40-120. Harden that to solid before
     # anything thresholds it away, keeping only genuine edges soft, or the body
@@ -107,9 +98,43 @@ def cutout(session, pil_img, alpha_matting=False):
     a = cv2.morphologyEx(a, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
     a = cv2.erode(a, np.ones((3, 3), np.uint8), iterations=1)
     a = cv2.GaussianBlur(a, (0, 0), 1.6)
+    return a
 
-    rgba[:, :, 3] = a
+
+def cutout(session, pil_img, alpha_matting=False):
+    """RGBA subject with a cleaned, slightly feathered alpha."""
+    if alpha_matting:
+        out = remove(pil_img, session=session, alpha_matting=True,
+                     alpha_matting_foreground_threshold=240,
+                     alpha_matting_background_threshold=15,
+                     alpha_matting_erode_size=11)
+    else:
+        out = remove(pil_img, session=session)
+    rgba = np.asarray(out.convert('RGBA')).copy()
+    rgba[:, :, 3] = clean_alpha(rgba[:, :, 3])
     return rgba
+
+
+def load_subject(path, session, alpha_matting=False):
+    """The subject as RGBA, preferring a cut-out the photographer already made.
+
+    A pack shot to spec arrives as PNGs with the background already knocked out
+    by whoever lit the shoot — a far better matte than rembg infers from the
+    flattened result, and it costs nothing to use. So: if a source carries a real
+    alpha channel, trust it and only clean the edge. Everything else still gets
+    matted here.
+
+    "Real" means some meaningful area is actually transparent. A JPEG-quality
+    photo re-saved as PNG carries a fully opaque alpha channel, which would
+    otherwise be read as a cut-out covering the whole frame and matte nothing.
+    """
+    pil = Image.open(path)
+    if 'A' in pil.getbands():
+        rgba = np.asarray(pil.convert('RGBA')).copy()
+        if (rgba[:, :, 3] < 16).mean() > 0.02:
+            rgba[:, :, 3] = clean_alpha(rgba[:, :, 3])
+            return rgba, 'supplied'
+    return cutout(session, pil.convert('RGB'), alpha_matting), 'matted'
 
 
 # ─────────────────────────── backdrop ───────────────────────────
@@ -278,12 +303,13 @@ def main():
     backdrop = build_backdrop(session, args.outdir).astype(np.float64)
     target = president_target(det)
 
-    files = sorted(glob.glob(os.path.join(args.indir, '*.jpg')))
+    files = sorted(f for f in glob.glob(os.path.join(args.indir, '*'))
+                   if os.path.splitext(f)[1].lower() in ('.jpg', '.jpeg', '.png'))
     print(f'\nnormalising {len(files)} portraits…')
     suspect = []
     for i, f in enumerate(files, 1):
-        name = os.path.basename(f)
-        rgba = cutout(session, Image.open(f).convert('RGB'), args.alpha_matting)
+        name = os.path.splitext(os.path.basename(f))[0] + '.jpg'
+        rgba, source = load_subject(f, session, args.alpha_matting)
         comp, how = place(rgba, det, target, backdrop)
         if comp is None:
             print(f'  {i:2}/{len(files)} !! {name}: {how}')
@@ -293,7 +319,7 @@ def main():
         note = '' if how == 'face' else f'   <-- {how}'
         if how != 'face':
             suspect.append((name, how))
-        print(f'  {i:2}/{len(files)} {name}{note}')
+        print(f'  {i:2}/{len(files)} [{source}] {name}{note}')
 
     print(f'\ndone → {args.outdir}  ({len(files) - len(suspect)}/{len(files)} clean)')
     if suspect:
