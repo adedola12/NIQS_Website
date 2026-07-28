@@ -51,10 +51,19 @@ def make_detector():
 
 
 def detect_face(det, bgr):
-    """Largest face as (cx, cy, w, h) plus eye-line y, or None."""
+    """Largest face as (cx, cy, w, h) plus eye-line y, or None.
+
+    Every image is detected at the same working size, and that matters more than
+    it looks: the whole pipeline scales a portrait by target_face_h / measured_fh,
+    so a measurement bias becomes a framing error. YuNet is trained near 320px and
+    its box drifts small on a multi-thousand-pixel input — feeding sources at their
+    native size put faces up to three times over life size on the finished card,
+    and how wrong depended on how big the photographer's file happened to be.
+    Normalising the detector's input to ~640px on the long side keeps the reference
+    and every subject on one ruler.
+    """
     h, w = bgr.shape[:2]
-    # YuNet is trained near 320px; upscale small crops so tiny faces are found.
-    scale = min(2.0, max(1.0, 640 / max(w, h)))
+    scale = min(2.0, 640 / max(w, h))
     img = cv2.resize(bgr, None, fx=scale, fy=scale) if scale != 1.0 else bgr
     det.setInputSize((img.shape[1], img.shape[0]))
     _, faces = det.detect(img)
@@ -198,6 +207,13 @@ def place(rgba, det, target, backdrop):
         anchor_y = top + head_h * 0.62
         how = 'mask'
 
+    # A matte that came back nearly empty makes the fallback's head_h tiny and the
+    # scale enormous — one such portrait asked for a 34GB resize and took the whole
+    # run down with it, losing every portrait queued behind it. Nothing legitimate
+    # needs more than a few times life size, so treat it as the failed matte it is.
+    if not (0.02 < scale < 8.0):
+        return None, f'BAD: implausible scale x{scale:.1f} — matte almost certainly empty'
+
     new_w, new_h = int(round(rgba.shape[1] * scale)), int(round(rgba.shape[0] * scale))
     interp = cv2.INTER_AREA if scale < 1 else cv2.INTER_CUBIC
     sc = cv2.resize(rgba, (new_w, new_h), interpolation=interp)
@@ -215,14 +231,27 @@ def place(rgba, det, target, backdrop):
         return None, 'subject placed off-canvas'
     canvas[dy0:dy0 + ch, dx0:dx0 + cw] = sc[sy0:sy0 + ch, sx0:sx0 + cw]
 
-    # A torso that stops short of the bottom edge reads as a floating cut-out.
-    # Extend the last opaque row down to the edge — it is clothing, so it carries.
+    # A torso that stops short of the bottom edge reads as a floating cut-out, so
+    # the last row of clothing is carried down. Copying it verbatim is the obvious
+    # way and it is wrong: real fabric varies as much down the frame as across it,
+    # so an exact copy comes out with a fraction of the vertical roughness of the
+    # cloth above it and the eye reads a barcode — worst on a lapel and tie, which
+    # stripe. Carrying it down while blurring sideways and easing darker is what
+    # the lens and the backdrop's own falloff do to a torso below the key light:
+    # detail dissolves with depth instead of repeating.
     col_any = canvas[:, :, 3].max(axis=1)
     filled = np.nonzero(col_any > 16)[0]
-    if len(filled):
-        last = filled[-1]
-        if last < CANVAS_H - 1:
-            canvas[last + 1:] = canvas[last]
+    if len(filled) and filled[-1] < CANVAS_H - 1:
+        start = max(0, filled[-1] - 3)
+        n = CANVAS_H - start
+        src = canvas[start].astype(np.float64)
+        src[:, :3] = cv2.GaussianBlur(src[None, :, :3], (0, 0), 1.2, 1e-6)[0]
+        rng = np.random.default_rng(11)
+        for i in range(n):
+            t = (i + 1) / n
+            row = cv2.GaussianBlur(src[None, :, :], (0, 0), 0.4 + 44.0 * t ** 1.5, 1e-6)[0]
+            row[:, :3] = row[:, :3] * (1.0 - 0.45 * t ** 0.8) + rng.normal(0, 1.6, (CANVAS_W, 3))
+            canvas[start + i] = np.clip(row, 0, 255).astype(np.uint8)
 
     a = (canvas[:, :, 3:4].astype(np.float64) / 255.0)
     comp = canvas[:, :, :3] * a + backdrop * (1 - a)
