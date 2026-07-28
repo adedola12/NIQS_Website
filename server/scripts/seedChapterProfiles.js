@@ -164,7 +164,7 @@ const CHAPTERS = [
     state: 'Ebonyi',
     stateLabel: 'Ebonyi State',
     chairperson: 'QS Agha Kalu Agwu, MNIQS',
-    secretary: 'QS Clinton Eze Ogbonnia, MNIQS',
+    secretary: 'QS Eze Clinton Ogbonnia, MNIQS',
     about:
       'The Ebonyi State Chapter of the Nigerian Institute of Quantity Surveyors brings '
       + 'together registered quantity surveyors practising across Ebonyi State in the '
@@ -175,10 +175,18 @@ const CHAPTERS = [
       + 'advocate for the quantity surveying profession with government and industry '
       + 'stakeholders in the state.',
     heroPortrait: 'agha-kalu-agwu',
+    /* Ebonyi resent the pack on 2026-07-28 — this time the executives' own
+       photographs rather than the designed cards with the gold caption bar,
+       which is what the first run had to crop and matte its way out of. Eight of
+       the ten came back, and the General Secretary's name with them: the card
+       read "Clinton Eze Ogbonnia", the resend has it as Eze Clinton Ogbonnia.
+       The Treasurer and Ex-Officio II were not in the resend, so they keep the
+       portraits already published — seeding simply skips a roster entry whose
+       file is absent. */
     roster: [
       ['agha-kalu-agwu', 'QS Agha Kalu Agwu, MNIQS', 'Chapter Chairman', 1],
       ['nwafor-eric-eze', 'QS Nwafor Eric Eze, MNIQS', 'Deputy Chairman', 2],
-      ['clinton-eze-ogbonnia', 'QS Clinton Eze Ogbonnia, MNIQS', 'General Secretary', 3],
+      ['eze-clinton-ogbonnia', 'QS Eze Clinton Ogbonnia, MNIQS', 'General Secretary', 3],
       ['agha-charity-c', 'Miss Agha Charity C.', 'Assistant General Secretary', 4],
       ['adeniyi-gbenga', 'QS Adeniyi Gbenga, MNIQS', 'Treasurer', 5],
       ['aliechem-reuben-c', 'Mr Aliechem Reuben C.', 'Financial Secretary', 6],
@@ -217,6 +225,100 @@ const CHAPTERS = [
       ['m-z-adih', 'QS M. Z. Adih', 'YQSF Coordinator', 8],
     ],
   },
+  {
+    key: 'kaduna',
+    chapterName: 'Kaduna Chapter',
+    state: 'Kaduna',
+    stateLabel: 'Kaduna State',
+    chairperson: 'QS Dr. Bukola Aluko-Olokun, FNIQS',
+    secretary: 'QS Ozavize Omayoza Ojoro, MNIQS',
+    about:
+      'The Kaduna State Chapter of the Nigerian Institute of Quantity Surveyors brings '
+      + 'together registered quantity surveyors practising across Kaduna State in the '
+      + 'North West geopolitical zone. A thirteen-member executive committee leads the '
+      + 'chapter across administration, finance, public relations and research and '
+      + 'development, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government, industry and the '
+      + 'academic community in the state.',
+    heroPortrait: 'bukola-aluko-olokun',
+    /* Titles are the chapter's own, from the captions on its senate pack — hence
+       "Chairperson" and "Assistant Secretary General" here where other chapters
+       say Chairman and Assistant General Secretary. Nothing keys off the exact
+       wording; the chapter page renders whatever the record carries.
+
+       The pack ranks nobody: it labels two people "Ex-Officio" and three
+       "Co-Opted Member", so I and II and III below are ordering, not the
+       chapter's own numbering. Worth confirming before anyone reads seniority
+       into it. */
+    roster: [
+      ['bukola-aluko-olokun', 'QS Dr. Bukola Aluko-Olokun, FNIQS', 'Chapter Chairperson', 1],
+      ['mohammed-saidu-minin', 'QS Mohammed Saidu Minin, MNIQS', 'Deputy Chairman', 2],
+      ['ozavize-omayoza-ojoro', 'QS Ozavize Omayoza Ojoro, MNIQS', 'General Secretary', 3],
+      ['habu-david-obadiah', 'QS Habu David Obadiah, MNIQS', 'Assistant Secretary General', 4],
+      ['gabriel-omotayo-oladija', 'QS Gabriel Omotayo Oladija, FNIQS', 'Treasurer', 5],
+      ['jamil-mohammed-ibrahim', 'QS Jamil Mohammed Ibrahim, MNIQS', 'Financial Secretary', 6],
+      ['gyorend-simon-yangs', 'QS Gyorend Simon Yangs, MNIQS', 'Public Relations Officer', 7],
+      ['hassana-mailabari-kumo', 'QS Dr. Hassana Mailabari Kumo, MNIQS', 'Research & Development Secretary', 8],
+      ['timothy-o-oluwasakin', 'QS Timothy O. Oluwasakin, FNIQS', 'Ex-Officio I', 9],
+      ['muinat-omolara-sanni', 'QS Muinat Omolara Sanni, MNIQS', 'Ex-Officio II', 10],
+      ['rebacca-kingsley-madaki', 'QS Dr. Rebacca Kingsley Madaki, FNIQS', 'Co-opted Member I', 11],
+      ['khadijat-yusuf', 'QS Khadijat Yusuf', 'Co-opted Member II', 12],
+      ['yusuf-musa-uba', 'QS Yusuf Musa Uba, MNIQS', 'Co-opted Member III', 13],
+    ],
+  },
+  {
+    key: 'fct',
+    chapterName: 'FCT Chapter',
+    state: 'FCT',
+    stateLabel: 'FCT',
+    chairperson: 'QS Ahmed Usman Kankia, FNIQS',
+    secretary: 'QS Buhari Tanko Haruna, FNIQS',
+    about:
+      'The FCT Chapter of the Nigerian Institute of Quantity Surveyors serves registered '
+      + 'quantity surveyors practising across the Federal Capital Territory. Sitting in '
+      + "the seat of federal government, the chapter works closest to the institute's "
+      + 'National Secretariat, and its chairman represents the Territory on the National '
+      + 'Executive Council. A fourteen-member executive committee leads the chapter across '
+      + 'administration, finance, public relations and education and professional '
+      + 'development, delivering continuing professional development, upholding standards '
+      + 'in construction cost management, and representing the profession before '
+      + 'government, industry and the academic community in Abuja. The chapter also hosts '
+      + 'the Young Quantity Surveyors Forum (YQSF) and West African Quantity Surveyors '
+      + 'Network coordination for the FCT.',
+    heroPortrait: 'ahmed-usman-kankia',
+    /* Roster read from the chapter's "Senate Members FCT CHAPTER" document, whose
+       wording is followed here — including the YQSF Coordinator, the one name it
+       supplies bare, which stays bare.
+
+       Three names the document and the photo captions disagree on, all recorded
+       below the way the weight of evidence points and all worth a line back to
+       the chapter: the chairman ("Kankika" in the document against Kankia in its
+       own filename and in the secretariat's caption of 2026-07-27); Ex-Officio II
+       ("Uzor Amaka" against Uzoamaka); and the WAQSN representative (Gowom
+       against Gowon). The Deputy Chairman keeps the fuller "Ayodele" already
+       published rather than the document's "Ayo" — the same name, not a
+       correction.
+
+       Fourteen executives, thirteen portraits: no photograph came with the pack
+       for the YQSF Coordinator, so his card renders as a monogram until one does. */
+    roster: [
+      ['ahmed-usman-kankia', 'QS Ahmed Usman Kankia, FNIQS', 'Chapter Chairman', 1],
+      ['theophilus-ayo-apere', 'QS Theophilus Ayodele Apere, FNIQS', 'Deputy Chairman', 2],
+      ['buhari-tanko-haruna', 'QS Buhari Tanko Haruna, FNIQS', 'General Secretary', 3],
+      ['ayuba-musa', 'QS Ayuba Musa, MNIQS', 'Assistant General Secretary', 4],
+      ['abel-gankon-dawah', 'QS Abel Gankon Dawah, FNIQS', 'Treasurer', 5],
+      ['yusuf-jamiu-adewale', 'QS Yusuf Jamiu Adewale, MNIQS', 'Financial Secretary', 6],
+      ['adamu-musa-barau', 'QS Adamu Musa Barau, MNIQS', 'Public Relations Secretary', 7],
+      ['mustapha-muhd-abdullahi', "QS Mustapha Muh'd Abdullahi, FNIQS", 'Education & Professional Development Secretary', 8],
+      ['ahmed-tijjani-lawal', 'QS Ahmed Tijjani Lawal, MNIQS', 'Ex-Officio I', 9],
+      ['uzoamaka-okobia', 'QS Uzoamaka Okobia, MNIQS', 'Ex-Officio II', 10],
+      ['mary-b-gowom', 'QS Mary B. Gowom, FNIQS', 'WAQSN Representative', 11],
+      ['abdulrafiu-abdullahi', 'Abdulrafiu Abdullahi', 'YQSF Coordinator', 12],
+      ['zemo-masha-alexander', 'QS Zemo Masha Alexander, FNIQS', 'Co-opted Member I', 13],
+      ['uwem-justine-glory', 'QS Uwem Justine Glory, MNIQS', 'Co-opted Member II', 14],
+    ],
+  },
 ];
 
 (async () => {
@@ -236,17 +338,24 @@ const CHAPTERS = [
     const urls = {};
 
     for (const [slug, name, title, order] of c.roster) {
-      const file = path.join(portraitsDir, c.key, `${c.key}-${slug}.jpg`);
-      if (!fs.existsSync(file)) { console.warn(`   !! missing portrait ${file}`); continue; }
-
       let storage = 'text only';
       if (!noPhotos) {
-        const buffer = fs.readFileSync(file);
-        const stored = await storeBuffer({
-          buffer, originalname: `${c.key}-${slug}.jpg`, mimetype: 'image/jpeg', size: buffer.length,
-        });
-        urls[slug] = stored.url;
-        storage = stored.storage;
+        /* A roster entry whose portrait is absent still gets its text written —
+           only the photo is skipped. That is what --no-photos means, and it is
+           also what a partial pack needs: when a chapter resends eight of ten
+           portraits, the other two must keep the images they already have
+           without their names and order going unwritten. */
+        const file = path.join(portraitsDir, c.key, `${c.key}-${slug}.jpg`);
+        if (!fs.existsSync(file)) {
+          console.warn(`   !! missing portrait ${file} — text only`);
+        } else {
+          const buffer = fs.readFileSync(file);
+          const stored = await storeBuffer({
+            buffer, originalname: `${c.key}-${slug}.jpg`, mimetype: 'image/jpeg', size: buffer.length,
+          });
+          urls[slug] = stored.url;
+          storage = stored.storage;
+        }
       }
 
       await Exco.findOneAndUpdate(

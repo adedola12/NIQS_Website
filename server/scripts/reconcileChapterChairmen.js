@@ -26,8 +26,12 @@ const apply = process.argv.includes('--apply');
    Only listed where the chapter's material and the NEC differ and someone has
    confirmed which is right — otherwise the chapter's own wording wins. */
 const NAME_OVERRIDES = {
-  // Secretariat's own caption, 2026-07-27: "QS KANKIA USMAN, FNIQS".
-  FCT: 'QS Kankia Usman, FNIQS',
+  // Secretariat's own caption, 2026-07-27: "QS KANKIA USMAN, FNIQS". The chapter's
+  // senate roster of 2026-07-28 supplies the full name but spells the surname
+  // "Kankika" — against Kankia in the secretariat's caption and in the chapter's
+  // own photo filename, so it reads as a slip of the keyboard. Full name from the
+  // roster, surname from the two that agree.
+  FCT: 'QS Ahmed Usman Kankia, FNIQS',
 };
 
 /* When both records already carry a portrait they are usually two different
@@ -37,6 +41,9 @@ const NAME_OVERRIDES = {
    left out keep whatever each record already has. */
 const PREFER_PHOTO = {
   Nasarawa: 'nec',
+  // FCT sent its senate portraits on 2026-07-28; the chairman's is now normalised
+  // onto the same backdrop as everyone else, so the NEC should take it.
+  FCT: 'chapter',
 };
 
 const STATES = ['FCT', 'Delta', 'Ebonyi', 'Nasarawa'];
