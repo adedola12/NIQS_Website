@@ -10,7 +10,13 @@
  *
  *   node scripts/buildOutstandingPortraits.js
  *   cd ../docs/pdf-source && node render.js outstanding-portraits.html \
- *       ../NIQS-Outstanding-Portraits.pdf "Outstanding Portraits"
+ *       ../../client/public/documents/niqs-outstanding-portraits.pdf "Outstanding Portraits"
+ *
+ * That output path is the one the site serves and the admin dashboard links to,
+ * so rendering anywhere else leaves the Secretariat downloading a stale list.
+ * The PDF ships with the client build — regenerating it needs a deploy to reach
+ * them, which is why the dashboard shows its own live count beside the link
+ * rather than relying on the number printed in the document.
  *
  * The photo spec near the top is not decoration. Full-length shots, group
  * photos and screenshots of designed posters are what produced every portrait

@@ -186,13 +186,27 @@ exports.getDashboardStats = async (req, res) => {
       memberFilter = { chapter: req.admin.assignedChapter };
     }
 
-    const [newsCount, eventCount, memberCount, contactCount, adminCount] = await Promise.all([
-      News.countDocuments(newsFilter),
-      Event.countDocuments(eventFilter),
-      Member.countDocuments(memberFilter),
-      Contact.countDocuments({ isRead: false }),
-      Admin.countDocuments()
-    ]);
+    /* Officers published with no photograph, who render as their initials. This
+       is the standing chase with the chapters, so the dashboard carries the
+       live number rather than the admin trusting whatever a circulated PDF said
+       on the day it was built. A state admin sees only their own chapter. */
+    const Exco = require('../models/Exco');
+    const PastPresident = require('../models/PastPresident');
+    const noImage = { $or: [{ image: { $exists: false } }, { image: '' }, { image: null }] };
+    const stateScoped = req.admin.role === 'state_admin' && req.admin.assignedChapter;
+    const portraitQueries = stateScoped
+      ? [Exco.countDocuments({ ...noImage, scope: 'chapter', chapter: req.admin.assignedChapter })]
+      : [Exco.countDocuments(noImage), PastPresident.countDocuments(noImage)];
+
+    const [newsCount, eventCount, memberCount, contactCount, adminCount, ...portraitCounts] =
+      await Promise.all([
+        News.countDocuments(newsFilter),
+        Event.countDocuments(eventFilter),
+        Member.countDocuments(memberFilter),
+        Contact.countDocuments({ isRead: false }),
+        Admin.countDocuments(),
+        ...portraitQueries,
+      ]);
 
     const recentNews = await News.find(newsFilter).sort('-createdAt').limit(5).populate('author', 'firstName lastName');
     const upcomingEvents = await Event.find({ ...eventFilter, date: { $gte: new Date() } }).sort('date').limit(5);
@@ -204,6 +218,7 @@ exports.getDashboardStats = async (req, res) => {
         totalMembers:   memberCount,
         unreadMessages: contactCount,
         totalAdmins:    adminCount,
+        portraitsOutstanding: portraitCounts.reduce((a, b) => a + b, 0),
       },
       recentNews,
       upcomingEvents,

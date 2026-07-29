@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdArticle, MdEvent, MdPeople, MdMail, MdAdminPanelSettings, MdAdd } from 'react-icons/md';
+import { MdArticle, MdEvent, MdPeople, MdMail, MdAdminPanelSettings, MdAdd, MdPictureAsPdf } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
@@ -88,6 +88,42 @@ export default function Dashboard() {
             />
           )}
         </div>
+
+        {/* Outstanding portraits — the standing chase with the chapters. The
+            count is live; the PDF beside it is only as current as the last
+            deploy, so the two are labelled separately on purpose. */}
+        {!loading && stats?.portraitsOutstanding > 0 && (
+          <div
+            style={{
+              display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+              background: '#fffdf8', border: '1px solid #f0d8a8', borderLeft: '4px solid #C9974A',
+              borderRadius: 10, padding: '14px 18px', marginBottom: 28,
+            }}
+          >
+            <div style={{ flex: '1 1 320px' }}>
+              <div style={{ fontWeight: 600, fontSize: 15, color: '#0B1F4B' }}>
+                {stats.portraitsOutstanding} officer{stats.portraitsOutstanding === 1 ? '' : 's'} without a photograph
+              </div>
+              <div style={{ fontSize: 13, color: '#6b7280', marginTop: 3 }}>
+                They appear on the public site as their initials. The chapter-by-chapter list,
+                with the photo standard to send chapters, is in the PDF.
+              </div>
+            </div>
+            <a
+              href="/documents/niqs-outstanding-portraits.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px',
+                background: '#0B1F4B', color: '#fff', borderRadius: 8, textDecoration: 'none',
+                fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap',
+              }}
+            >
+              <MdPictureAsPdf size={17} />
+              Outstanding Portraits PDF
+            </a>
+          </div>
+        )}
 
         {/* Quick actions */}
         <div style={{ marginBottom: 28 }}>
