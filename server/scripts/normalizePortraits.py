@@ -177,6 +177,28 @@ def build_backdrop(session, debug_dir=None):
     return out
 
 
+def blurred_fill(rgb):
+    """The photo's own colours, blurred to canvas size, as a surround.
+
+    For a source no matting model will cut — every one tried returns either a
+    floating head or a rectangle of the room behind it — the choice is between
+    leaving it at its own size, where the card crops a head to twice everyone
+    else's, and framing it to the house geometry with something behind it. This
+    is that something: the picture's own colours, too soft to read as a place,
+    so nothing is invented about where the subject was standing.
+    """
+    h, w = rgb.shape[:2]
+    scale = max(CANVAS_W / w, CANVAS_H / h)
+    big = cv2.resize(rgb, (int(np.ceil(w * scale)), int(np.ceil(h * scale))),
+                     interpolation=cv2.INTER_LINEAR)
+    y0 = (big.shape[0] - CANVAS_H) // 2
+    x0 = (big.shape[1] - CANVAS_W) // 2
+    out = big[y0:y0 + CANVAS_H, x0:x0 + CANVAS_W].astype(np.float64)
+    out = cv2.GaussianBlur(out, (0, 0), 42)
+    rng = np.random.default_rng(23)
+    return np.clip(out * 0.82 + rng.normal(0, 1.6, out.shape), 0, 255)
+
+
 def president_target(det):
     """Face size and placement to match, measured off the president himself."""
     bgr = cv2.imread(PRESIDENT)
@@ -292,6 +314,11 @@ def main():
     ap.add_argument('--model', default='u2net')
     ap.add_argument('--alpha-matting', action='store_true',
                     help='trimap refinement via pymatting — slower, much cleaner edges')
+    ap.add_argument('--no-matte', action='store_true',
+                    help='do not cut the subject out: keep the whole photo, framed to the '
+                         'house face geometry over a blurred fill of its own colours. For '
+                         'sources no matting model can handle — the card then at least '
+                         'agrees with every other card on how big a head is.')
     args = ap.parse_args()
 
     os.makedirs(args.outdir, exist_ok=True)
@@ -309,8 +336,14 @@ def main():
     suspect = []
     for i, f in enumerate(files, 1):
         name = os.path.splitext(os.path.basename(f))[0] + '.jpg'
-        rgba, source = load_subject(f, session, args.alpha_matting)
-        comp, how = place(rgba, det, target, backdrop)
+        if args.no_matte:
+            src = np.asarray(Image.open(f).convert('RGB'))
+            rgba = np.dstack([src, np.full(src.shape[:2], 255, np.uint8)])
+            plate, source = blurred_fill(src), 'unmatted'
+        else:
+            rgba, source = load_subject(f, session, args.alpha_matting)
+            plate = backdrop
+        comp, how = place(rgba, det, target, plate)
         if comp is None:
             print(f'  {i:2}/{len(files)} !! {name}: {how}')
             suspect.append((name, how))

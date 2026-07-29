@@ -523,10 +523,14 @@
   .pp-grid { @apply grid grid-cols-4 gap-5 mt-8; }
   .ppcard { @apply bg-white border border-bdr rounded-[13px] p-6 text-center transition-all duration-200; }
   .ppcard:hover { @apply -translate-y-1; box-shadow: var(--shadow-sm); border-color: var(--color-bdr-gold); }
-  .ppcard-img-wrap { @apply w-[72px] h-[72px] rounded-full overflow-hidden mx-auto mb-3; border: 3px solid var(--color-bdr); }
+  /* A past president's portrait is the point of his card, so it gets the room:
+     72px left a face unreadable and the initials fallback looked like a bullet.
+     object-position 22% because these are studio portraits with the head high
+     in the frame — centring a circle on them crops the forehead. */
+  .ppcard-img-wrap { @apply w-[132px] h-[132px] rounded-full overflow-hidden mx-auto mb-4; border: 3px solid var(--color-bdr); }
   .ppcard:hover .ppcard-img-wrap { border-color: var(--color-bdr-gold); }
-  .ppcard-img-wrap img { @apply w-full h-full object-cover object-top; }
-  .ppcard-name { @apply font-heading text-[.9rem] font-bold text-navy mb-1; letter-spacing: -.02em; }
+  .ppcard-img-wrap img { @apply w-full h-full object-cover; object-position: center 22%; }
+  .ppcard-name { @apply font-heading text-[.95rem] font-bold text-navy mb-1; letter-spacing: -.02em; }
   .ppcard-term { @apply text-[.68rem] font-bold text-gold mb-0.5; }
   .ppcard-info { @apply text-[.7rem] text-txt-3; }
 

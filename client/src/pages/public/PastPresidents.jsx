@@ -17,7 +17,8 @@ function InitialsAvatar({ name }) {
     <div style={{
       width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: 'linear-gradient(160deg, #0B1F4B 0%, #12306e 100%)',
-      color: 'rgba(255,255,255,.85)', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.3rem',
+      color: 'rgba(255,255,255,.85)', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '2.4rem',
+      letterSpacing: '.02em',
     }}>{initials || 'QS'}</div>
   );
 }
