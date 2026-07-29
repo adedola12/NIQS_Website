@@ -7,8 +7,11 @@
  * Reads MONGO_URI + Cloudinary/R2 creds from server/.env, uploads the
  * compressed body-head portraits through utils/storage (same tiering as
  * /api/upload), then upserts records by (name, scope) so re-runs are safe.
- * BOT members have no portraits in the content package — the public page
- * renders a monogram card for them.
+ * BOT members had no portraits in that package, so this script sets none for
+ * them. The secretariat sent all seven on 2026-07-29 and they were published
+ * with applyManifestPortraits.js; because the trustee upsert below never writes
+ * an `image`, re-running this seed leaves those portraits alone. Keep it that
+ * way, or a routine re-seed will blank the Board of Trustees page.
  *
  * Usage (from the server folder):
  *   node scripts/seedLeadershipBodies.js <photosDir>
