@@ -169,20 +169,45 @@ release.**
 
 ---
 
-## Phase 4 — The one item worth real budget
+## Phase 4 — Chapter map ✅ DONE
 
-**Interactive Nigeria chapters map.** Chapters are currently a list; a clickable
-state map is the natural way to present a national institute and would be the
-site's signature moment.
+Budgeted at ~30 KB brotli of inline SVG path data. **Delivered for 569 bytes of
+CSS and a 2.3 KB Chapters chunk**, entry bundle untouched — the map sits on a lazy
+route.
 
-- Inline SVG of Nigeria's 36 states + FCT: **~20–30 KB brotli** for the path data.
-- Zero JS if hover/active states are CSS and transitions use resident framer-motion.
-- Only two chapters have full profiles today (Katsina, Osun), so the map needs a
-  clear "profile coming soon" state for the rest — worth designing up front rather
-  than discovering at launch.
+**It is not an SVG outline of Nigeria, deliberately.** Accurate admin-1 boundary
+data is not in this repo, and hand-approximating 37 state borders would put a map
+with *wrong borders* on a national institute's website — authoritative-looking and
+incorrect, which is worse than no map. A tile grid makes no boundary claim, and
+says so in visible copy rather than leaving the reader to infer it.
 
-Budget it explicitly: **+30 KB.** Even with it, the initial payload lands around
-107 KB brotli — still 3.5× lighter than today.
+It is also the better instrument. On a true map Lagos is a speck and Niger is
+enormous, which inverts their importance to NIQS — the smallest state carries the
+largest membership. Equal tiles give every chapter equal presence.
+
+Positions are relative, not projected: column 1 west, column 7 east, row 1 north,
+row 8 south. **If licensed boundary data is ever approved, only the `GRID`
+constant in `ChapterMap.jsx` needs replacing** — everything else reads from
+chapter data.
+
+Other decisions worth keeping:
+
+- **Profiled status is derived, not hardcoded** — a chairperson, about text,
+  address, or non-zero member count. The map updates itself as NIQS seeds more
+  chapters. Ten currently qualify (not two, as an earlier note recorded).
+- **Pending chapters still link through.** `ChapterDetail` renders a sensible
+  fallback for any state, so a dead tile would be worse. The distinction lives in
+  the styling and the accessible name — a screen reader hears "full profile not
+  yet published".
+- **Zone filtering is lifted into `Chapters.jsx`** so the map and the list below
+  filter together rather than disagreeing.
+- **Hover and focus are CSS, not React state.** Tracking hover would re-render all
+  37 tiles per pointer move for what `:hover` does free; `:focus-visible` gets the
+  same treatment so keyboard users get the affordance.
+- Colour is never the only signal — every tile is labelled, the legend repeats
+  each zone name in text.
+- Below 560px the grid gives way to the searchable list, which carries the same
+  information and suits a phone better.
 
 ---
 
@@ -208,7 +233,7 @@ Budget it explicitly: **+30 KB.** Even with it, the initial payload lands around
 | After Phase 2 (images) | **78.5 KB** JS + **8.3 KB** image | ✅ measured; was 92 KB of image |
 | After Phase 3 (all CSS, no framer-motion) | **78.5 KB** JS + **11.1 KB** CSS | ✅ measured; +539 B |
 | ~~Phase 3 with framer-motion on the homepage~~ | ~116 KB | avoided — see Phase 3 |
-| After Phase 4 (chapters map) | ~108 KB | projected |
+| After Phase 4 (chapters map) | **78.5 KB** JS + **11.7 KB** CSS | ✅ measured; map is on a lazy route |
 
 Faster **and** more immersive is not a trade here, but it is not automatic either.
 Phase 1 freed 293 KB by moving an admin PDF toolchain off the public path. Phases
