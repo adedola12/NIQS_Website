@@ -2,76 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
 
-/* ── Placeholder data — matches the HTML file exactly ── */
-const FALLBACK = [
-  {
-    _id: '1',
-    title: 'NIQS Logo (White)',
-    description: 'Primary logo for dark backgrounds. PNG, SVG, EPS formats.',
-    buttonLabel: 'Download',
-    fileUrl: '',
-    previewType: 'image_contained',
-    previewBackground: 'var(--navy)',
-    previewImage: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&q=80&fit=crop',
-    imageFilter: 'opacity:.85',
-  },
-  {
-    _id: '2',
-    title: 'NIQS Logo (Navy)',
-    description: 'Primary logo for light backgrounds. PNG, SVG, EPS formats.',
-    buttonLabel: 'Download',
-    fileUrl: '',
-    previewType: 'image_contained',
-    previewBackground: '',
-    previewImage: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&q=80&fit=crop',
-    imageFilter: 'grayscale(100%) brightness(.3)',
-  },
-  {
-    _id: '3',
-    title: 'Colour Palette',
-    description: 'Official NIQS colour codes — HEX, RGB, CMYK, Pantone.',
-    buttonLabel: 'Download PDF',
-    fileUrl: '',
-    previewType: 'gradient',
-    previewBackground: 'linear-gradient(135deg,var(--navy) 50%,var(--gold) 100%)',
-    previewImage: '',
-    imageFilter: '',
-  },
-  {
-    _id: '4',
-    title: 'Letterhead Template',
-    description: 'Official NIQS letterhead in Microsoft Word and PDF formats.',
-    buttonLabel: 'Download',
-    fileUrl: '',
-    previewType: 'image',
-    previewBackground: '',
-    previewImage: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&q=80&fit=crop',
-    imageFilter: '',
-  },
-  {
-    _id: '5',
-    title: 'Business Card Template',
-    description: 'Standard and premium member business card templates.',
-    buttonLabel: 'Download',
-    fileUrl: '',
-    previewType: 'image',
-    previewBackground: '',
-    previewImage: 'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=400&q=80&fit=crop',
-    imageFilter: '',
-  },
-  {
-    _id: '6',
-    title: 'Brand Guidelines',
-    description: "Comprehensive brand usage guidelines and do's & don'ts.",
-    buttonLabel: 'Download PDF',
-    fileUrl: '',
-    previewType: 'image',
-    previewBackground: '',
-    previewImage: 'https://images.unsplash.com/photo-1543286386-713bdd548da4?w=400&q=80&fit=crop',
-    imageFilter: '',
-  },
-];
-
 /* ── Preview block renderer ── */
 function BCardPreview({ item }) {
   const bgStyle = item.previewBackground
@@ -107,15 +37,20 @@ function BCardPreview({ item }) {
 }
 
 export default function BrandMaterials() {
-  const [materials, setMaterials] = useState(FALLBACK);
+  const [materials, setMaterials] = useState([]);
+  const [status, setStatus]       = useState('loading');
 
   useEffect(() => {
     API.get('/brand-materials')
       .then(res => {
         const data = res.data;
-        if (Array.isArray(data) && data.length > 0) setMaterials(data);
+        setMaterials(Array.isArray(data) ? data : []);
+        setStatus('ready');
       })
-      .catch(() => {}); // silently keep fallback on error
+      .catch(() => {
+        setMaterials([]);
+        setStatus('error');
+      });
   }, []);
 
   const handleDownload = (item) => {
@@ -163,6 +98,16 @@ export default function BrandMaterials() {
               </div>
             ))}
           </div>
+
+          {materials.length === 0 && (
+            <p style={{ textAlign: 'center', color: 'var(--color-txt-3)', marginTop: '1rem' }}>
+              {status === 'loading'
+                ? 'Loading brand materials…'
+                : status === 'error'
+                  ? 'We could not load the brand materials just now. Please try again shortly.'
+                  : 'No brand materials have been published yet.'}
+            </p>
+          )}
         </div>
       </section>
     </>

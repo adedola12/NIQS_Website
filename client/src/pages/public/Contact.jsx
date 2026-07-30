@@ -3,11 +3,15 @@ import { useSearchParams } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
-/* ── Fallback contact blocks ─────────────────────────────── */
+/* ── Fallback contact blocks ─────────────────────────────────────────────
+   Defaults only, overlaid by /contact-info. No phone numbers here: the two
+   that used to sit in this block were placeholder digits, and a wrong number
+   on the contact page is worse than no number at all. The secretariat's real
+   lines belong in the admin contact settings, not in the bundle. */
 const FALLBACK = {
   national: {
     label: 'National Secretariat',
-    phone1: '+234 901 234 5678', phone2: '+234 801 234 5678',
+    phone1: '', phone2: '',
     email1: 'info@niqs.org.ng', email2: 'secretary@niqs.org.ng',
     address: 'NIQS House, Plot 759 Cadastral Zone,\nCentral Business District,\nAbuja, FCT, Nigeria',
     officeHours: 'Monday — Friday: 8:00 AM — 5:00 PM\nSaturday — Sunday: Closed',

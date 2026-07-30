@@ -171,9 +171,10 @@
   .stagger > *:nth-child(n+10) { --i: 9; }
 
   /* ── Chapter map ──
-     A schematic tile grid, laid out with CSS Grid rather than SVG. Columns run
-     west to east, rows north to south; ChapterMap.jsx supplies the coordinates.
-     Costs no path data and no JavaScript beyond the component itself. */
+     A real map of Nigeria. Boundaries are Natural Earth 1:10m Admin 1 (public
+     domain), converted to SVG paths by client/scripts/build-nigeria-map.py and
+     shipped as src/data/nigeriaStates.js — ~11.5 KB brotli for all 37 states,
+     on a lazy route, so the entry bundle is unaffected. */
   .cmap-wrap { margin-bottom: 3.5rem; }
   .cmap-head {
     display: flex; align-items: flex-end; justify-content: space-between;
@@ -192,78 +193,75 @@
   .cmap-zone.on { background: var(--color-navy); border-color: var(--color-navy); color: #fff; }
   .cmap-swatch { width: 9px; height: 9px; border-radius: 3px; background: currentColor; opacity: .85; }
 
-  .cmap {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    grid-template-rows: repeat(8, auto);
-    gap: .45rem;
-    max-width: 760px;
-  }
-  .cmap-cell { min-width: 0; }
+  .cmap-figure { max-width: 820px; }
+  .cmap-svg { width: 100%; height: auto; display: block; overflow: visible; }
 
-  .cmap-tile {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: .15rem;
-    aspect-ratio: 1 / 1;
-    padding: .3rem .2rem;
-    border-radius: 10px;
-    border: 1px solid var(--color-bdr);
-    background: var(--color-off);
-    text-align: center;
-    transition: transform .18s cubic-bezier(.22,.61,.36,1),
-                box-shadow .18s, border-color .18s, background .18s, opacity .18s;
+  /* Each state. The fill carries profile status, the stroke keeps neighbours
+     legible where two same-zone states meet. */
+  .cmap-state {
+    fill: var(--color-off-2);
+    stroke: #fff;
+    stroke-width: 1.1;
+    stroke-linejoin: round;
+    cursor: pointer;
+    transition: fill .18s ease, opacity .18s ease;
   }
-  .cmap-name {
-    font-family: var(--font-heading);
-    font-size: clamp(.5rem, 1.05vw, .66rem);
-    font-weight: 700; line-height: 1.1;
-    color: var(--color-txt-2);
-    overflow-wrap: anywhere;
-  }
-  .cmap-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-gold); }
-  .cmap-pending { font-size: .6rem; line-height: 1; color: var(--color-txt-3); }
+  .cmap-state.is-profiled { fill: var(--color-gold); fill-opacity: .55; }
+  .cmap-state.is-pending  { fill: var(--color-off-2); }
+  .cmap-state.is-dimmed   { opacity: .25; }
 
-  /* Published chapters read as solid; the rest stay legible but recede, so the
-     difference is visible without the pending ones looking broken or disabled. */
-  .cmap-tile.is-profiled { background: #fff; border-color: var(--color-bdr-gold); }
-  .cmap-tile.is-profiled .cmap-name { color: var(--color-navy); }
-  .cmap-tile.is-pending { border-style: dashed; }
-
-  /* Hover and keyboard focus get the identical treatment, in CSS rather than
-     React state — a tracked `hovered` value would re-render all 37 tiles on every
-     pointer move to produce something :hover already does for free. */
-  .cmap-tile:hover,
-  .cmap-tile:focus-visible {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-    border-color: var(--color-gold);
-    background: #fff;
-  }
-  .cmap-tile:focus-visible {
-    outline: 2px solid var(--color-gold);
-    outline-offset: 2px;
-  }
-  .cmap-tile.is-dimmed { opacity: .3; }
-
-  /* Zone tinting. Colour is never the only signal — every tile is also labelled,
-     and the legend repeats the zone name in text. */
-  .cmap-tile.z-nw { border-left: 3px solid #2563EB; }
-  .cmap-tile.z-ne { border-left: 3px solid #7C3AED; }
-  .cmap-tile.z-nc { border-left: 3px solid #0891B2; }
-  .cmap-tile.z-sw { border-left: 3px solid #C9974A; }
-  .cmap-tile.z-se { border-left: 3px solid #059669; }
-  .cmap-tile.z-ss { border-left: 3px solid #DC2626; }
+  /* Zone tint, applied to pending states so the six zones stay readable without
+     competing with the gold that marks a published profile. */
+  .cmap-state.is-pending.z-nw { fill: #dbe7fb; }
+  .cmap-state.is-pending.z-ne { fill: #e6ddfa; }
+  .cmap-state.is-pending.z-nc { fill: #d6eef4; }
+  .cmap-state.is-pending.z-sw { fill: #f5e7cf; }
+  .cmap-state.is-pending.z-se { fill: #d8f0e6; }
+  .cmap-state.is-pending.z-ss { fill: #fadfdf; }
   .cmap-zone.z-nw { color: #2563EB; } .cmap-zone.z-ne { color: #7C3AED; }
   .cmap-zone.z-nc { color: #0891B2; } .cmap-zone.z-sw { color: #B4832F; }
   .cmap-zone.z-se { color: #059669; } .cmap-zone.z-ss { color: #DC2626; }
   .cmap-zone.on.z-nw, .cmap-zone.on.z-ne, .cmap-zone.on.z-nc,
   .cmap-zone.on.z-sw, .cmap-zone.on.z-se, .cmap-zone.on.z-ss { color: #fff; }
 
-  .cmap-note {
-    display: flex; align-items: center; flex-wrap: wrap; gap: .3rem 1rem;
-    margin-top: 1rem; font-size: .7rem; color: var(--color-txt-3);
+  .cmap-svg a:hover .cmap-state,
+  .cmap-svg a:focus-visible .cmap-state {
+    fill: var(--color-gold);
+    fill-opacity: 1;
   }
-  .cmap-key { display: inline-flex; align-items: center; gap: .35rem; }
+  .cmap-svg a:focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: 2px;
+  }
+  .cmap-svg a:focus { outline: none; }
+
+  .cmap-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--color-txt-2);
+    pointer-events: none;          /* never steal the click from the state */
+    transition: fill .18s ease, opacity .18s ease;
+  }
+  .cmap-label.is-dimmed { opacity: .2; }
+  .cmap-label.is-hover  { fill: var(--color-navy); font-weight: 800; }
+
+  .cmap-tiny-key {
+    margin-top: .9rem; font-size: .68rem; line-height: 1.6;
+    color: var(--color-txt-3); max-width: 820px;
+  }
+  .cmap-tiny-key strong { color: var(--color-txt-2); font-weight: 700; }
+
+  .cmap-note {
+    display: flex; align-items: center; flex-wrap: wrap; gap: .3rem 1.2rem;
+    margin-top: .6rem; font-size: .7rem; color: var(--color-txt-3);
+  }
+  .cmap-key { display: inline-flex; align-items: center; gap: .4rem; }
+  .cmap-dot  { width: 11px; height: 11px; border-radius: 3px;
+               background: var(--color-gold); opacity: .55; }
+  .cmap-dash { width: 11px; height: 11px; border-radius: 3px;
+               background: var(--color-off-2); border: 1px solid var(--color-bdr); }
+  .cmap-hovered { font-weight: 700; color: var(--color-navy); }
 
   /* ── Skeleton placeholders ──
      18 public pages gate their content behind `{!loading && …}`, so the section
@@ -1015,11 +1013,15 @@
    size, so it gives way to the searchable list underneath, which carries the same
    information and is the better small-screen instrument anyway. */
 @media (max-width: 900px) {
-  .cmap { gap: .3rem; max-width: 100%; }
-  .cmap-tile { border-radius: 8px; padding: .2rem .1rem; }
+  /* Labels stop fitting inside the smaller states well before the map itself
+     becomes unusable, so drop them and lean on hover/selection instead. */
+  .cmap-label { font-size: 15px; }
 }
-@media (max-width: 560px) {
-  .cmap, .cmap-note { display: none; }
+@media (max-width: 620px) {
+  /* Below this the outlines are too small to hit reliably with a thumb, and the
+     searchable list underneath carries the same information in a form that
+     actually suits a phone. */
+  .cmap-figure, .cmap-note { display: none; }
   .cmap-wrap { margin-bottom: 2rem; }
   .cmap-head { margin-bottom: 1rem; }
 }

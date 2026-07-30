@@ -3,12 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
-const FALLBACK_RELATED = [
-  { _id: '1', slug: 'niqs-annual-conference-2026', title: 'NIQS Annual Conference 2026 Announced', excerpt: 'Conference details for the 34th Annual Conference in Abuja.', image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400', date: '2026-03-15', category: 'Conference' },
-  { _id: '2', slug: 'new-qs-bill-passes-senate', title: 'New QS Bill Passes Second Reading', excerpt: 'Legislative update on the Quantity Surveyors Registration Act.', image: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=400', date: '2026-03-10', category: 'Legislation' },
-  { _id: '3', slug: 'niqs-signs-mou-with-rics', title: 'NIQS Signs MoU with RICS', excerpt: 'International reciprocity partnership expanded.', image: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=400', date: '2026-03-01', category: 'International' },
-];
-
 export default function NewsArticle() {
   const { slug } = useParams();
   const [article, setArticle] = useState(null);
@@ -27,20 +21,12 @@ export default function NewsArticle() {
               const d = r.data?.data || r.data;
               if (Array.isArray(d)) setRelated(d.filter(n => n.slug !== slug).slice(0, 3));
             })
-            .catch(() => setRelated(FALLBACK_RELATED));
+            .catch(() => setRelated([]));
         }
       })
       .catch(() => {
-        setArticle({
-          title: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-          content: '<p>This article is currently unavailable. Please check back later or browse other news articles.</p>',
-          excerpt: 'Article content is loading or unavailable.',
-          image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1000',
-          date: new Date().toISOString(),
-          category: 'News',
-          author: 'NIQS Communications',
-        });
-        setRelated(FALLBACK_RELATED);
+        setArticle(null);
+        setRelated([]);
       })
       .finally(() => setLoading(false));
   }, [slug]);

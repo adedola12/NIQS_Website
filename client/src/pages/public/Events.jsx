@@ -2,30 +2,24 @@ import React, { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
-const FALLBACK = [
-  { _id: '1', slug: 'annual-conference-2026', title: '34th Annual Conference', description: 'The flagship event of NIQS bringing together quantity surveyors from across Nigeria and beyond for knowledge sharing and fellowship.', date: '2026-06-15', endDate: '2026-06-17', location: 'Abuja International Conference Centre', type: 'Conference' },
-  { _id: '2', slug: 'tpc-exam-april-2026', title: 'TPC Examination — April 2026 Diet', description: 'Test of Professional Competence examination for aspiring Graduate Members (MNIQS) of the Institute.', date: '2026-04-20', endDate: '2026-04-22', location: 'Lagos, Abuja, Port Harcourt', type: 'Examination' },
-  { _id: '3', slug: 'cpd-workshop-bim', title: 'CPD Workshop: BIM for Quantity Surveyors', description: 'Hands-on workshop on Building Information Modelling applications in QS practice. Earn 5 CPD points.', date: '2026-05-10', location: 'NIQS Lagos Chapter Secretariat', type: 'Workshop' },
-  { _id: '4', slug: 'fellowship-investiture-2026', title: 'Fellowship Investiture Ceremony 2026', description: 'Formal investiture of new Fellows of the Nigerian Institute of Quantity Surveyors — a prestigious milestone.', date: '2026-06-16', location: 'Abuja International Conference Centre', type: 'Ceremony' },
-  { _id: '5', slug: 'gde-exam-june-2026', title: 'GDE Examination 2026', description: 'General Development Examination for graduates of non-accredited programmes seeking probationer membership.', date: '2026-06-15', endDate: '2026-06-16', location: 'Lagos, Abuja', type: 'Examination' },
-  { _id: '6', slug: 'yqsf-tech-summit', title: 'YQSF Technology Summit', description: 'Young QS Forum technology conference focusing on digital tools, AI in construction, and the future of QS practice.', date: '2026-07-20', location: 'Landmark Event Centre, Lagos', type: 'Conference' },
-  { _id: '7', slug: 'cpd-dispute-resolution', title: 'CPD: Construction Dispute Resolution', description: 'Workshop on mediation, arbitration, and adjudication in construction contracts. Earn 5 CPD points.', date: '2026-08-12', location: 'NIQS National Secretariat, Abuja', type: 'Workshop' },
-  { _id: '8', slug: 'tpc-exam-october-2026', title: 'TPC Examination — October 2026 Diet', description: 'Second sitting of the Test of Professional Competence for the 2026 examination year.', date: '2026-10-19', endDate: '2026-10-21', location: 'Lagos, Abuja, Port Harcourt', type: 'Examination' },
-];
-
 const TYPE_FILTERS = ['All', 'Conference', 'Examination', 'Workshop', 'Ceremony'];
 
 export default function Events() {
-  const [events, setEvents] = useState(FALLBACK);
+  const [events, setEvents] = useState([]);
+  const [status, setStatus] = useState('loading');
   const [activeType, setActiveType] = useState('All');
 
   useEffect(() => {
     API.get('/events')
       .then(res => {
         const data = res.data?.events || res.data?.data || res.data;
-        if (Array.isArray(data) && data.length) setEvents(data);
+        setEvents(Array.isArray(data) ? data : []);
+        setStatus('ready');
       })
-      .catch(() => {});
+      .catch(() => {
+        setEvents([]);
+        setStatus('error');
+      });
   }, []);
 
   const filtered = activeType === 'All' ? events : events.filter(e => e.type === activeType);
@@ -88,7 +82,13 @@ export default function Events() {
 
           {filtered.length === 0 && (
             <p style={{ textAlign: 'center', color: 'var(--color-txt-3)', marginTop: '2rem' }}>
-              No events found for this type.
+              {status === 'loading'
+                ? 'Loading events…'
+                : status === 'error'
+                  ? 'We could not load the events just now. Please try again shortly.'
+                  : activeType === 'All'
+                    ? 'No events have been published yet.'
+                    : 'No events found for this type.'}
             </p>
           )}
         </div>

@@ -4,148 +4,6 @@ import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 import { useAuth } from '../../context/AuthContext';
 
-/* ─────────────────────────────────────────────
-   Placeholder jobs — used when DB is empty
-───────────────────────────────────────────── */
-const FALLBACK = [
-  {
-    _id: '1',
-    title: 'Senior Quantity Surveyor',
-    company: 'Julius Berger Nigeria Plc',
-    location: 'Abuja, FCT, Nigeria',
-    type: 'Full-time',
-    salary: 'Competitive',
-    deadline: '2026-04-15',
-    logo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=80&h=80&fit=crop',
-    description: `Julius Berger Nigeria Plc is seeking an experienced Senior Quantity Surveyor to join our Infrastructure Division in Abuja. The ideal candidate will oversee cost management on major civil and building projects across Nigeria.
-
-You will be responsible for all aspects of commercial management from project inception through to final account settlement, working closely with project managers, engineers, and clients.
-
-This is an outstanding opportunity to be part of one of Nigeria's premier construction and engineering firms, contributing to landmark infrastructure projects that shape the nation.`,
-    requirements: `• Minimum of 7 years post-qualification experience in a similar role
-• Corporate Member of NIQS (MNIQS) or equivalent professional body
-• BSc or HND in Quantity Surveying or related discipline
-• Proven experience with NEC or FIDIC contract forms
-• Proficiency in CostX, Candy, or similar estimating software
-• Strong understanding of Nigerian construction industry regulations
-• Excellent negotiation and communication skills`,
-    applicationLink: 'https://juliusberger.com/careers',
-  },
-  {
-    _id: '2',
-    title: 'Project Quantity Surveyor',
-    company: 'Dangote Industries Limited',
-    location: 'Lagos Island, Lagos, Nigeria',
-    type: 'Full-time',
-    salary: '₦500,000 — ₦800,000/month',
-    deadline: '2026-04-20',
-    logo: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=80&h=80&fit=crop',
-    description: `Dangote Industries Limited is looking for a dynamic Project Quantity Surveyor to support the cost and commercial functions of our ongoing real estate and industrial development projects across Lagos.
-
-You will work within a high-performing team responsible for delivering commercial excellence across multiple high-value projects. You will manage subcontractor accounts, prepare valuations, and ensure cost control measures are in place throughout the project lifecycle.`,
-    requirements: `• Minimum of 4 years experience in quantity surveying
-• Graduate membership of NIQS (GNIQS) or higher
-• BSc in Quantity Surveying from a recognised university
-• Experience in cost planning, estimating, and contract management
-• Familiarity with BOQ preparation and measurement standards
-• Good knowledge of AutoCAD and Microsoft Office Suite
-• Ability to work in a fast-paced construction environment`,
-    applicationLink: '',
-  },
-  {
-    _id: '3',
-    title: 'Graduate QS Trainee',
-    company: 'CCECC Nigeria',
-    location: 'Port Harcourt, Rivers State, Nigeria',
-    type: 'Graduate Trainee',
-    salary: '₦200,000 — ₦350,000/month',
-    deadline: '2026-04-30',
-    logo: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=80&h=80&fit=crop',
-    description: `CCECC Nigeria is offering a Graduate Trainee programme for fresh Quantity Surveying graduates looking to kick-start their careers in the construction industry.
-
-Successful candidates will be placed on a structured 12-month rotational programme covering estimating, procurement, site measurement, and contract administration, mentored by experienced professionals.
-
-This is an excellent platform for ambitious young QS graduates to develop practical skills and grow into key commercial roles within a major international contractor.`,
-    requirements: `• First class or Second class upper degree in Quantity Surveying
-• NIQS student or probationer membership
-• Not more than 2 years post-graduation experience
-• Strong analytical and numerical skills
-• Proficiency in Microsoft Excel and Word
-• Excellent written and verbal communication
-• Willingness to be based in Port Harcourt`,
-    applicationLink: '',
-  },
-  {
-    _id: '4',
-    title: 'Cost Manager',
-    company: 'Aecom Nigeria',
-    location: 'Victoria Island, Lagos, Nigeria',
-    type: 'Full-time',
-    salary: 'Competitive',
-    deadline: '2026-05-01',
-    logo: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=80&h=80&fit=crop',
-    description: `AECOM is a global infrastructure firm and we are seeking a Cost Manager to join our growing Nigeria office in Victoria Island, Lagos.
-
-The Cost Manager will provide comprehensive cost management services to a varied portfolio of clients across the public and private sectors, including infrastructure, commercial, residential, and hospitality projects.
-
-Working within AECOM's established methodologies, you will prepare cost plans, manage procurement, conduct post-contract cost reporting, and drive value engineering initiatives.`,
-    requirements: `• Degree in Quantity Surveying, Cost Management, or related field
-• Minimum 5 years relevant experience
-• Chartered membership of NIQS or RICS
-• Strong knowledge of cost planning and procurement strategies
-• Experience with international construction contracts (NEC3/4, JCT, FIDIC)
-• Excellent client-facing and presentation skills
-• Proficiency in Microsoft Office and project cost management software`,
-    applicationLink: 'https://aecom.com/careers',
-  },
-  {
-    _id: '5',
-    title: 'Quantity Surveyor (Contract)',
-    company: 'Setraco Nigeria Limited',
-    location: 'Abuja, FCT, Nigeria',
-    type: 'Contract',
-    salary: '₦400,000 — ₦600,000/month',
-    deadline: '2026-05-10',
-    logo: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=80&h=80&fit=crop',
-    description: `Setraco Nigeria Limited requires a contract Quantity Surveyor to support ongoing road and civil infrastructure projects in the Abuja metropolitan area.
-
-The role is an initial 12-month contract with strong potential for renewal or conversion to permanent staff. You will be embedded within the project team and report directly to the Chief QS.
-
-Key responsibilities include interim valuations, subcontractor procurement and management, variation management, and preparation of final accounts.`,
-    requirements: `• Minimum 5 years post-qualification experience
-• Corporate membership of NIQS
-• Strong civil/infrastructure QS background
-• Experience with road, drainage, and bridge works
-• Ability to work independently with minimal supervision
-• Valid driver's licence — site visits required
-• Immediately available or short notice period`,
-    applicationLink: '',
-  },
-  {
-    _id: '6',
-    title: 'BIM Quantity Surveyor',
-    company: 'Lekki Free Zone Development Company',
-    location: 'Lekki, Lagos, Nigeria',
-    type: 'Full-time',
-    salary: '₦600,000 — ₦900,000/month',
-    deadline: '2026-05-15',
-    logo: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=80&h=80&fit=crop',
-    description: `Lekki Free Zone Development Company is pioneering smart construction delivery in Nigeria and is looking for a BIM-savvy Quantity Surveyor to join our technical team.
-
-In this role you will use 5D BIM workflows to extract quantities, prepare cost models, and carry out cost control reporting through the full project lifecycle. You will collaborate closely with architects, engineers, and the BIM coordination team.
-
-This is a cutting-edge opportunity for a forward-thinking QS professional who wants to work at the forefront of digital construction delivery in Nigeria.`,
-    requirements: `• Degree in Quantity Surveying with minimum 4 years experience
-• Demonstrated experience using Revit, Navisworks, or similar BIM authoring tools
-• Working knowledge of 5D BIM cost extraction
-• Corporate membership of NIQS preferred
-• Experience with international contracts (FIDIC or NEC)
-• Strong analytical and problem-solving skills
-• Passion for technology and digital transformation in construction`,
-    applicationLink: '',
-  },
-];
-
 const TYPE_COLORS = {
   'Full-time':       { bg: '#fff7ed', color: '#C9974A', border: '#f5d49b' },
   'full-time':       { bg: '#fff7ed', color: '#C9974A', border: '#f5d49b' },
@@ -427,7 +285,8 @@ function JobDetail({ job, onClose, isLoggedIn }) {
 }
 
 export default function Jobs() {
-  const [jobs, setJobs]       = useState(FALLBACK);
+  const [jobs, setJobs]       = useState([]);
+  const [status, setStatus]   = useState('loading');
   const [selected, setSelected] = useState(null);
   const [search, setSearch]   = useState('');
   const [typeFilter, setType] = useState('All');
@@ -438,9 +297,13 @@ export default function Jobs() {
     API.get('/jobs')
       .then(res => {
         const data = res.data?.data || res.data;
-        if (Array.isArray(data) && data.length) setJobs(data);
+        setJobs(Array.isArray(data) ? data : []);
+        setStatus('ready');
       })
-      .catch(() => {});
+      .catch(() => {
+        setJobs([]);
+        setStatus('error');
+      });
   }, []);
 
   const types = ['All', ...Array.from(new Set(jobs.map(j => j.type).filter(Boolean)))];
@@ -520,7 +383,13 @@ export default function Jobs() {
           <div className="job-list">
             {filtered.length === 0 ? (
               <p style={{ textAlign: 'center', color: 'var(--color-txt-3)', padding: '3rem 0' }}>
-                No jobs match your search. Try adjusting the filters.
+                {status === 'loading'
+                  ? 'Loading vacancies…'
+                  : status === 'error'
+                    ? 'We could not load the vacancies just now. Please try again shortly.'
+                    : jobs.length === 0
+                      ? 'No vacancies are currently listed.'
+                      : 'No jobs match your search. Try adjusting the filters.'}
               </p>
             ) : filtered.map(job => {
               const daysLeft = job.deadline
