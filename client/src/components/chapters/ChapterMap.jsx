@@ -46,9 +46,49 @@ function isProfiled(chapter) {
   return Boolean(chapter?.about);
 }
 
-/** Small states whose label will not fit inside their own outline. */
-const TINY = new Set(['Lagos', 'Anambra', 'Abia', 'Imo', 'Ebonyi', 'Ekiti', 'Osun',
-                      'Bayelsa', 'FCT', 'Enugu', 'Akwa Ibom', 'Rivers']);
+/**
+ * States too small to hold a label inside their own outline, and where their
+ * label goes instead.
+ *
+ * The generated paths fill their viewBox edge to edge (x 8-992, y 8-806), so
+ * there is no margin to write into. VIEWBOX_PADDED widens the canvas around the
+ * unchanged geometry — the country is not rescaled, the frame simply gets bigger
+ * — and these anchors sit in that new space.
+ *
+ * Positions are hand-placed rather than derived. An algorithm that pushes each
+ * label to its nearest edge puts eight of the south-eastern states on the same
+ * short stretch of the bottom border, which is worse than useless. Grouping them
+ * — west coast to the left, delta along the bottom, the south-east fanned into
+ * the empty bottom-right, and the landlocked ones out to the right — keeps every
+ * line readable and unambiguous about which shape it points at.
+ *
+ * anchor is the SVG text-anchor, so labels read outward from the map on each side.
+ */
+const VIEWBOX_PADDED = '-215 0 1425 915';
+
+const LEADERS = {
+  /* West coast — short hops to the left margin. */
+  Ekiti:        { x: -22,  y: 470, anchor: 'end' },
+  Osun:         { x: -22,  y: 540, anchor: 'end' },
+  Lagos:        { x: -22,  y: 612, anchor: 'end' },
+
+  /* Niger delta — straight down into the bottom margin. */
+  Bayelsa:      { x: 150,  y: 884, anchor: 'middle' },
+  Rivers:       { x: 330,  y: 884, anchor: 'middle' },
+
+  /* South-east, fanned into the empty corner beyond Cross River. */
+  Imo:          { x: 615,  y: 884, anchor: 'middle' },
+  Abia:         { x: 760,  y: 884, anchor: 'middle' },
+  'Akwa Ibom':  { x: 920,  y: 884, anchor: 'middle' },
+
+  /* Landlocked — out to the right margin at roughly their own latitude. */
+  FCT:          { x: 1015, y: 424, anchor: 'start' },
+  Enugu:        { x: 1015, y: 608, anchor: 'start' },
+  Anambra:      { x: 1015, y: 668, anchor: 'start' },
+  Ebonyi:       { x: 1015, y: 728, anchor: 'start' },
+};
+
+const TINY = new Set(Object.keys(LEADERS));
 
 export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) {
   const navigate = useNavigate();
@@ -118,7 +158,7 @@ export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) 
 
       <div className="cmap-figure">
         <svg
-          viewBox={VIEWBOX}
+          viewBox={VIEWBOX_PADDED}
           className="cmap-svg"
           role="list"
           aria-label="Map of Nigeria. Each state links to its NIQS chapter."
@@ -161,19 +201,46 @@ export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) 
             );
           })}
 
-          {/* Labels drawn after every shape so no neighbouring state paints over
-              them. pointer-events none keeps the label from stealing the click
-              from the state underneath it. */}
+          {/* Leader lines for the states too small to label in place. Drawn
+              before the labels but after every shape, so a line never disappears
+              under a neighbouring state. All of it is pointer-events: none —
+              a line lying across Taraba must not intercept Taraba's click. */}
+          {STATES.map((s) => {
+            const lead = LEADERS[s.name];
+            if (!lead) return null;
+            const chapter = byState.get(s.name);
+            const dimmed  = activeZone && chapter?.zone !== activeZone;
+            const cls = `cmap-leader${dimmed ? ' is-dimmed' : ''}${hovered === s.name ? ' is-hover' : ''}`;
+            return (
+              <g key={`l-${s.name}`} className={cls} aria-hidden="true">
+                <line x1={s.cx} y1={s.cy} x2={lead.x} y2={lead.y} />
+                {/* Anchor dot sits on the state, so it is unambiguous which
+                    shape the line belongs to where several run in parallel. */}
+                <circle cx={s.cx} cy={s.cy} r="3.5" />
+              </g>
+            );
+          })}
+
+          {/* Labels last, so nothing paints over them. pointer-events none keeps
+              a label from stealing the click from the state underneath it. */}
           {STATES.map((s) => {
             const chapter = byState.get(s.name);
             const dimmed  = activeZone && chapter?.zone !== activeZone;
-            if (TINY.has(s.name)) return null;
+            const lead    = LEADERS[s.name];
+            const hover   = hovered === s.name;
             return (
               <text
                 key={`t-${s.name}`}
-                x={s.cx} y={s.cy}
-                className={`cmap-label${dimmed ? ' is-dimmed' : ''}${hovered === s.name ? ' is-hover' : ''}`}
-                textAnchor="middle"
+                x={lead ? lead.x : s.cx}
+                y={lead ? lead.y : s.cy}
+                className={[
+                  'cmap-label',
+                  lead ? 'is-leader' : '',
+                  dimmed ? 'is-dimmed' : '',
+                  hover ? 'is-hover' : '',
+                ].filter(Boolean).join(' ')}
+                textAnchor={lead ? lead.anchor : 'middle'}
+                dominantBaseline={lead ? 'middle' : 'auto'}
                 aria-hidden="true"
               >
                 {s.name}
@@ -181,14 +248,6 @@ export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) 
             );
           })}
         </svg>
-
-        {/* The small southern and central states cannot hold a label inside
-            their own outline at this scale, so they get a shared key rather
-            than labels overlapping each other into illegibility. */}
-        <p className="cmap-tiny-key">
-          <strong>Not labelled on the map:</strong>{' '}
-          {[...TINY].sort().join(' · ')} — hover or select any state to identify it.
-        </p>
       </div>
 
       <p className="cmap-note">

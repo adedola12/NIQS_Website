@@ -193,7 +193,7 @@
   .cmap-zone.on { background: var(--color-navy); border-color: var(--color-navy); color: #fff; }
   .cmap-swatch { width: 9px; height: 9px; border-radius: 3px; background: currentColor; opacity: .85; }
 
-  .cmap-figure { max-width: 820px; }
+  .cmap-figure { max-width: 960px; }
   .cmap-svg { width: 100%; height: auto; display: block; overflow: visible; }
 
   /* Each state. The fill carries profile status, the stroke keeps neighbours
@@ -246,11 +246,28 @@
   .cmap-label.is-dimmed { opacity: .2; }
   .cmap-label.is-hover  { fill: var(--color-navy); font-weight: 800; }
 
-  .cmap-tiny-key {
-    margin-top: .9rem; font-size: .68rem; line-height: 1.6;
-    color: var(--color-txt-3); max-width: 820px;
+  /* Leader-line labels sit outside the country, on the page background rather
+     than on a filled shape, so they can take the darker text colour. */
+  .cmap-label.is-leader { fill: var(--color-txt); font-size: 12.5px; }
+
+  /* Twelve lines crossing the map would shout if they were drawn at full
+     strength, so they stay faint until their state is hovered or focused. */
+  .cmap-leader {
+    pointer-events: none;          /* never intercept a click meant for a state */
+    transition: opacity .18s ease;
   }
-  .cmap-tiny-key strong { color: var(--color-txt-2); font-weight: 700; }
+  .cmap-leader line {
+    stroke: var(--color-txt-3);
+    stroke-width: 1;
+    opacity: .45;
+  }
+  .cmap-leader circle {
+    fill: var(--color-txt-3);
+    opacity: .55;
+  }
+  .cmap-leader.is-dimmed { opacity: .15; }
+  .cmap-leader.is-hover line   { stroke: var(--color-navy); stroke-width: 1.8; opacity: 1; }
+  .cmap-leader.is-hover circle { fill: var(--color-navy); opacity: 1; }
 
   .cmap-note {
     display: flex; align-items: center; flex-wrap: wrap; gap: .3rem 1.2rem;
@@ -1013,9 +1030,11 @@
    size, so it gives way to the searchable list underneath, which carries the same
    information and is the better small-screen instrument anyway. */
 @media (max-width: 900px) {
-  /* Labels stop fitting inside the smaller states well before the map itself
-     becomes unusable, so drop them and lean on hover/selection instead. */
+  /* Everything scales with the viewBox, so text has to grow in SVG units to
+     stay legible as the rendered map shrinks. */
   .cmap-label { font-size: 15px; }
+  .cmap-label.is-leader { font-size: 14.5px; }
+  .cmap-leader line { stroke-width: 1.4; }
 }
 @media (max-width: 620px) {
   /* Below this the outlines are too small to hit reliably with a thumb, and the
