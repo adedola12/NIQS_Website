@@ -53,6 +53,11 @@ const QUERIES = [
   ['Rivers Chapter', 'QS Tochukwu Blessed, MNIQS (Research & Development Secretary) is cropped to the '
     + 'head and upper chest, which leaves nothing of the suit to work with. A photograph taken from '
     + 'the waist up would let his card match the rest of the chapter.'],
+  ['Bayelsa Chapter', 'The chapter\'s pack names QS Larry Samuel Agorosor, MNIQS as Deputy Chairman, '
+    + 'and the site now says so. The committee\'s Chapter Chairmen List (July 2026) had QS Enize '
+    + 'Fidelis Kenigbolo in that office and he is not in the pack at all. Please confirm the change.'],
+  ['Bayelsa Chapter', 'The chairman is published as QS Amangala Mabel Morris, FNIQS, the order her '
+    + 'own chapter uses; the committee\'s list has QS Mabel Morris Amangala, FNIQS. Which does she use?'],
   ['YQSF', 'What does NAQSS stand for in full? The page currently prints the acronym, where every '
     + 'other body on the site is spelt out.'],
 ];

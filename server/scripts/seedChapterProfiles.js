@@ -370,6 +370,53 @@ const CHAPTERS = [
       ['okwukwu-precious-oma', 'QS Okwukwu Precious Oma, MNIQS', 'WAQSN Coordinator', 12],
     ],
   },
+  {
+    key: 'bayelsa',
+    chapterName: 'Bayelsa Chapter',
+    state: 'Bayelsa',
+    stateLabel: 'Bayelsa State',
+    chairperson: 'QS Amangala Mabel Morris, FNIQS',
+    secretary: 'QS Amakoromo Ebiuge James, MNIQS',
+    about:
+      'The Bayelsa State Chapter of the Nigerian Institute of Quantity Surveyors serves '
+      + 'registered quantity surveyors practising across Bayelsa State in the South South '
+      + 'geopolitical zone. A ten-member executive committee leads the chapter across '
+      + 'administration, finance, public relations and professional development, working '
+      + 'with the National Secretariat to deliver continuing professional development, '
+      + 'uphold professional standards in construction cost management, and represent the '
+      + 'profession before government, industry and the academic community across the '
+      + 'creeks and coastal communities of the Niger Delta, where the cost of building is '
+      + 'shaped as much by access and terrain as by the market. The chapter also hosts the '
+      + 'Young Quantity Surveyors Forum (YQSF) for Bayelsa.',
+    heroPortrait: 'amangala-mabel-morris',
+    /* Titles are the chapter's own: "Secretary" and "Assistant Secretary" where
+       most chapters say General Secretary, and the caption's "PRO" and "Secretary
+       Professional development" written out. All ten portraits came, all ten are
+       published — a first for a pack of candid photographs rather than studio
+       shots. Three are full-length phone photos and one is a 450px-wide crop, so
+       they are softer than Rivers' at full size; none needed hand work.
+
+       Two things the chapter should confirm:
+       - The Deputy Chairman is QS Larry Samuel Agorosor here. The committee's
+         Chapter Chairmen List (July 2026) had QS Enize Fidelis Kenigbolo in that
+         office, and he is not in the pack at all, so this publishes a change of
+         officer on the strength of the chapter's own captions.
+       - The chairman's name is given surname-first in the pack (Amangala Mabel
+         Morris) against the committee list's Mabel Morris Amangala. The pack's
+         order is used, matching how it styles everyone else. */
+    roster: [
+      ['amangala-mabel-morris', 'QS Amangala Mabel Morris, FNIQS', 'Chapter Chairman', 1],
+      ['larry-samuel-agorosor', 'QS Larry Samuel Agorosor, MNIQS', 'Deputy Chairman', 2],
+      ['amakoromo-ebiuge-james', 'QS Amakoromo Ebiuge James, MNIQS', 'Secretary', 3],
+      ['dumo-silvia-sekibo', 'QS Dumo Silvia Sekibo, MNIQS', 'Assistant Secretary', 4],
+      ['bunu-afini-alex', 'QS Bunu Afini Alex, MNIQS', 'Treasurer', 5],
+      ['abraham-gilbert', 'QS Abraham Gilbert, MNIQS', 'Public Relations Officer', 6],
+      ['adesina-fatunwase', 'QS Adesina Fatunwase, MNIQS', 'Professional Development Secretary', 7],
+      ['ohwotuemuhor-omamakpor', 'QS Ohwotuemuhor Omamakpor, MNIQS', 'YQSF Coordinator', 8],
+      ['iniobi-moni-edoghotu', 'QS Iniobi Moni Edoghotu, FNIQS', 'Ex-Officio I', 9],
+      ['kubiat-sifon-thompson', 'QS Kubiat-Sifon Thompson, MNIQS', 'Ex-Officio II', 10],
+    ],
+  },
 ];
 
 (async () => {
