@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -110,7 +110,10 @@ const PortalLayout = () => {
 
       {/* Main content */}
       <main className="portal-main">
-        <Outlet />
+        {/* Keeps the portal sidebar mounted while a page chunk loads. */}
+        <Suspense fallback={<div style={{ minHeight: '60vh' }} aria-busy="true" />}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <style>{`

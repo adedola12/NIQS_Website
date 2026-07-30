@@ -20,6 +20,12 @@
       "port": 5188
     },
     {
+      "name": "split-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "client", "run", "preview", "--", "--port", "5191", "--strictPort"],
+      "port": 5191
+    },
+    {
       "name": "client-prod-preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "client", "run", "preview", "--", "--port", "5173", "--strictPort"],

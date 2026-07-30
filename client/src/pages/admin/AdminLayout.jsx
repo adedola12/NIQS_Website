@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AdminSidebar from '../../components/admin/AdminSidebar';
@@ -57,7 +57,11 @@ export default function AdminLayout() {
         }}
         className="admin-main-content"
       >
-        <Outlet />
+        {/* Each admin page is its own lazy chunk. Without a boundary here the
+            nearest one is in App.jsx, which would blank the sidebar too. */}
+        <Suspense fallback={<div style={{ minHeight: '60vh' }} aria-busy="true" />}>
+          <Outlet />
+        </Suspense>
       </main>
       <style>{`
         @media (max-width: 768px) {

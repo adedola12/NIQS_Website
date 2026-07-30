@@ -1,7 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
-import { useEffect, useRef } from 'react';
+import { useEffect, Suspense } from 'react';
 
 /* ── Global scroll-reveal observer ── */
 function useScrollReveal() {
@@ -41,7 +41,7 @@ function PageFade({ children }) {
   );
 }
 
-// Layout
+// Layout — on every page, so these stay in the entry chunk.
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import PartnerAdvert from './components/layout/PartnerAdvert';
@@ -49,79 +49,30 @@ import PartnerAdvert from './components/layout/PartnerAdvert';
 // Common
 import ProtectedRoute from './components/common/ProtectedRoute';
 
-// Public Pages
+// Prefetches a route's chunk when a link is hovered or focused.
+import useRoutePrefetch from './hooks/useRoutePrefetch';
+
+/**
+ * Home is the one page imported eagerly. It is the most common entry point, and
+ * lazy-loading it would cost an extra round trip on the very first paint: entry
+ * chunk arrives, React renders, *then* the Home chunk is requested. It is small
+ * enough that carrying it in the entry chunk is the better trade.
+ *
+ * Every other page comes from the registry in routes/pages.js as its own chunk.
+ */
 import Home from './pages/public/Home';
-import About from './pages/public/About';
-import President from './pages/public/President';
-import Council from './pages/public/Council';
-import NPC from './pages/public/NPC';
-import NationalBodies from './pages/public/NationalBodies';
-import Trustees from './pages/public/Trustees';
-import PastPresidents from './pages/public/PastPresidents';
-import Chapters from './pages/public/Chapters';
-import ChapterDetail from './pages/public/ChapterDetail';
-import WAQSN from './pages/public/WAQSN';
-import YQSF from './pages/public/YQSF';
-import Reciprocity from './pages/public/Reciprocity';
-import BrandMaterials from './pages/public/BrandMaterials';
-import Membership from './pages/public/Membership';
-import SearchQSFirms from './pages/public/SearchQSFirms';
-import Webinars from './pages/public/Webinars';
-import WorkshopMaterials from './pages/public/WorkshopMaterials';
-import Exams from './pages/public/Exams';
-import Research from './pages/public/Research';
-import News from './pages/public/News';
-import NewsArticle from './pages/public/NewsArticle';
-import Events from './pages/public/Events';
-import Jobs from './pages/public/Jobs';
-import Payment from './pages/public/Payment';
-import Contact from './pages/public/Contact';
-import Partnership from './pages/public/Partnership';
-import PartnerDetail from './pages/public/PartnerDetail';
-import EventRegister from './pages/public/EventRegister';
-import EventAttend from './pages/public/EventAttend';
-import FlyerRequest from './pages/public/FlyerRequest';
-import RequestFlyer from './pages/public/RequestFlyer';
+import { Pages } from './routes/pages';
 
-// Auth Pages
-import Login from './pages/auth/Login';
-import ForgotPassword from './pages/auth/ForgotPassword';
-import ResetPassword from './pages/auth/ResetPassword';
-
-// Portal Pages
-import PortalLayout from './pages/portal/PortalLayout';
-import PortalDashboard from './pages/portal/PortalDashboard';
-import PortalProfile from './pages/portal/PortalProfile';
-
-// Admin Pages
-import AdminLayout from './pages/admin/AdminLayout';
-import AdminDashboard from './pages/admin/Dashboard';
-import ManageAdmins from './pages/admin/ManageAdmins';
-import ManageNews from './pages/admin/ManageNews';
-import ManageEvents from './pages/admin/ManageEvents';
-import EventCalendar from './pages/admin/EventCalendar';
-import FlyerStudio from './pages/admin/FlyerStudio';
-import FlyerRequests from './pages/admin/FlyerRequests';
-import ManageRegistrations from './pages/admin/ManageRegistrations';
-import ManageExco from './pages/admin/ManageExco';
-import ManageChapters from './pages/admin/ManageChapters';
-import ManageJobs from './pages/admin/ManageJobs';
-import ManagePartners from './pages/admin/ManagePartners';
-import ManageMembers from './pages/admin/ManageMembers';
-import ManageBrandMaterials from './pages/admin/ManageBrandMaterials';
-import ManagePresident from './pages/admin/ManagePresident';
-import ManagePastPresidents from './pages/admin/ManagePastPresidents';
-import ManageSiteSettings from './pages/admin/ManageSiteSettings';
-import ManagePartnerAdvert from './pages/admin/ManagePartnerAdvert';
-import ManageContactInfo from './pages/admin/ManageContactInfo';
-import ManageQSFirms from './pages/admin/ManageQSFirms';
-import ManageExamResults from './pages/admin/ManageExamResults';
-import ManageQSConnect from './pages/admin/ManageQSConnect';
-import ManageWebinars from './pages/admin/ManageWebinars';
-import ManageWorkshopMaterials from './pages/admin/ManageWorkshopMaterials';
-import ManageJournal from './pages/admin/ManageJournal';
-import ManageMessages from './pages/admin/ManageMessages';
-import ManageProfile from './pages/admin/ManageProfile';
+/**
+ * Shown while a route chunk is in flight. The min-height matters: without it the
+ * footer jumps up to fill the empty space and then back down, which reads as a
+ * layout bug. Intentionally blank rather than a spinner — hovering prefetches the
+ * chunk, so on most navigations this never renders at all, and a spinner that
+ * flashes for 40ms looks worse than nothing.
+ */
+function RouteFallback() {
+  return <div style={{ minHeight: '60vh' }} aria-busy="true" />;
+}
 
 // Public layout wrapper
 function PublicLayout({ children }) {
@@ -129,7 +80,12 @@ function PublicLayout({ children }) {
     <>
       <Navbar />
       <main>
-        <PageFade>{children}</PageFade>
+        <PageFade>
+          {/* Inside the layout, not around <Routes>. A boundary further up would
+              unmount the navbar and footer while a chunk loads, flashing the
+              whole shell. Here only the page content swaps. */}
+          <Suspense fallback={<RouteFallback />}>{children}</Suspense>
+        </PageFade>
       </main>
       <Footer />
       <PartnerAdvert />
@@ -166,6 +122,7 @@ function BuiltByBadge() {
 
 export default function App() {
   useScrollReveal();
+  useRoutePrefetch();
   return (
     <AuthProvider>
       <BuiltByBadge />
@@ -180,119 +137,123 @@ export default function App() {
         }}
       />
 
-      <Routes>
-        {/* ══════ PUBLIC ROUTES ══════ */}
-        <Route path="/" element={<PublicPage element={<Home />} />} />
-        <Route path="/about" element={<PublicPage element={<About />} />} />
-        <Route path="/president" element={<PublicPage element={<President />} />} />
-        <Route path="/council" element={<PublicPage element={<Council />} />} />
-        <Route path="/npc" element={<PublicPage element={<NPC />} />} />
-        <Route path="/national-bodies" element={<PublicPage element={<NationalBodies />} />} />
-        <Route path="/board-of-trustees" element={<PublicPage element={<Trustees />} />} />
-        <Route path="/past-presidents" element={<PublicPage element={<PastPresidents />} />} />
-        <Route path="/chapters" element={<PublicPage element={<Chapters />} />} />
-        <Route path="/chapters/:slug" element={<PublicPage element={<ChapterDetail />} />} />
-        <Route path="/waqsn" element={<PublicPage element={<WAQSN />} />} />
-        <Route path="/yqsf" element={<PublicPage element={<YQSF />} />} />
-        <Route path="/reciprocity" element={<PublicPage element={<Reciprocity />} />} />
-        <Route path="/brand-materials" element={<PublicPage element={<BrandMaterials />} />} />
-        <Route path="/membership" element={<PublicPage element={<Membership />} />} />
-        <Route path="/search-qs-firms"    element={<PublicPage element={<SearchQSFirms />} />} />
-        <Route path="/webinars"           element={<PublicPage element={<Webinars />} />} />
-        <Route path="/workshop-materials" element={<PublicPage element={<WorkshopMaterials />} />} />
-        <Route path="/exams" element={<PublicPage element={<Exams />} />} />
-        <Route path="/research" element={<PublicPage element={<Research />} />} />
-        <Route path="/news" element={<PublicPage element={<News />} />} />
-        <Route path="/news/:slug" element={<PublicPage element={<NewsArticle />} />} />
-        <Route path="/events" element={<PublicPage element={<Events />} />} />
-        <Route path="/events/:id/register" element={<PublicPage element={<EventRegister />} />} />
-        <Route path="/events/attend/:token" element={<PublicPage element={<EventAttend />} />} />
-        <Route path="/request-flyer" element={<PublicPage element={<RequestFlyer />} />} />
-        <Route path="/flyer-request" element={<PublicPage element={<FlyerRequest />} />} />
-        <Route path="/flyer-request/:token" element={<PublicPage element={<FlyerRequest />} />} />
-        <Route path="/jobs" element={<PublicPage element={<Jobs />} />} />
-        <Route path="/payment" element={<PublicPage element={<Payment />} />} />
-        <Route path="/contact" element={<PublicPage element={<Contact />} />} />
-        <Route path="/partnership" element={<PublicPage element={<Partnership />} />} />
-        <Route path="/partnership/:id" element={<PublicPage element={<PartnerDetail />} />} />
+      {/* Outer boundary for routes that render outside PublicLayout — the auth
+          pages, and the portal and admin shells themselves. */}
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          {/* ══════ PUBLIC ROUTES ══════ */}
+          <Route path="/" element={<PublicPage element={<Home />} />} />
+          <Route path="/about" element={<PublicPage element={<Pages.About />} />} />
+          <Route path="/president" element={<PublicPage element={<Pages.President />} />} />
+          <Route path="/council" element={<PublicPage element={<Pages.Council />} />} />
+          <Route path="/npc" element={<PublicPage element={<Pages.NPC />} />} />
+          <Route path="/national-bodies" element={<PublicPage element={<Pages.NationalBodies />} />} />
+          <Route path="/board-of-trustees" element={<PublicPage element={<Pages.Trustees />} />} />
+          <Route path="/past-presidents" element={<PublicPage element={<Pages.PastPresidents />} />} />
+          <Route path="/chapters" element={<PublicPage element={<Pages.Chapters />} />} />
+          <Route path="/chapters/:slug" element={<PublicPage element={<Pages.ChapterDetail />} />} />
+          <Route path="/waqsn" element={<PublicPage element={<Pages.WAQSN />} />} />
+          <Route path="/yqsf" element={<PublicPage element={<Pages.YQSF />} />} />
+          <Route path="/reciprocity" element={<PublicPage element={<Pages.Reciprocity />} />} />
+          <Route path="/brand-materials" element={<PublicPage element={<Pages.BrandMaterials />} />} />
+          <Route path="/membership" element={<PublicPage element={<Pages.Membership />} />} />
+          <Route path="/search-qs-firms"    element={<PublicPage element={<Pages.SearchQSFirms />} />} />
+          <Route path="/webinars"           element={<PublicPage element={<Pages.Webinars />} />} />
+          <Route path="/workshop-materials" element={<PublicPage element={<Pages.WorkshopMaterials />} />} />
+          <Route path="/exams" element={<PublicPage element={<Pages.Exams />} />} />
+          <Route path="/research" element={<PublicPage element={<Pages.Research />} />} />
+          <Route path="/news" element={<PublicPage element={<Pages.News />} />} />
+          <Route path="/news/:slug" element={<PublicPage element={<Pages.NewsArticle />} />} />
+          <Route path="/events" element={<PublicPage element={<Pages.Events />} />} />
+          <Route path="/events/:id/register" element={<PublicPage element={<Pages.EventRegister />} />} />
+          <Route path="/events/attend/:token" element={<PublicPage element={<Pages.EventAttend />} />} />
+          <Route path="/request-flyer" element={<PublicPage element={<Pages.RequestFlyer />} />} />
+          <Route path="/flyer-request" element={<PublicPage element={<Pages.FlyerRequest />} />} />
+          <Route path="/flyer-request/:token" element={<PublicPage element={<Pages.FlyerRequest />} />} />
+          <Route path="/jobs" element={<PublicPage element={<Pages.Jobs />} />} />
+          <Route path="/payment" element={<PublicPage element={<Pages.Payment />} />} />
+          <Route path="/contact" element={<PublicPage element={<Pages.Contact />} />} />
+          <Route path="/partnership" element={<PublicPage element={<Pages.Partnership />} />} />
+          <Route path="/partnership/:id" element={<PublicPage element={<Pages.PartnerDetail />} />} />
 
-        {/* ══════ AUTH ROUTES ══════ */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+          {/* ══════ AUTH ROUTES ══════ */}
+          <Route path="/login" element={<Pages.Login />} />
+          <Route path="/forgot-password" element={<Pages.ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<Pages.ResetPassword />} />
 
-        {/* ══════ MEMBER PORTAL ══════ */}
-        <Route
-          path="/portal"
-          element={
-            <ProtectedRoute>
-              <PortalLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<PortalDashboard />} />
-          <Route path="profile" element={<PortalProfile />} />
-        </Route>
-
-        {/* ══════ ADMIN PANEL ══════ */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute adminOnly>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<AdminDashboard />} />
-          <Route path="news" element={<ManageNews />} />
-          <Route path="events" element={<ManageEvents />} />
-          <Route path="calendar" element={<EventCalendar />} />
-          <Route path="flyer-studio" element={<FlyerStudio />} />
-          <Route path="flyer-requests" element={<FlyerRequests />} />
-          <Route path="registrations" element={<ManageRegistrations />} />
-          <Route path="exco" element={<ManageExco />} />
-          <Route path="chapters" element={<ManageChapters />} />
-          <Route path="jobs" element={<ManageJobs />} />
-          <Route path="partners" element={<ManagePartners />} />
-          <Route path="members" element={<ManageMembers />} />
-          <Route path="admins" element={<ManageAdmins />} />
-          <Route path="brand-materials" element={<ManageBrandMaterials />} />
-          <Route path="president" element={<ManagePresident />} />
-          <Route path="past-presidents" element={<ManagePastPresidents />} />
-          <Route path="site-settings"  element={<ManageSiteSettings />} />
+          {/* ══════ MEMBER PORTAL ══════ */}
           <Route
-            path="partner-advert"
+            path="/portal"
             element={
-              <ProtectedRoute adminRoles={['main_admin']}>
-                <ManagePartnerAdvert />
+              <ProtectedRoute>
+                <Pages.PortalLayout />
               </ProtectedRoute>
             }
-          />
-          <Route path="contact-info"   element={<ManageContactInfo  />} />
-          <Route path="qs-firms"        element={<ManageQSFirms />} />
-          <Route path="exam-results"        element={<ManageExamResults />} />
-          <Route path="qs-connect"          element={<ManageQSConnect />} />
-          <Route path="webinars"            element={<ManageWebinars />} />
-          <Route path="workshop-materials"  element={<ManageWorkshopMaterials />} />
-          <Route path="journal"             element={<ManageJournal />} />
-          <Route path="messages"            element={<ManageMessages />} />
-          <Route path="profile"             element={<ManageProfile />} />
-        </Route>
+          >
+            <Route index element={<Pages.PortalDashboard />} />
+            <Route path="profile" element={<Pages.PortalProfile />} />
+          </Route>
 
-        {/* ══════ 404 ══════ */}
-        <Route
-          path="*"
-          element={
-            <PublicLayout>
-              <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem', padding: '4rem 2rem', textAlign: 'center' }}>
-                <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: '4rem', fontWeight: 800, color: 'var(--navy)', letterSpacing: '-.04em' }}>404</h1>
-                <p style={{ color: 'var(--text2)', fontSize: '1rem' }}>Page not found</p>
-                <a href="/" className="btn bp" style={{ marginTop: '1rem' }}>Back to Home</a>
-              </div>
-            </PublicLayout>
-          }
-        />
-      </Routes>
+          {/* ══════ ADMIN PANEL ══════ */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute adminOnly>
+                <Pages.AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Pages.AdminDashboard />} />
+            <Route path="news" element={<Pages.ManageNews />} />
+            <Route path="events" element={<Pages.ManageEvents />} />
+            <Route path="calendar" element={<Pages.EventCalendar />} />
+            <Route path="flyer-studio" element={<Pages.FlyerStudio />} />
+            <Route path="flyer-requests" element={<Pages.FlyerRequests />} />
+            <Route path="registrations" element={<Pages.ManageRegistrations />} />
+            <Route path="exco" element={<Pages.ManageExco />} />
+            <Route path="chapters" element={<Pages.ManageChapters />} />
+            <Route path="jobs" element={<Pages.ManageJobs />} />
+            <Route path="partners" element={<Pages.ManagePartners />} />
+            <Route path="members" element={<Pages.ManageMembers />} />
+            <Route path="admins" element={<Pages.ManageAdmins />} />
+            <Route path="brand-materials" element={<Pages.ManageBrandMaterials />} />
+            <Route path="president" element={<Pages.ManagePresident />} />
+            <Route path="past-presidents" element={<Pages.ManagePastPresidents />} />
+            <Route path="site-settings"  element={<Pages.ManageSiteSettings />} />
+            <Route
+              path="partner-advert"
+              element={
+                <ProtectedRoute adminRoles={['main_admin']}>
+                  <Pages.ManagePartnerAdvert />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="contact-info"   element={<Pages.ManageContactInfo  />} />
+            <Route path="qs-firms"        element={<Pages.ManageQSFirms />} />
+            <Route path="exam-results"        element={<Pages.ManageExamResults />} />
+            <Route path="qs-connect"          element={<Pages.ManageQSConnect />} />
+            <Route path="webinars"            element={<Pages.ManageWebinars />} />
+            <Route path="workshop-materials"  element={<Pages.ManageWorkshopMaterials />} />
+            <Route path="journal"             element={<Pages.ManageJournal />} />
+            <Route path="messages"            element={<Pages.ManageMessages />} />
+            <Route path="profile"             element={<Pages.ManageProfile />} />
+          </Route>
+
+          {/* ══════ 404 ══════ */}
+          <Route
+            path="*"
+            element={
+              <PublicLayout>
+                <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem', padding: '4rem 2rem', textAlign: 'center' }}>
+                  <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: '4rem', fontWeight: 800, color: 'var(--navy)', letterSpacing: '-.04em' }}>404</h1>
+                  <p style={{ color: 'var(--text2)', fontSize: '1rem' }}>Page not found</p>
+                  <a href="/" className="btn bp" style={{ marginTop: '1rem' }}>Back to Home</a>
+                </div>
+              </PublicLayout>
+            }
+          />
+        </Routes>
+      </Suspense>
     </AuthProvider>
   );
 }
