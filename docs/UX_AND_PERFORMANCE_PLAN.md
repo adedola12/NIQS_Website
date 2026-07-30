@@ -10,43 +10,60 @@ Lagos on 4G actually pays.
 
 Measured on this repo, not estimated.
 
-| | Entry chunk, raw | Entry chunk, brotli |
+| | Initial JS, raw | Initial JS, brotli |
 |---|---|---|
-| Today (all 60 pages in one bundle) | 1,647,915 | **371,341** |
-| With route-level `lazy()` | 250,963 | **72,715** |
-| Difference | −85% | **−298,626** |
+| Before (all 60 pages in one bundle) | 1,647,915 | **371,341** |
+| After Phase 1 (shipped) | 271,640 | **78,473** |
+| Difference | −84% | **−292,868 (−78.9%)** |
 
-A homepage visitor today downloads 371 KB before anything renders. After
-splitting it is the 73 KB entry plus the Home chunk (4.5 KB brotli) — about
-**77 KB, a 4.8× reduction**.
+A homepage visitor previously downloaded 371 KB before anything rendered. It is
+now 78.5 KB across three files — the entry chunk, `vendor-react` and
+`vendor-router` — verified in the browser as the only JS the homepage requests.
 
 Where the 298 KB goes: `FlyerStudio` alone is **184 KB brotli** (`jspdf` +
 `html2canvas` + `jszip`). It is imported only by `pages/admin/FlyerStudio.jsx`,
 which sits behind `ProtectedRoute`. Right now every public visitor downloads the
 admin PDF toolchain to read a news article.
 
-**So the immersive work is pre-funded.** `framer-motion` is already in the entry
-chunk and used in exactly 2 of 75 source files
-([LeaderCard.jsx](../client/src/components/common/LeaderCard.jsx),
-[President.jsx](../client/src/pages/public/President.jsx)). Its cost is already
-paid — using it across the site is marginally free.
+**Correction after shipping Phase 1.** The original version of this plan said the
+immersive work was "pre-funded" because `framer-motion` sat in the entry chunk and
+was therefore already paid for. **That is no longer true.** Splitting the routes
+moved framer-motion out of the initial payload into its own on-demand chunk
+(`proxy-*.js`, **37,878 bytes brotli**), loaded only by the two files that use it —
+[LeaderCard.jsx](../client/src/components/common/LeaderCard.jsx) and
+[President.jsx](../client/src/pages/public/President.jsx). Confirmed in the
+browser: `/president` pulls it, `/` does not.
+
+That is a better outcome, but it re-prices Phase 3 — see the note there.
 
 ---
 
-## Phase 1 — Split the bundle (prerequisite, +0 KB)
+## Phase 1 — Split the bundle ✅ DONE
 
-Nothing else on this list is worth doing first; richer motion on a 371 KB bundle
-just makes the wait more elaborate.
+Target was ≤ 80 KB brotli. Landed at **78,473**.
 
-1. Convert the 66 page imports in [App.jsx](../client/src/App.jsx) to
-   `lazy(() => import(...))` with a `<Suspense>` boundary.
-2. Add `manualChunks` in [vite.config.js](../client/vite.config.js) to pin
-   `react`/`react-dom`/`react-router` into a stable vendor chunk so it stays
-   cached across deploys.
-3. Prefetch on intent: call the route's `import()` on nav-link hover/focus. Costs
-   nothing and makes navigation feel instant.
+1. ✅ All 65 pages moved to dynamic imports via a registry,
+   [routes/pages.js](../client/src/routes/pages.js), which is the single source of
+   truth for both lazy rendering and prefetching. Home stays a static import — it
+   is the most common landing page, and lazy-loading it would add a round trip to
+   first paint for the sake of 4.5 KB.
+2. ✅ `manualChunks` in [vite.config.js](../client/vite.config.js) pins
+   `vendor-react` and `vendor-router` so the framework keeps a stable hash across
+   deploys instead of being re-downloaded every release.
+3. ✅ Prefetch on intent via [useRoutePrefetch.js](../client/src/hooks/useRoutePrefetch.js)
+   — one delegated document listener, not 57 per-link handlers. Hover, focus and
+   touchstart all trigger it; skipped on 2G or `saveData`.
 
-**Verify with:** entry chunk brotli ≤ 80 KB.
+**Suspense placement is the part worth preserving.** The boundary sits *inside*
+`PublicLayout` (and inside the `<Outlet>` of `AdminLayout`/`PortalLayout`), not
+around `<Routes>`. A boundary above the layout would unmount the navbar and footer
+on every navigation, flashing the whole shell. Verified: nav and footer stay
+mounted through a lazy route change.
+
+**Verified in a browser on the production build:** homepage requests exactly 3 JS
+files; `/about`, `/president`, `/login`, `/admin` and the 404 route all render;
+hovering `/about` prefetches its chunk and a repeat hover does not refetch;
+`/admin` redirects to `/login` without ever loading FlyerStudio; no console errors.
 
 ---
 
@@ -71,9 +88,29 @@ This is the largest single transfer win on the site and adds no JavaScript.
 
 ---
 
-## Phase 3 — Immersive layer (+0 KB, on the resident library)
+## Phase 3 — Immersive layer (re-priced after Phase 1)
 
-All of this runs on the `framer-motion` already in the bundle.
+All of this runs on `framer-motion`, which is already a dependency — but read the
+correction above: after splitting, it is a **37.9 KB brotli on-demand chunk**, not
+entry-resident. So the marginal cost depends entirely on *where* motion is used:
+
+- **On any page that already loads it** (`/president`, anything using `LeaderCard`)
+  — genuinely 0 KB.
+- **On other inner pages** — the 37.9 KB chunk loads once, then is cached for the
+  rest of the session. Cheap.
+- **On the homepage** — this is the decision that matters. Using framer-motion
+  above the fold pulls it into the initial payload, taking it from 78.5 KB to
+  ~116 KB. Still 3.2× better than before Phase 1, but it spends a third of what
+  Phase 1 saved.
+
+**Recommendation:** use CSS transitions and the existing IntersectionObserver
+`.reveal` mechanism (already in `App.jsx`) for the homepage hero and above-the-fold
+motion, and reserve framer-motion for inner pages where it is already loaded or
+where the interaction genuinely needs layout animation. That keeps the 78.5 KB
+entry intact.
+
+The table below assumes that split — 0 KB entries mean "no *additional* initial
+payload", not "no code".
 
 | Upgrade | Where | JS cost |
 |---|---|---|
@@ -128,16 +165,19 @@ Budget it explicitly: **+30 KB.** Even with it, the initial payload lands around
 
 ## Running total
 
-| Stage | Entry payload (brotli) |
-|---|---|
-| Today | 371 KB |
-| After Phase 1 | 77 KB |
-| After Phases 2–3 | ~79 KB |
-| After Phase 4 (with the map) | ~107 KB |
+| Stage | Initial payload (brotli) | Status |
+|---|---|---|
+| Before | 371 KB | — |
+| After Phase 1 | **78.5 KB** | ✅ measured |
+| After Phase 2 (images) | ~78.5 KB | JS unchanged; −11 MB of image transfer |
+| After Phase 3, homepage motion in CSS | ~81 KB | projected |
+| After Phase 3, framer-motion on the homepage | ~116 KB | projected — avoid |
+| After Phase 4 (chapters map) | ~108 KB | projected |
 
-Faster **and** more immersive is not a trade here. The bundle is currently paying
-for an admin PDF toolchain most visitors never touch; redirecting that budget
-funds the entire experience upgrade with ~260 KB left over.
+Faster **and** more immersive is not a trade here, but it is not automatic either.
+Phase 1 freed 293 KB by moving an admin PDF toolchain off the public path. Phases
+3 and 4 should spend a fraction of that, not all of it — the running total above
+is the thing to check before merging any of it.
 
 ---
 
