@@ -2,8 +2,21 @@ const mongoose = require('mongoose');
 const dns      = require('dns');
 
 // Override DNS to use Google (8.8.8.8) + Cloudflare (1.1.1.1) —
-// prevents ESERVFAIL errors when the system/ISP DNS can't resolve Atlas hostnames
-dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+// prevents ESERVFAIL errors when the system/ISP DNS can't resolve Atlas hostnames.
+//
+// Configurable because the right answer is environment-specific. On a developer
+// machine or Render, public resolvers work around flaky ISP DNS. Inside a VPC they
+// are a liability: a task in a private subnet with no NAT route cannot reach
+// 8.8.8.8 at all, and the mongodb+srv:// URI needs SRV lookups to resolve — so
+// resolution fails outright rather than falling back. Set DNS_SERVERS=system on
+// ECS to use the VPC resolver, or pass a comma-separated list to pin your own.
+const dnsSetting = (process.env.DNS_SERVERS || '').trim();
+if (dnsSetting.toLowerCase() !== 'system') {
+  dns.setServers(
+    dnsSetting ? dnsSetting.split(',').map((s) => s.trim()).filter(Boolean)
+               : ['8.8.8.8', '8.8.4.4', '1.1.1.1']
+  );
+}
 
 const connectDB = async () => {
   try {

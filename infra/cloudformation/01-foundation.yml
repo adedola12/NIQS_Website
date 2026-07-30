@@ -1,0 +1,394 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  NIQS API foundation — ECR repository, private S3 asset bucket fronted by
+  CloudFront, ECS cluster, IAM roles and the application secret. Deploy this
+  once, push an image, then deploy 02-service.yml.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REGION CHOICE MATTERS MORE THAN ANYTHING ELSE IN THIS TEMPLATE.
+# The API is chatty with MongoDB Atlas — a page render is several queries — so
+# every millisecond between Fargate and Atlas is multiplied. Deploy this stack
+# in the SAME region as the Atlas cluster. Check Atlas → Cluster → Configuration
+# before running. Putting the API in Ireland while Atlas sits in Virginia adds
+# ~80ms per query and will feel SLOWER than Render does today.
+# ─────────────────────────────────────────────────────────────────────────────
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: niqs
+    Description: Prefix for resource names.
+    AllowedPattern: "^[a-z][a-z0-9-]{1,20}$"
+
+  ClientOrigins:
+    Type: CommaDelimitedList
+    Default: "https://niqs-website.vercel.app,http://localhost:5173"
+    Description: >
+      Browser origins allowed to read CDN assets cross-origin. The flyer
+      generator rasterises remote images with html2canvas, which needs CORS.
+
+  CloudFrontPriceClass:
+    Type: String
+    Default: PriceClass_200
+    AllowedValues: [PriceClass_100, PriceClass_200, PriceClass_All]
+    Description: >
+      PriceClass_200 is the correct default for a Nigerian audience — it is the
+      cheapest class that includes the Lagos edge location. PriceClass_100 covers
+      only North America, Europe and Israel, so Nigerian visitors would be served
+      from Europe. Do not "save money" by dropping to 100.
+
+  RetainAssetsOnDelete:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: >
+      Keep the asset bucket if this stack is deleted. Leave as true — the bucket
+      holds uploaded constitutions and portraits that are not stored anywhere else.
+
+Conditions:
+  RetainAssets: !Equals [!Ref RetainAssetsOnDelete, "true"]
+
+Resources:
+  # ── Container registry ─────────────────────────────────────────────────────
+  ApiRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub "${ProjectName}-api"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      ImageTagMutability: MUTABLE
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Expire untagged images after 14 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 14
+                },
+                "action": { "type": "expire" }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Keep only the 20 most recent tagged images",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 20
+                },
+                "action": { "type": "expire" }
+              }
+            ]
+          }
+
+  # ── Asset storage ──────────────────────────────────────────────────────────
+  # Private bucket. Nothing is public-read; CloudFront reads it through an
+  # Origin Access Control, so the CDN domain is the only way in.
+  AssetBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: !If [RetainAssets, Retain, Delete]
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub "${ProjectName}-assets-${AWS::AccountId}-${AWS::Region}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+            BucketKeyEnabled: true
+      VersioningConfiguration:
+        # Uploads are keyed by uuid so they are never overwritten, but versioning
+        # is the difference between "someone deleted the constitution" being an
+        # inconvenience and being unrecoverable.
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: AbortIncompleteUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+          - Id: ExpireOldVersions
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 90
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods: [GET, HEAD]
+            AllowedOrigins: !Ref ClientOrigins
+            AllowedHeaders: ["*"]
+            ExposedHeaders: [ETag]
+            MaxAge: 3600
+
+  AssetOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${ProjectName}-asset-oac"
+        Description: Lets the CDN read the private asset bucket.
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # Uploads are uuid-keyed and never rewritten, so they are safe to cache for a
+  # year at the edge. The origin also sets Cache-Control: immutable.
+  AssetCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub "${ProjectName}-asset-cache"
+        Comment: Long-lived caching for immutable uuid-keyed uploads.
+        DefaultTTL: 86400
+        MinTTL: 1
+        MaxTTL: 31536000
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+          CookiesConfig:
+            CookieBehavior: none
+          HeadersConfig:
+            # Origin is deliberately NOT in the cache key. It would fragment the
+            # cache per origin for no benefit; CORS headers come from the
+            # response headers policy below, not from S3.
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+
+  AssetResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub "${ProjectName}-asset-headers"
+        Comment: CORS for html2canvas plus baseline security headers.
+        CorsConfig:
+          AccessControlAllowCredentials: false
+          AccessControlAllowHeaders:
+            Items: ["*"]
+          AccessControlAllowMethods:
+            Items: [GET, HEAD]
+          AccessControlAllowOrigins:
+            Items: !Ref ClientOrigins
+          AccessControlMaxAgeSec: 3600
+          OriginOverride: true
+        SecurityHeadersConfig:
+          ContentTypeOptions:
+            Override: true
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 31536000
+            IncludeSubdomains: true
+            Override: true
+          ReferrerPolicy:
+            ReferrerPolicy: strict-origin-when-cross-origin
+            Override: true
+
+  AssetDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub "${ProjectName} uploaded assets (PDFs, large images)"
+        PriceClass: !Ref CloudFrontPriceClass
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        Origins:
+          - Id: AssetBucketOrigin
+            DomainName: !GetAtt AssetBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt AssetOriginAccessControl.Id
+            # Required even with OAC; must be an empty string.
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: AssetBucketOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachedMethods: [GET, HEAD, OPTIONS]
+          Compress: true
+          CachePolicyId: !Ref AssetCachePolicy
+          ResponseHeadersPolicyId: !Ref AssetResponseHeadersPolicy
+
+  # Depends on the distribution (for the SourceArn condition), which depends on
+  # the bucket — a chain, not a cycle.
+  AssetBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AssetBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${AssetBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${AssetDistribution}"
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt AssetBucket.Arn
+              - !Sub "${AssetBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+
+  # ── Application secret ─────────────────────────────────────────────────────
+  # Created with placeholders. Fill the real values in after deploy — see the
+  # runbook. CloudFormation templates must never carry live credentials.
+  AppSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "${ProjectName}/api"
+      Description: Runtime secrets for the NIQS API (injected as env vars by ECS).
+      SecretString: |
+        {
+          "MONGO_URI": "REPLACE_ME",
+          "JWT_SECRET": "REPLACE_ME",
+          "CLOUDINARY_CLOUD_NAME": "REPLACE_ME",
+          "CLOUDINARY_API_KEY": "REPLACE_ME",
+          "CLOUDINARY_API_SECRET": "REPLACE_ME",
+          "SMTP_HOST": "REPLACE_ME",
+          "SMTP_PORT": "587",
+          "SMTP_USER": "REPLACE_ME",
+          "SMTP_PASS": "REPLACE_ME",
+          "SMTP_FROM": "REPLACE_ME",
+          "PORTAL_API_URL": "REPLACE_ME",
+          "PORTAL_API_KEY": "REPLACE_ME"
+        }
+
+  # ── ECS cluster ────────────────────────────────────────────────────────────
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ProjectName
+      CapacityProviders: [FARGATE, FARGATE_SPOT]
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+      ClusterSettings:
+        # "enabled" gives cluster/service metrics. "enhanced" adds per-task
+        # granularity but bills per metric — overkill for one small service.
+        - Name: containerInsights
+          Value: enabled
+
+  # ── IAM ────────────────────────────────────────────────────────────────────
+  # Used by the ECS agent to pull the image, ship logs and resolve secrets.
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-api-execution"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      Policies:
+        - PolicyName: ReadAppSecret
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: !Ref AppSecret
+
+  # Assumed by ECS itself to build the ALB, target groups, security groups and
+  # scaling policies that Express Mode manages on our behalf.
+  InfrastructureRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-api-infrastructure"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSInfrastructureRoleforExpressGatewayServices"
+
+  # Assumed by the application code. Scoped to the niqs/ prefix it writes to —
+  # the API has no reason to read anything else in the bucket.
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-api-task"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AssetBucketAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:DeleteObject
+                Resource: !Sub "${AssetBucket.Arn}/niqs/*"
+
+Outputs:
+  RepositoryUri:
+    Description: Push the API image here.
+    Value: !GetAtt ApiRepository.RepositoryUri
+    Export:
+      Name: !Sub "${ProjectName}-api-repo-uri"
+
+  ClusterName:
+    Value: !Ref Cluster
+    Export:
+      Name: !Sub "${ProjectName}-cluster"
+
+  ExecutionRoleArn:
+    Value: !GetAtt ExecutionRole.Arn
+    Export:
+      Name: !Sub "${ProjectName}-execution-role"
+
+  InfrastructureRoleArn:
+    Value: !GetAtt InfrastructureRole.Arn
+    Export:
+      Name: !Sub "${ProjectName}-infrastructure-role"
+
+  TaskRoleArn:
+    Value: !GetAtt TaskRole.Arn
+    Export:
+      Name: !Sub "${ProjectName}-task-role"
+
+  AppSecretArn:
+    Value: !Ref AppSecret
+    Export:
+      Name: !Sub "${ProjectName}-app-secret"
+
+  AssetBucketName:
+    Value: !Ref AssetBucket
+    Export:
+      Name: !Sub "${ProjectName}-asset-bucket"
+
+  AssetCdnUrl:
+    Description: Set as ASSET_CDN_URL on the service — becomes the public URL of uploads.
+    Value: !Sub "https://${AssetDistribution.DomainName}"
+    Export:
+      Name: !Sub "${ProjectName}-asset-cdn-url"

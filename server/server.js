@@ -8,6 +8,13 @@ const connectDB = require("./config/db");
 
 const app = express();
 
+// Behind the ECS Express Mode Application Load Balancer, so honour X-Forwarded-*
+// (one hop). Without this req.protocol reads "http" and `secure` cookies never set.
+app.set("trust proxy", 1);
+
+// Flipped by the SIGTERM handler at the bottom of this file; read by /api/health.
+let shuttingDown = false;
+
 // Connect to MongoDB
 connectDB();
 
@@ -81,12 +88,87 @@ app.use("/api/webinars", require("./routes/webinars"));
 app.use("/api/workshop-materials", require("./routes/workshopMaterials"));
 app.use("/api/journals", require("./routes/journals"));
 
-// Health check
+// Health check — also the ALB target-group probe for the ECS Express service.
+// Deliberately does NOT fail on a Mongo blip: a transient database outage would
+// otherwise make every task unhealthy and take the whole service down. Mongo state
+// is reported for observability only. During drain we return 503 so the ALB
+// deregisters this task promptly instead of racing the shutdown.
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  const mongoState = require("mongoose").connection.readyState; // 1 = connected
+  res.status(shuttingDown ? 503 : 200).json({
+    status: shuttingDown ? "draining" : "ok",
+    mongo: mongoState === 1 ? "connected" : "disconnected",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`NIQS Server running on port ${PORT}`);
 });
+
+/**
+ * Graceful shutdown. ECS sends SIGTERM and waits 30s before SIGKILL, so every
+ * deploy would otherwise drop whatever requests were mid-flight.
+ *
+ * The sequencing matters. `server.close()` alone is not enough: it stops new
+ * connections but waits for every *existing* socket to close, and both browsers
+ * and the ALB hold idle keep-alive sockets open for far longer than the 30s
+ * window. So we also close idle sockets explicitly, and force the stragglers.
+ *
+ *   1. flip /api/health to 503 so the ALB deregisters this task
+ *   2. keep serving for PRE_DRAIN_MS while that deregistration propagates
+ *   3. stop accepting, and drop sockets sitting idle in keep-alive
+ *   4. after DRAIN_TIMEOUT_MS, force-close whatever is still in flight
+ */
+const PRE_DRAIN_MS     = Number(process.env.PRE_DRAIN_MS || 5_000);
+const DRAIN_TIMEOUT_MS = Number(process.env.DRAIN_TIMEOUT_MS || 10_000);
+
+async function closeMongoAndExit(code) {
+  try {
+    await require("mongoose").connection.close(false);
+    console.log("Shutdown complete");
+  } catch (e) {
+    console.error("Error closing MongoDB connection:", e.message);
+    code = code || 1;
+  }
+  process.exit(code);
+}
+
+function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`${signal} received — health now 503, deregistering`);
+
+  setTimeout(() => {
+    console.log("Draining connections");
+
+    let closed = false;
+    server.close((err) => {
+      if (closed) return;
+      closed = true;
+      if (err) {
+        console.error("Error closing HTTP server:", err.message);
+        return closeMongoAndExit(1);
+      }
+      closeMongoAndExit(0);
+    });
+
+    // Idle keep-alive sockets would otherwise hold server.close() open until
+    // their timeout. Active requests are untouched and still get to finish.
+    server.closeIdleConnections();
+
+    // Backstop for genuinely long-running requests: force them, then exit 0 —
+    // this is an expected outcome of a deploy, not a failure.
+    const force = setTimeout(() => {
+      if (closed) return;
+      console.warn(`Drain exceeded ${DRAIN_TIMEOUT_MS}ms — forcing remaining connections`);
+      server.closeAllConnections();
+      closed = true;
+      closeMongoAndExit(0);
+    }, DRAIN_TIMEOUT_MS);
+    force.unref();
+  }, PRE_DRAIN_MS);
+}
+
+["SIGTERM", "SIGINT"].forEach((sig) => process.on(sig, () => shutdown(sig)));

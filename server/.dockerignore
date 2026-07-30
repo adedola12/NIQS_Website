@@ -1,0 +1,17 @@
+# Never bake secrets or host-built dependencies into the image.
+.env
+.env.*
+!.env.example
+node_modules
+npm-debug.log
+*.log
+
+# Ephemeral on Fargate — the directory is recreated by the Dockerfile.
+uploads/*
+!uploads/.gitkeep
+
+# Not needed by the API at runtime.
+Dockerfile
+.dockerignore
+.git
+.gitignore
