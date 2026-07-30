@@ -58,6 +58,15 @@ const QUERIES = [
     + 'Fidelis Kenigbolo in that office and he is not in the pack at all. Please confirm the change.'],
   ['Bayelsa Chapter', 'The chairman is published as QS Amangala Mabel Morris, FNIQS, the order her '
     + 'own chapter uses; the committee\'s list has QS Mabel Morris Amangala, FNIQS. Which does she use?'],
+  ['Ondo Chapter', 'The pack has an Ex-Officio II but no Ex-Officio I, and the site says Ex-Officio II '
+    + 'rather than quietly renumbering it. Is there a twelfth officer whose photograph did not come, '
+    + 'or is QS Aina Olanrewaju, MNIQS the only one?'],
+  ['Ondo Chapter', 'Names are published surname-first throughout, the order the chapter\'s own pack '
+    + 'uses; the committee\'s list has the chairman as QS Akinlolu Oyebobola Fadiyimu, FNIQS. Please '
+    + 'confirm the order the chapter prefers.'],
+  ['Ondo Chapter', 'QS Gbadebo Bunmi, MNIQS (Assistant General Secretary) came as a 413px-wide image '
+    + 'already cut out onto white, with the edge of a chair left in it. Her card is softer than the '
+    + 'rest of the chapter as a result — the full-size original photograph would fix it.'],
   ['YQSF', 'What does NAQSS stand for in full? The page currently prints the acronym, where every '
     + 'other body on the site is spelt out.'],
 ];
