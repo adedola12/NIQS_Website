@@ -29,15 +29,26 @@ Parameters:
 
   Cpu:
     Type: String
-    Default: "512"
+    Default: "256"
     AllowedValues: ["256", "512", "1024", "2048"]
     Description: >
-      512 (.5 vCPU) is a sensible start. 256 works but leaves little headroom for
-      the PDF/flyer endpoints, which are CPU-bound.
+      256 (.25 vCPU) is what runs in production, chosen to hold spend under the
+      $50/month ceiling — it halves the Fargate line to roughly $10.
+
+      Measured consequence: /api/exco, the heaviest endpoint at 212 documents,
+      moved from a ~0.64s median to ~0.96s. Lighter endpoints were unchanged.
+      Resource headroom is not the constraint — memory sits at 6% of 512 MB and
+      CPU peaks around 30% — the extra time is per-request serialisation with
+      less CPU to do it. Raise to 512/1024 (~$20) if that 300ms matters more than
+      the $10.
+
+      The earlier note here claimed the PDF/flyer endpoints were CPU-bound. They
+      are not: jspdf and html2canvas run in the browser, not on the server. The
+      only CPU-bound server work is bcryptjs on login.
 
   Memory:
     Type: String
-    Default: "1024"
+    Default: "512"
     Description: >
       Must be a valid Fargate pairing for Cpu — 512 CPU allows 1024-4096 MiB.
 
