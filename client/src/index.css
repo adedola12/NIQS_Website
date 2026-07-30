@@ -170,6 +170,101 @@
   .stagger > *:nth-child(9)  { --i: 8; }
   .stagger > *:nth-child(n+10) { --i: 9; }
 
+  /* ── Chapter map ──
+     A schematic tile grid, laid out with CSS Grid rather than SVG. Columns run
+     west to east, rows north to south; ChapterMap.jsx supplies the coordinates.
+     Costs no path data and no JavaScript beyond the component itself. */
+  .cmap-wrap { margin-bottom: 3.5rem; }
+  .cmap-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 1.25rem; margin-bottom: 1.75rem;
+  }
+
+  .cmap-legend { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .cmap-zone {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-size: .68rem; font-weight: 600; letter-spacing: .02em;
+    padding: .34rem .7rem; border-radius: 999px;
+    border: 1px solid var(--color-bdr); background: #fff; color: var(--color-txt-2);
+    transition: border-color .18s, color .18s, background .18s;
+  }
+  .cmap-zone:hover { border-color: var(--color-bdr-gold); color: var(--color-txt); }
+  .cmap-zone.on { background: var(--color-navy); border-color: var(--color-navy); color: #fff; }
+  .cmap-swatch { width: 9px; height: 9px; border-radius: 3px; background: currentColor; opacity: .85; }
+
+  .cmap {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: repeat(8, auto);
+    gap: .45rem;
+    max-width: 760px;
+  }
+  .cmap-cell { min-width: 0; }
+
+  .cmap-tile {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .15rem;
+    aspect-ratio: 1 / 1;
+    padding: .3rem .2rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-bdr);
+    background: var(--color-off);
+    text-align: center;
+    transition: transform .18s cubic-bezier(.22,.61,.36,1),
+                box-shadow .18s, border-color .18s, background .18s, opacity .18s;
+  }
+  .cmap-name {
+    font-family: var(--font-heading);
+    font-size: clamp(.5rem, 1.05vw, .66rem);
+    font-weight: 700; line-height: 1.1;
+    color: var(--color-txt-2);
+    overflow-wrap: anywhere;
+  }
+  .cmap-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-gold); }
+  .cmap-pending { font-size: .6rem; line-height: 1; color: var(--color-txt-3); }
+
+  /* Published chapters read as solid; the rest stay legible but recede, so the
+     difference is visible without the pending ones looking broken or disabled. */
+  .cmap-tile.is-profiled { background: #fff; border-color: var(--color-bdr-gold); }
+  .cmap-tile.is-profiled .cmap-name { color: var(--color-navy); }
+  .cmap-tile.is-pending { border-style: dashed; }
+
+  /* Hover and keyboard focus get the identical treatment, in CSS rather than
+     React state — a tracked `hovered` value would re-render all 37 tiles on every
+     pointer move to produce something :hover already does for free. */
+  .cmap-tile:hover,
+  .cmap-tile:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--color-gold);
+    background: #fff;
+  }
+  .cmap-tile:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+  .cmap-tile.is-dimmed { opacity: .3; }
+
+  /* Zone tinting. Colour is never the only signal — every tile is also labelled,
+     and the legend repeats the zone name in text. */
+  .cmap-tile.z-nw { border-left: 3px solid #2563EB; }
+  .cmap-tile.z-ne { border-left: 3px solid #7C3AED; }
+  .cmap-tile.z-nc { border-left: 3px solid #0891B2; }
+  .cmap-tile.z-sw { border-left: 3px solid #C9974A; }
+  .cmap-tile.z-se { border-left: 3px solid #059669; }
+  .cmap-tile.z-ss { border-left: 3px solid #DC2626; }
+  .cmap-zone.z-nw { color: #2563EB; } .cmap-zone.z-ne { color: #7C3AED; }
+  .cmap-zone.z-nc { color: #0891B2; } .cmap-zone.z-sw { color: #B4832F; }
+  .cmap-zone.z-se { color: #059669; } .cmap-zone.z-ss { color: #DC2626; }
+  .cmap-zone.on.z-nw, .cmap-zone.on.z-ne, .cmap-zone.on.z-nc,
+  .cmap-zone.on.z-sw, .cmap-zone.on.z-se, .cmap-zone.on.z-ss { color: #fff; }
+
+  .cmap-note {
+    display: flex; align-items: center; flex-wrap: wrap; gap: .3rem 1rem;
+    margin-top: 1rem; font-size: .7rem; color: var(--color-txt-3);
+  }
+  .cmap-key { display: inline-flex; align-items: center; gap: .35rem; }
+
   /* ── Skeleton placeholders ──
      18 public pages gate their content behind `{!loading && …}`, so the section
      is absent until data lands and then pops in — the page visibly reflows and
@@ -914,6 +1009,21 @@
   .hc-title { font-size: clamp(2rem, 7vw, 2.8rem); }
   .hstat-row { display: none; }
 }
+/* The chapter map keeps its 7-column shape down to tablet — collapsing it would
+   destroy the only thing the layout communicates — but the tiles shrink and the
+   labels drop to initials-width. Below 560px the grid becomes unreadable at any
+   size, so it gives way to the searchable list underneath, which carries the same
+   information and is the better small-screen instrument anyway. */
+@media (max-width: 900px) {
+  .cmap { gap: .3rem; max-width: 100%; }
+  .cmap-tile { border-radius: 8px; padding: .2rem .1rem; }
+}
+@media (max-width: 560px) {
+  .cmap, .cmap-note { display: none; }
+  .cmap-wrap { margin-bottom: 2rem; }
+  .cmap-head { margin-bottom: 1rem; }
+}
+
 @media (max-width: 480px) {
   .fg4, .pp-grid { grid-template-columns: 1fr; }
   .plogos { grid-template-columns: 1fr 1fr; }

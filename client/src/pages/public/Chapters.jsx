@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
+import ChapterMap from '../../components/chapters/ChapterMap';
 import API from '../../api/axios';
 
 /* All 37 chapters with geopolitical zones — used as fallback */
@@ -36,8 +37,11 @@ const FALLBACK = ALL_STATES.map(([state, zone], i) => ({
 }));
 
 export default function Chapters() {
-  const [chapters, setChapters] = useState(FALLBACK);
-  const [search, setSearch]     = useState('');
+  const [chapters, setChapters]   = useState(FALLBACK);
+  const [search, setSearch]       = useState('');
+  // Shared between the map's zone legend and the list below it, so selecting a
+  // zone on the map filters both rather than leaving the two views disagreeing.
+  const [activeZone, setActiveZone] = useState(null);
 
   useEffect(() => {
     API.get('/chapters')
@@ -48,11 +52,13 @@ export default function Chapters() {
       .catch(() => {});
   }, []);
 
-  const filtered = chapters.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    (c.state || '').toLowerCase().includes(search.toLowerCase()) ||
-    (c.zone  || '').toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = chapters.filter(c => {
+    if (activeZone && c.zone !== activeZone) return false;
+    const q = search.toLowerCase();
+    return c.name.toLowerCase().includes(q) ||
+           (c.state || '').toLowerCase().includes(q) ||
+           (c.zone  || '').toLowerCase().includes(q);
+  });
 
   return (
     <>
@@ -65,12 +71,12 @@ export default function Chapters() {
 
       <section style={{ background: '#fff' }}>
         <div className="ct" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
-          <div className="ey">37 Chapters</div>
-          <h2 className="sh">NIQS in Every <em>State</em></h2>
-          <p className="sd" style={{ marginBottom: '2.5rem' }}>
-            NIQS has active chapters in all 36 states of Nigeria and the FCT, bringing
-            professional QS services to every community.
-          </p>
+
+          <ChapterMap
+            chapters={chapters}
+            activeZone={activeZone}
+            onZoneChange={setActiveZone}
+          />
 
           {/* Search */}
           <div style={{ maxWidth: 400, marginBottom: '2rem' }}>
