@@ -61,20 +61,39 @@ function abbreviate(state) {
 }
 
 /**
- * Whether a chapter has real content behind it rather than the generic fallback
- * ChapterDetail renders. Derived from the data instead of a hardcoded list, so
- * the map updates itself as NIQS seeds more chapters.
+ * Chapter records store the state as "Abia State", the grid keys it as "Abia",
+ * and FCT is stored bare. Without this the lookup misses every chapter except
+ * FCT — which is exactly what happened on first contact with live data, and is
+ * invisible against the local fallback because that array uses the short form.
+ */
+function normaliseState(value) {
+  return String(value || '')
+    .replace(/\s+state$/i, '')
+    .replace(/^federal capital territory$/i, 'FCT')
+    .trim();
+}
+
+/**
+ * Whether a chapter has a published profile rather than the generic fallback
+ * ChapterDetail renders. Keyed on `about`, matching the "Full profile" badge the
+ * chapters list already used.
+ *
+ * Deliberately NOT chairperson: seedChapterExcos.js gives every chapter a
+ * chairman-only stub, so it is set on all 35 records and distinguishes nothing.
+ * Nor address — those are intentionally blank until real ones arrive — nor
+ * memberCount, which is 0 across the board.
  */
 function isProfiled(chapter) {
-  if (!chapter) return false;
-  return Boolean(chapter.chairperson || chapter.about || chapter.address) ||
-         Number(chapter.memberCount) > 0;
+  return Boolean(chapter?.about);
 }
 
 export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) {
   const byState = useMemo(() => {
     const m = new Map();
-    chapters.forEach((c) => { if (c.state) m.set(c.state, c); });
+    chapters.forEach((c) => {
+      const key = normaliseState(c.state) || normaliseState(String(c.name).replace(/\s+chapter$/i, ''));
+      if (key) m.set(key, c);
+    });
     return m;
   }, [chapters]);
 
