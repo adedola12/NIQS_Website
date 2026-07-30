@@ -67,24 +67,62 @@ hovering `/about` prefetches its chunk and a repeat hover does not refetch;
 
 ---
 
-## Phase 2 — Images (−11 MB transfer, +0 KB JS)
+## Phase 2 — Images ✅ DONE
 
-`client/public/backgrounds` is 12 MB of PNG. These are photographs in a lossless
-format:
+**This phase was planned on a false premise.** It claimed `client/public/backgrounds`
+was 12 MB of page backgrounds and "the largest single transfer win on the site".
+Those files are referenced only by `src/flyer/backgrounds.json` — they are flyer
+studio backdrops, loaded when an admin opens the picker. **No public visitor has
+ever downloaded one.** Optimising them was worth doing, but it saves a visitor
+nothing, and the phase was rewritten around what a browser actually requests.
 
-```
-3,594,862  dark-bg-3.png
-2,053,965  light-bg-2.png
-1,691,415  dark-bg-2.png
-```
+Measured against the production build, a public page downloads exactly **one**
+local image: the nav logo.
 
-- Convert to AVIF with WebP fallback via `<picture>`. Expect ~90% smaller.
-- `srcset` at 640/1280/1920 so phones stop downloading desktop backdrops.
-- `fetchpriority="high"` on the hero image, `loading="lazy"` on everything
-  below the fold.
-- Inline ~200-byte blurred LQIP placeholders so hero areas never flash empty.
+| | before | after | |
+|---|---|---|---|
+| `NIQS-LOGO-PNG-NAV.png` | 92.0 KB | **8.3 KB** | −91%, every page |
+| `NIQS-LOGO-SQUARE.png` | 62.7 KB | **11.7 KB** | −81%, favicon on cold visits |
+| `public/backgrounds/*` | 11.6 MB | **1.2 MB** | −89%, flyer studio + deploy size |
 
-This is the largest single transfer win on the site and adds no JavaScript.
+The nav logo was 828×869 rendered at 50–64px — roughly 13× oversized.
+
+**Palette PNG beat both modern formats**, which is the opposite of the usual
+advice. At 256px wide: 128-colour PNG **8.3 KB**, AVIF q=60 9.7 KB, WebP q=85
+15.3 KB. The logo has 1,254 distinct colours, so quantising to 128 gives an RMSE
+of 1.40 against the resized original — below perceptibility — and it needs no
+`<picture>` element, no format negotiation and no fallback chain. Photographs tip
+the other way; flat brand artwork does not. Worth re-measuring rather than
+assuming next time.
+
+Two coupling problems surfaced and are now handled:
+
+- `build-og-image.py` rendered its 1200px artwork *from* the nav logo, so the
+  served copy could not simply be downscaled. The full-resolution original now
+  lives at `client/scripts/assets/niqs-logo-source.png`, outside `public/` so it
+  is never served. Verified the og artwork is still byte-identical.
+- That same script also *generates* `NIQS-LOGO-SQUARE.png`, so it silently
+  overwrote the first optimisation pass. The quantisation moved into the point of
+  generation; both scripts are now idempotent.
+
+Settings are committed as `client/scripts/optimize-images.py` and
+`optimize-flyer-backgrounds.py` so they can be re-run after an asset changes.
+
+### Still open — a content problem, not a performance one
+
+Public pages pull their imagery from **Unsplash stock photos**: ~90 references
+across 29 files, 6 requests on the homepage alone. Hero backdrops, news
+thumbnails, job listing logos, webinar and workshop cards, chapter photos.
+
+A `preconnect` for `images.unsplash.com` now saves the first request a DNS + TCP +
+TLS round trip, but that is a mitigation. These are placeholders awaiting real
+NIQS photography, and on a live institutional site they are a credibility issue
+before they are a speed one. Replacing them is a content decision for NIQS, and
+also the single largest remaining transfer win on public pages — real images can
+be served from the S3 + CloudFront bucket the API migration provisions.
+
+Not touched, deliberately: `og-image.jpg` and `og-square.jpg` are fetched by
+crawlers, never during a page load.
 
 ---
 
@@ -169,7 +207,7 @@ Budget it explicitly: **+30 KB.** Even with it, the initial payload lands around
 |---|---|---|
 | Before | 371 KB | — |
 | After Phase 1 | **78.5 KB** | ✅ measured |
-| After Phase 2 (images) | ~78.5 KB | JS unchanged; −11 MB of image transfer |
+| After Phase 2 (images) | **78.5 KB** JS + **8.3 KB** image | ✅ measured; was 92 KB of image |
 | After Phase 3, homepage motion in CSS | ~81 KB | projected |
 | After Phase 3, framer-motion on the homepage | ~116 KB | projected — avoid |
 | After Phase 4 (chapters map) | ~108 KB | projected |
