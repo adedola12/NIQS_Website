@@ -6,6 +6,14 @@ import { useEffect, Suspense } from 'react';
 /* ── Global scroll-reveal observer ── */
 function useScrollReveal() {
   useEffect(() => {
+    // The stylesheet only hides .reveal content beneath .js-reveal. Adding the
+    // class here — after confirming the API exists, and never before the observer
+    // is built — means a browser without IntersectionObserver, or a run where
+    // this effect never executes, simply shows the content instead of hiding it
+    // forever with nothing to reveal it.
+    if (typeof IntersectionObserver === 'undefined') return;
+    document.documentElement.classList.add('js-reveal');
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -27,7 +35,12 @@ function useScrollReveal() {
     const mo = new MutationObserver(observe);
     mo.observe(document.body, { childList: true, subtree: true });
 
-    return () => { observer.disconnect(); mo.disconnect(); };
+    return () => {
+      observer.disconnect();
+      mo.disconnect();
+      // Nothing is left to add .visible, so stop hiding.
+      document.documentElement.classList.remove('js-reveal');
+    };
   }, []);
 }
 

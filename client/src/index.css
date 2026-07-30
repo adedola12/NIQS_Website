@@ -59,6 +59,19 @@
   to   { opacity: 1; transform: none; }
 }
 
+/* Skeleton shimmer */
+@keyframes sk-shimmer {
+  from { background-position: 100% 50%; }
+  to   { background-position: 0 50%; }
+}
+
+/* Hero parallax, driven by scroll position rather than time. Only ever attached
+   inside an @supports (animation-timeline: scroll()) block — see the base layer. */
+@keyframes hero-drift {
+  from { transform: translateY(0) scale(1.06); }
+  to   { transform: translateY(-7%) scale(1.06); }
+}
+
 /* ═══════════════════════════════════════
    LEGACY CSS VARIABLES (for inline styles)
 ═══════════════════════════════════════ */
@@ -115,22 +128,80 @@
     animation: page-enter 0.42s cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
 
-  /* ── Scroll-reveal ── */
-  .reveal {
+  /* ── Scroll-reveal ──
+     Hiding is gated behind .js-reveal, which App.jsx puts on <html> only once it
+     has actually constructed the IntersectionObserver. Without that gate, content
+     is hidden by the stylesheet and revealed by JavaScript, so anything that stops
+     the observer running — a script error, an unsupported browser, a blocked
+     bundle — leaves 15 sections of the homepage permanently invisible with no
+     symptom to debug. Default to visible; opt into hiding only when the mechanism
+     that undoes it is confirmed present. */
+  .js-reveal .reveal {
     opacity: 0;
     transform: translateY(28px);
     transition: opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1),
                 transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
   }
-  .reveal.visible {
+  .js-reveal .reveal.visible {
     opacity: 1;
     transform: none;
   }
-  .reveal.d1 { transition-delay: 0.08s; }
-  .reveal.d2 { transition-delay: 0.16s; }
-  .reveal.d3 { transition-delay: 0.24s; }
-  .reveal.d4 { transition-delay: 0.32s; }
-  .reveal.d5 { transition-delay: 0.40s; }
+  .js-reveal .reveal.d1 { transition-delay: 0.08s; }
+  .js-reveal .reveal.d2 { transition-delay: 0.16s; }
+  .js-reveal .reveal.d3 { transition-delay: 0.24s; }
+  .js-reveal .reveal.d4 { transition-delay: 0.32s; }
+  .js-reveal .reveal.d5 { transition-delay: 0.40s; }
+
+  /* ── Grid stagger ──
+     The .d1–.d5 helpers require hand-numbering each child, which does not work
+     for grids rendered from data of unknown length. Put .stagger on the grid and
+     its children cascade automatically. Capped at 10: beyond that the last card
+     waits nearly a second, which reads as broken rather than choreographed, so
+     everything from the 11th on shares the same delay. */
+  .js-reveal .stagger > * { transition-delay: calc(var(--stagger-step, 0.06s) * var(--i, 0)); }
+  .stagger > *:nth-child(1)  { --i: 0; }
+  .stagger > *:nth-child(2)  { --i: 1; }
+  .stagger > *:nth-child(3)  { --i: 2; }
+  .stagger > *:nth-child(4)  { --i: 3; }
+  .stagger > *:nth-child(5)  { --i: 4; }
+  .stagger > *:nth-child(6)  { --i: 5; }
+  .stagger > *:nth-child(7)  { --i: 6; }
+  .stagger > *:nth-child(8)  { --i: 7; }
+  .stagger > *:nth-child(9)  { --i: 8; }
+  .stagger > *:nth-child(n+10) { --i: 9; }
+
+  /* ── Skeleton placeholders ──
+     18 public pages gate their content behind `{!loading && …}`, so the section
+     is absent until data lands and then pops in — the page visibly reflows and
+     the reader loses their place. A skeleton holds the space at roughly the
+     right shape instead.
+
+     The shimmer animates background-position, not width/left, so it stays on the
+     compositor and costs no layout. */
+  .sk {
+    background: linear-gradient(
+      90deg,
+      var(--color-off, #F6F7FB) 25%,
+      #e8ecf5 37%,
+      var(--color-off, #F6F7FB) 63%
+    );
+    background-size: 400% 100%;
+    animation: sk-shimmer 1.4s ease-in-out infinite;
+    border-radius: 8px;
+  }
+  .sk-title  { height: 1.6rem; width: 60%; margin-bottom: 0.9rem; border-radius: 6px; }
+  .sk-line   { height: 0.75rem; margin-bottom: 0.55rem; border-radius: 4px; }
+  .sk-line.w90 { width: 90%; } .sk-line.w75 { width: 75%; } .sk-line.w60 { width: 60%; }
+  .sk-img    { width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; }
+  .sk-avatar { width: 100%; aspect-ratio: 4 / 4.6; border-radius: 12px; }
+  .sk-card {
+    background: #fff;
+    border: 1px solid var(--color-bdr, #DDE3F0);
+    border-radius: 14px;
+    overflow: hidden;
+    padding: 0;
+  }
+  .sk-card-body { padding: 1.1rem 1.15rem 1.35rem; }
 
   /* ── Image hover zoom ── */
   .img-zoom { overflow: hidden; border-radius: inherit; }
@@ -848,4 +919,76 @@
   .plogos { grid-template-columns: 1fr 1fr; }
   .chapters-grid, .grid-4, .countries-grid { grid-template-columns: 1fr; }
   .h-stats { display: none; }
+}
+
+/* ═══════════════════════════════════════
+   MOTION
+   Deliberately unlayered and last. Unlayered rules beat anything inside an
+   @layer regardless of specificity, which is what makes the reduced-motion
+   block below reliable rather than a specificity fight.
+═══════════════════════════════════════ */
+
+/* ── Hero parallax ──
+   Scroll-driven, so the browser runs it off the main thread — no scroll
+   listener, no rAF loop, no JavaScript at all. Browsers without scroll-driven
+   animations fall through the @supports and get a static hero, which is a
+   perfectly good outcome rather than a broken one.
+
+   view() rather than scroll(): the range is measured against this element
+   passing through the viewport, which is what parallax actually means. The
+   1.06 scale in the keyframes gives the translate somewhere to go without
+   exposing an edge. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ph .phimg {
+      animation: hero-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+      will-change: transform;
+    }
+  }
+}
+
+/* ── Reduced motion ──
+   Was entirely absent from this codebase. Everything above — reveals, page
+   transitions, the marquee, parallax, shimmer — moves by default, and for a
+   reader with a vestibular disorder that is not a preference, it is a barrier.
+
+   The blanket rule is not enough on its own: .reveal starts at opacity 0 and is
+   only made visible by a class the IntersectionObserver adds. Merely removing
+   its transition would leave content permanently invisible, so the reveal state
+   is forced open explicitly. That is the trap in every "just disable all
+   animation" snippet. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html { scroll-behavior: auto !important; }
+
+  /* Content must be visible, not merely un-animated. */
+  .reveal,
+  .reveal.visible,
+  .js-reveal .reveal,
+  .js-reveal .reveal.visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .page-transition { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .ph .phimg      { animation: none !important; transform: none !important; }
+
+  /* A frozen gradient reads as a rendering bug. Flat fill instead. */
+  .sk { animation: none !important; background: var(--color-off, #F6F7FB) !important; }
+
+  /* Spinners are functional feedback, not decoration — a frozen one says
+     "crashed" rather than "loading". Exempted deliberately. */
+  .animate-spin {
+    animation-duration: 0.8s !important;
+    animation-iteration-count: infinite !important;
+  }
 }

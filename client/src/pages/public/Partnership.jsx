@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
+import { SkeletonGrid, SkeletonText } from '../../components/common/Skeleton';
 
 const tierColors = {
   platinum: '#6b7280',
@@ -180,6 +181,20 @@ export default function Partnership() {
         </div>
       </section>
 
+      {/* While partners are in flight every section below is gated off, so the
+          page ended at the hero and then jumped to full height. Hold the space. */}
+      {loading && (
+        <section className="section-alt" aria-busy="true">
+          <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+            <span className="sr-only">Loading partners…</span>
+            <div style={{ maxWidth: 320, marginBottom: '2.5rem' }}>
+              <SkeletonText lines={2} title />
+            </div>
+            <SkeletonGrid count={3} className="grid-3" />
+          </div>
+        </section>
+      )}
+
       {/* ── Platinum Partners ── */}
       {!loading && platinum.length > 0 && (
         <section className="section-alt">
@@ -198,11 +213,13 @@ export default function Partnership() {
               )}
             </div>
 
-            {/* Platinum cards */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+            {/* Platinum cards — .stagger cascades the reveal delay across however
+                many partners come back, instead of the hand-numbered d1/d2 that
+                left every card past the third arriving at once. */}
+            <div className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
               {platinum.map((p, idx) => (
                 <div
-                  className={`gpc reveal${idx === 1 ? ' d1' : idx === 2 ? ' d2' : ''}`}
+                  className="gpc reveal"
                   key={p._id || idx}
                   style={{ opacity: isPlaceholder ? 0.75 : 1, position: 'relative' }}
                 >
