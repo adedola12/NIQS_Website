@@ -126,48 +126,46 @@ crawlers, never during a page load.
 
 ---
 
-## Phase 3 — Immersive layer (re-priced after Phase 1)
+## Phase 3 — Immersive layer ✅ DONE
 
-All of this runs on `framer-motion`, which is already a dependency — but read the
-correction above: after splitting, it is a **37.9 KB brotli on-demand chunk**, not
-entry-resident. So the marginal cost depends entirely on *where* motion is used:
+Built entirely in CSS. **framer-motion was not used**, so it stays out of the
+initial payload as the Phase 1 measurement required. Total cost: **539 bytes of
+CSS**. The entry chunk came out 15 bytes smaller.
 
-- **On any page that already loads it** (`/president`, anything using `LeaderCard`)
-  — genuinely 0 KB.
-- **On other inner pages** — the 37.9 KB chunk loads once, then is cached for the
-  rest of the session. Cheap.
-- **On the homepage** — this is the decision that matters. Using framer-motion
-  above the fold pulls it into the initial payload, taking it from 78.5 KB to
-  ~116 KB. Still 3.2× better than before Phase 1, but it spends a third of what
-  Phase 1 saved.
-
-**Recommendation:** use CSS transitions and the existing IntersectionObserver
-`.reveal` mechanism (already in `App.jsx`) for the homepage hero and above-the-fold
-motion, and reserve framer-motion for inner pages where it is already loaded or
-where the interaction genuinely needs layout animation. That keeps the 78.5 KB
-entry intact.
-
-The table below assumes that split — 0 KB entries mean "no *additional* initial
-payload", not "no code".
-
-| Upgrade | Where | JS cost |
+| Delivered | How | Cost |
 |---|---|---|
-| Page transitions on route change (`AnimatePresence`) | App shell | 0 KB |
-| Scroll-reveal for sections (`whileInView`, once) | Home, About, Membership | 0 KB |
-| Staggered card entrance | Leadership, Chapters, News grids | 0 KB |
-| Shared-element portrait → detail transition (`layoutId`) | Council, Trustees, Past Presidents | 0 KB |
-| Hero parallax (`useScroll` + `useTransform`) | Home | 0 KB |
-| Animated statistics counters | About, Membership | 0 KB |
-| Skeleton placeholders instead of spinners | every API-backed page | ~2 KB |
+| Reduced-motion support | media query, unlayered so it wins the cascade | 0 |
+| `.js-reveal` fallback gate | content defaults visible, hides only when the observer exists | 0 |
+| `.stagger` grid cascade | `nth-child` custom properties, capped at 10 | 0 |
+| Skeleton placeholders | `.sk*` classes + `Skeleton.jsx` | ~340 B |
+| Hero parallax | `animation-timeline: view()` behind `@supports` | ~90 B |
 
-**Non-negotiable:** gate all of it behind `prefers-reduced-motion`. Framer's
-`useReducedMotion()` handles this. Motion must never gate content — the text
-renders, then moves.
+**Reduced motion was entirely absent.** The trap in every "disable all animation"
+snippet applies here: `.reveal` starts at `opacity: 0` and is only revealed by a
+JS-added class, so removing its transition alone leaves content permanently
+invisible. The reveal state is forced open explicitly. Spinners are exempted —
+a frozen spinner reads as "crashed", not "loading".
 
-The shared-element portrait transition is the highest-impact single item. The
-leadership portraits are already normalised onto a common backdrop, so a
-`layoutId` morph from grid card to detail page will look deliberate rather than
-accidental.
+**A latent fragility was fixed.** The stylesheet hid `.reveal` unconditionally and
+depended on an IntersectionObserver to undo it, so any failure of that observer
+left 15 homepage sections invisible with no symptom. Hiding now lives behind
+`.js-reveal`, added by `App.jsx` only after the API is confirmed and the observer
+built. Verified both directions.
+
+**Not done:** the `layoutId` shared-element portrait transition and animated
+counters from the original table. Both want framer-motion, and both sit on pages
+where it is already loaded — worth doing, but they are additive polish rather than
+the structural work, and were left rather than rushed.
+
+### Verification limit worth knowing
+
+The reveal transitions could not be exercised in the dev harness: the browser pane
+does not composite frames, so IntersectionObserver never fires and CSS transitions
+never progress — confirmed with a control observer on a clearly-intersecting
+element. Assertions were made against resolved computed styles with transitions
+neutralised, plus a static check that all eight critical rules survive into the
+shipped stylesheet. **Eyeball the reveal and parallax in a real browser before
+release.**
 
 ---
 
@@ -208,8 +206,8 @@ Budget it explicitly: **+30 KB.** Even with it, the initial payload lands around
 | Before | 371 KB | — |
 | After Phase 1 | **78.5 KB** | ✅ measured |
 | After Phase 2 (images) | **78.5 KB** JS + **8.3 KB** image | ✅ measured; was 92 KB of image |
-| After Phase 3, homepage motion in CSS | ~81 KB | projected |
-| After Phase 3, framer-motion on the homepage | ~116 KB | projected — avoid |
+| After Phase 3 (all CSS, no framer-motion) | **78.5 KB** JS + **11.1 KB** CSS | ✅ measured; +539 B |
+| ~~Phase 3 with framer-motion on the homepage~~ | ~116 KB | avoided — see Phase 3 |
 | After Phase 4 (chapters map) | ~108 KB | projected |
 
 Faster **and** more immersive is not a trade here, but it is not automatic either.
