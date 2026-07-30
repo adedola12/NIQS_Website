@@ -417,6 +417,52 @@ const CHAPTERS = [
       ['kubiat-sifon-thompson', 'QS Kubiat-Sifon Thompson, MNIQS', 'Ex-Officio II', 10],
     ],
   },
+  {
+    key: 'ondo',
+    chapterName: 'Ondo Chapter',
+    state: 'Ondo',
+    stateLabel: 'Ondo State',
+    chairperson: 'QS Fadiyimu Akinlolu Oyebobola, FNIQS',
+    secretary: 'QS Ayinla Olasunkanmi, MNIQS',
+    about:
+      'The Ondo State Chapter of the Nigerian Institute of Quantity Surveyors serves '
+      + 'registered quantity surveyors practising across Ondo State in the South West '
+      + 'geopolitical zone. An eleven-member executive committee leads the chapter across '
+      + 'administration, finance, publicity and marketing, and research and development, '
+      + 'working with the National Secretariat to deliver continuing professional '
+      + 'development, uphold professional standards in construction cost management, and '
+      + 'represent the profession before government, industry and the academic community '
+      + 'in the state. The chapter keeps its immediate past chairman on the committee and '
+      + 'carries its own West African Quantity Surveyors Network representation.',
+    heroPortrait: 'fadiyimu-akinlolu-oyebobola',
+    /* The best-shot pack so far: eleven proper studio portraits on plain white,
+       all eleven published. Two came as PNG but neither carried an alpha channel —
+       photographs in a PNG wrapper, not cut-outs — so nothing took the pipeline's
+       keep-the-supplied-matte path.
+
+       Names run surname-first throughout the pack, and are published that way so
+       the roster reads consistently; the committee's Chapter Chairmen List has the
+       chairman the other way round (Akinlolu Oyebobola Fadiyimu). Titles are the
+       chapter's, with "Secretary Publicity & Marketing" and "Secretary Research &
+       Development" turned round to match how every other chapter on the site reads.
+
+       "Ex-Officio II" is verbatim from the pack, which has no Ex-Officio I — asked
+       about rather than quietly renumbered, in case a twelfth officer exists whose
+       photograph simply did not come. */
+    roster: [
+      ['fadiyimu-akinlolu-oyebobola', 'QS Fadiyimu Akinlolu Oyebobola, FNIQS', 'Chapter Chairman', 1],
+      ['osomo-fayowle', 'QS Osomo Fayowle, FNIQS', 'Deputy Chairman', 2],
+      ['ayinla-olasunkanmi', 'QS Ayinla Olasunkanmi, MNIQS', 'General Secretary', 3],
+      ['gbadebo-bunmi', 'QS Gbadebo Bunmi, MNIQS', 'Assistant General Secretary', 4],
+      ['akinsanmi-taiwo-mary', 'QS Akinsanmi Taiwo Mary, MNIQS', 'Treasurer', 5],
+      ['oganah-endurance', 'QS Oganah Endurance, MNIQS', 'Financial Secretary', 6],
+      ['olanitori-morolayo-olayemi', 'QS Olanitori Morolayo-Olayemi, MNIQS', 'Publicity & Marketing Secretary', 7],
+      ['jayeoba-oluyemisi', 'QS Jayeoba Oluyemisi, MNIQS', 'Research & Development Secretary', 8],
+      ['olawale-ogunkua-atinuke', 'QS Olawale-Ogunkua Atinuke, MNIQS', 'WAQSN Representative', 9],
+      ['momoh-temitope', 'QS Momoh Temitope, FNIQS', 'Immediate Past Chairman', 10],
+      ['aina-olanrewaju', 'QS Aina Olanrewaju, MNIQS', 'Ex-Officio II', 11],
+    ],
+  },
 ];
 
 (async () => {
