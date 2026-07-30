@@ -12,14 +12,19 @@
   key names here must match the Secrets block in 02-service.yml exactly.
 
 .EXAMPLE
-  pwsh infra/load-secrets.ps1
-  pwsh infra/load-secrets.ps1 -Profile adlm-deploy -Region eu-west-3
+  Windows PowerShell 5.1 (what ships with Windows):
+    powershell -ExecutionPolicy Bypass -File .\infra\load-secrets.ps1
+
+  PowerShell 7, if installed:
+    pwsh infra/load-secrets.ps1 -AwsProfile adlm-deploy -Region eu-west-3
 #>
 param(
-  [string]$Profile   = 'adlm-deploy',
-  [string]$Region    = 'eu-west-3',
-  [string]$SecretId  = 'niqs/api',
-  [string]$EnvFile   = "$PSScriptRoot\..\server\.env"
+  # NOT $Profile — that is an automatic variable in PowerShell holding the
+  # profile script path, and shadowing it inside a script invites confusion.
+  [string]$AwsProfile = 'adlm-deploy',
+  [string]$Region     = 'eu-west-3',
+  [string]$SecretId   = 'niqs/api',
+  [string]$EnvFile    = "$PSScriptRoot\..\server\.env"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -58,11 +63,17 @@ if (-not $found) { throw 'nothing to upload' }
 # where they would be visible to anything reading the process table.
 $tmp = [IO.Path]::GetTempFileName()
 try {
-  ($payload | ConvertTo-Json -Compress) | Set-Content -Path $tmp -Encoding utf8 -NoNewline
+  $json = $payload | ConvertTo-Json -Compress
+  # Written with an explicit BOM-less UTF-8 encoder rather than Set-Content.
+  # Windows PowerShell 5.1's `-Encoding utf8` emits a BOM, and the three BOM
+  # bytes land at the head of the file the CLI reads as JSON — the parse fails
+  # with an error that says nothing about encoding.
+  [IO.File]::WriteAllText($tmp, $json, (New-Object Text.UTF8Encoding $false))
+
   & $aws secretsmanager put-secret-value `
       --secret-id $SecretId `
       --secret-string "file://$tmp" `
-      --region $Region --profile $Profile --output json | Out-Null
+      --region $Region --profile $AwsProfile --output json | Out-Null
   if ($LASTEXITCODE -ne 0) { throw "put-secret-value failed ($LASTEXITCODE)" }
   Write-Host "uploaded $($found.Count) key(s) to $SecretId in $Region" -ForegroundColor Green
 } finally {
