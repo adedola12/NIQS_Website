@@ -5,12 +5,18 @@ Description: >
   once, push an image, then deploy 02-service.yml.
 
 # ─────────────────────────────────────────────────────────────────────────────
-# REGION CHOICE MATTERS MORE THAN ANYTHING ELSE IN THIS TEMPLATE.
-# The API is chatty with MongoDB Atlas — a page render is several queries — so
-# every millisecond between Fargate and Atlas is multiplied. Deploy this stack
-# in the SAME region as the Atlas cluster. Check Atlas → Cluster → Configuration
-# before running. Putting the API in Ireland while Atlas sits in Virginia adds
-# ~80ms per query and will feel SLOWER than Render does today.
+# DEPLOY THIS IN eu-west-3 (PARIS).
+#
+# The API is chatty with MongoDB Atlas — one page render is several queries — so
+# every millisecond between Fargate and Atlas is multiplied. The cluster was
+# located on 2026-07-30 by resolving its SRV record to 65.62.2.42/.51/.56, which
+# fall in 65.62.0.0/15 (registered to MongoDB, Inc., not to any cloud provider)
+# and resolve to Paris, FR-IDF in MongoDB's published RFC 8805 geofeed at
+# https://as8011.s3.us-east-2.amazonaws.com/geo-ip.txt.
+#
+# eu-west-3 is Paris — same city, ~1-2ms. eu-west-1 (Ireland) is ~800km away and
+# costs roughly 10-15ms on every single query. Re-check the geofeed if the
+# cluster is ever migrated.
 # ─────────────────────────────────────────────────────────────────────────────
 
 Parameters:

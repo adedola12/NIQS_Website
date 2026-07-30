@@ -1,0 +1,113 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  CodeBuild project that builds the NIQS API container image and pushes it to
+  ECR. Exists so the image can be produced without Docker on the workstation —
+  Docker Desktop needs local administrator rights, which the deploying account
+  does not have. Deploy after 01-foundation.yml.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: niqs
+    AllowedPattern: "^[a-z][a-z0-9-]{1,20}$"
+
+  SourceBucket:
+    Type: String
+    Description: >
+      Bucket holding the uploaded source zip. Defaults to the asset bucket from
+      the foundation stack; the build/ prefix is separate from niqs/ uploads.
+
+  SourceKey:
+    Type: String
+    Default: build/server-source.zip
+
+Resources:
+  BuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-api-build"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: codebuild.amazonaws.com }
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: BuildAndPush
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${ProjectName}-api-build*"
+              # Auth token is account-wide by design; the push itself is scoped
+              # to the one repository below.
+              - Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !Sub "arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/${ProjectName}-api"
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub "arn:${AWS::Partition}:s3:::${SourceBucket}/build/*"
+
+  BuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${ProjectName}-api-build"
+      Description: Builds and pushes the NIQS API image to ECR.
+      ServiceRole: !GetAtt BuildRole.Arn
+      Artifacts: { Type: NO_ARTIFACTS }
+      Source:
+        Type: S3
+        Location: !Sub "${SourceBucket}/${SourceKey}"
+        BuildSpec: |
+          version: 0.2
+          phases:
+            pre_build:
+              commands:
+                - REPO="$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/$PROJECT-api"
+                # IMAGE_TAG is passed per-build. Never :latest — Express Mode
+                # only redeploys when the image URI changes, so a floating tag
+                # would make every subsequent deploy a silent no-op.
+                - echo "building $REPO:$IMAGE_TAG"
+                - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
+            build:
+              commands:
+                # Dockerfile lives at the root of the uploaded zip (server/).
+                - docker build -t "$REPO:$IMAGE_TAG" .
+            post_build:
+              commands:
+                - docker push "$REPO:$IMAGE_TAG"
+                - echo "pushed $REPO:$IMAGE_TAG"
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:5.0
+        # Required to run a Docker daemon inside the build container.
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - { Name: ACCOUNT,    Value: !Ref AWS::AccountId }
+          - { Name: PROJECT,    Value: !Ref ProjectName }
+          - { Name: IMAGE_TAG,  Value: placeholder }
+      TimeoutInMinutes: 20
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+          GroupName: !Sub "/aws/codebuild/${ProjectName}-api-build"
+
+Outputs:
+  BuildProjectName:
+    Value: !Ref BuildProject
+  SourceUri:
+    Description: Upload the zipped server/ directory here before starting a build.
+    Value: !Sub "s3://${SourceBucket}/${SourceKey}"

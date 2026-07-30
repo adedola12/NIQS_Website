@@ -21,26 +21,31 @@ S3/CloudFront would not make it faster.
 
 ---
 
-## Step 0 — Pick the region (do not skip)
+## Step 0 — Region: eu-west-3 (Paris). Already determined.
 
-**Deploy into the same region as your MongoDB Atlas cluster.** This is the single
-biggest latency decision here, and it is easy to get wrong.
+**Deploy into `eu-west-3`.** This is settled, not a guess.
 
-The API is chatty: rendering one page is several Mongo round trips. If Fargate
-sits in Ireland while Atlas sits in Virginia, every query pays ~80 ms and the
-site will feel *slower* than Render does today. Same region ≈ 1–2 ms.
-
-Find it in Atlas → your cluster → Configuration, then match it:
+The API is chatty with Atlas — one page render is several queries — so every
+millisecond between Fargate and the database is multiplied. The cluster was
+located on 2026-07-30 without needing Atlas console access:
 
 ```bash
-aws configure set region eu-west-1
+nslookup -type=SRV _mongodb._tcp.<cluster-host>   # -> ac-...-shard-00-0{0,1,2}
+nslookup ac-...-shard-00-00.<host>                # -> 65.62.2.42 / .51 / .56
 ```
 
-Nigeria has no local AWS region. `af-south-1` (Cape Town) is nearest
-geographically, `eu-west-1` (Ireland) usually routes better from Lagos and costs
-less. Either is fine — **matching Atlas matters more than either choice.**
+Those IPs are not in AWS, GCP or Azure published ranges. `65.62.0.0/15` is
+registered to MongoDB, Inc., and their RFC 8805 geofeed
+(https://as8011.s3.us-east-2.amazonaws.com/geo-ip.txt) maps `65.62.0.0/19` to
+`FR, FR-IDF, Paris`.
 
----
+So: **eu-west-3 is Paris — same city as the database, ~1-2ms.** eu-west-1
+(Ireland) is ~800km away and would cost 10-15ms on every query. Re-run the
+lookup above if the cluster is ever migrated.
+
+```bash
+aws configure set region eu-west-3 --profile adlm-deploy
+```
 
 ## Step 1 — Deploy the foundation
 

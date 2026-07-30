@@ -47,7 +47,7 @@ if (cloudinary && process.env.CLOUDINARY_CLOUD_NAME) {
 /* ── Configure S3 client ── */
 let s3 = null;
 if (S3Client && process.env.S3_BUCKET) {
-  s3 = new S3Client({ region: process.env.AWS_REGION || 'eu-west-1' });
+  s3 = new S3Client({ region: process.env.AWS_REGION || 'eu-west-3' });
 }
 
 const TEN_MB = 10 * 1024 * 1024;
@@ -59,7 +59,7 @@ const IMMUTABLE_CACHE = 'public, max-age=31536000, immutable';
 function s3PublicBase() {
   const cdn = (process.env.ASSET_CDN_URL || '').replace(/\/$/, '');
   if (cdn) return cdn;
-  const region = process.env.AWS_REGION || 'eu-west-1';
+  const region = process.env.AWS_REGION || 'eu-west-3';
   return `https://${process.env.S3_BUCKET}.s3.${region}.amazonaws.com`;
 }
 
