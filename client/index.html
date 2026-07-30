@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Public pages currently pull their imagery from Unsplash (see the note in
+         docs/UX_AND_PERFORMANCE_PLAN.md — these are placeholders awaiting real NIQS
+         photography). Until they are replaced, warm the connection: the homepage
+         alone makes 6 requests to this host, and without a hint the first one pays
+         a full DNS + TCP + TLS round trip before a single byte of image arrives. -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Sora:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"

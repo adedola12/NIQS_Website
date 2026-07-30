@@ -18,7 +18,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PUBLIC = os.path.normpath(os.path.join(HERE, '..', 'public'))
-LOGO = os.path.join(PUBLIC, 'NIQS-LOGO-PNG-NAV.png')
+# The full-resolution original, not the served copy. public/NIQS-LOGO-PNG-NAV.png
+# is now a 256px palette PNG optimised for page loads (see optimize-images.py) and
+# is far too small to render 1200px artwork from.
+LOGO = os.path.join(HERE, 'assets', 'niqs-logo-source.png')
 
 NAVY = (11, 31, 75)
 GOLD = (201, 151, 74)
@@ -122,7 +125,13 @@ def square_icon():
     w = round(logo.width * h / logo.height)
     logo = logo.resize((w, h), Image.LANCZOS)
     img.paste(logo, ((size - w) // 2, (size - h) // 2), logo)
-    img.save(os.path.join(PUBLIC, 'NIQS-LOGO-SQUARE.png'))
+    # Quantised on the way out, not in a later pass. Browsers fetch this as the
+    # favicon and apple-touch-icon on every cold visit, and a full RGBA encode
+    # costs 63 KB against 12 KB for a 128-colour palette — indistinguishable on
+    # flat brand artwork. Doing it here keeps optimize-images.py from having to
+    # re-optimise a file this script would overwrite on its next run.
+    out = img.quantize(colors=128, method=Image.FASTOCTREE)
+    out.save(os.path.join(PUBLIC, 'NIQS-LOGO-SQUARE.png'), optimize=True)
     print(f'NIQS-LOGO-SQUARE.png  {size}x{size}')
 
 
