@@ -71,6 +71,19 @@ Parameters:
       hardcoded public resolvers in config/db.js exist for flaky ISP DNS on
       developer machines and would break a task in a private subnet.
 
+  IncludeOptionalSecrets:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: >
+      Wire SMTP_* and PORTAL_* through from the secret. Leave false until those
+      keys actually exist in it — ECS fails to start a task that references a
+      JSON key which is not there. Flip to true once load-secrets.ps1 has
+      uploaded them, and redeploy.
+
+Conditions:
+  WithOptionalSecrets: !Equals [!Ref IncludeOptionalSecrets, "true"]
+
 Resources:
   ApiService:
     Type: AWS::ECS::ExpressGatewayService
@@ -130,67 +143,102 @@ Resources:
 
         # Resolved from Secrets Manager at task start and injected as env vars.
         # The "<arn>:<jsonKey>::" form pulls a single key out of the JSON secret.
-        Secrets:
-          - Name: MONGO_URI
-            ValueFrom: !Sub
-              - "${SecretArn}:MONGO_URI::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: JWT_SECRET
-            ValueFrom: !Sub
-              - "${SecretArn}:JWT_SECRET::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: CLOUDINARY_CLOUD_NAME
-            ValueFrom: !Sub
-              - "${SecretArn}:CLOUDINARY_CLOUD_NAME::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: CLOUDINARY_API_KEY
-            ValueFrom: !Sub
-              - "${SecretArn}:CLOUDINARY_API_KEY::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: CLOUDINARY_API_SECRET
-            ValueFrom: !Sub
-              - "${SecretArn}:CLOUDINARY_API_SECRET::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: SMTP_HOST
-            ValueFrom: !Sub
-              - "${SecretArn}:SMTP_HOST::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: SMTP_PORT
-            ValueFrom: !Sub
-              - "${SecretArn}:SMTP_PORT::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: SMTP_USER
-            ValueFrom: !Sub
-              - "${SecretArn}:SMTP_USER::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: SMTP_PASS
-            ValueFrom: !Sub
-              - "${SecretArn}:SMTP_PASS::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: SMTP_FROM
-            ValueFrom: !Sub
-              - "${SecretArn}:SMTP_FROM::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: PORTAL_API_URL
-            ValueFrom: !Sub
-              - "${SecretArn}:PORTAL_API_URL::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
-          - Name: PORTAL_API_KEY
-            ValueFrom: !Sub
-              - "${SecretArn}:PORTAL_API_KEY::"
-              - SecretArn: !ImportValue
-                  Fn::Sub: "${ProjectName}-app-secret"
+        #
+        # A referenced key that is not present in the secret makes the task fail
+        # to start — not degrade, fail. So the optional group is gated behind a
+        # parameter rather than listed unconditionally: email.js and
+        # portalClient.js are both written to no-op when their variables are
+        # unset, so the API runs correctly without them, but neither survives
+        # ECS refusing to launch the task at all.
+        Secrets: !If
+          - WithOptionalSecrets
+          -
+            - Name: MONGO_URI
+              ValueFrom: !Sub
+                - "${SecretArn}:MONGO_URI::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: JWT_SECRET
+              ValueFrom: !Sub
+                - "${SecretArn}:JWT_SECRET::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: CLOUDINARY_CLOUD_NAME
+              ValueFrom: !Sub
+                - "${SecretArn}:CLOUDINARY_CLOUD_NAME::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: CLOUDINARY_API_KEY
+              ValueFrom: !Sub
+                - "${SecretArn}:CLOUDINARY_API_KEY::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: CLOUDINARY_API_SECRET
+              ValueFrom: !Sub
+                - "${SecretArn}:CLOUDINARY_API_SECRET::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: SMTP_HOST
+              ValueFrom: !Sub
+                - "${SecretArn}:SMTP_HOST::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: SMTP_PORT
+              ValueFrom: !Sub
+                - "${SecretArn}:SMTP_PORT::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: SMTP_USER
+              ValueFrom: !Sub
+                - "${SecretArn}:SMTP_USER::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: SMTP_PASS
+              ValueFrom: !Sub
+                - "${SecretArn}:SMTP_PASS::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: SMTP_FROM
+              ValueFrom: !Sub
+                - "${SecretArn}:SMTP_FROM::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: PORTAL_API_URL
+              ValueFrom: !Sub
+                - "${SecretArn}:PORTAL_API_URL::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: PORTAL_API_KEY
+              ValueFrom: !Sub
+                - "${SecretArn}:PORTAL_API_KEY::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+          -
+            - Name: MONGO_URI
+              ValueFrom: !Sub
+                - "${SecretArn}:MONGO_URI::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: JWT_SECRET
+              ValueFrom: !Sub
+                - "${SecretArn}:JWT_SECRET::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: CLOUDINARY_CLOUD_NAME
+              ValueFrom: !Sub
+                - "${SecretArn}:CLOUDINARY_CLOUD_NAME::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: CLOUDINARY_API_KEY
+              ValueFrom: !Sub
+                - "${SecretArn}:CLOUDINARY_API_KEY::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
+            - Name: CLOUDINARY_API_SECRET
+              ValueFrom: !Sub
+                - "${SecretArn}:CLOUDINARY_API_SECRET::"
+                - SecretArn: !ImportValue
+                    Fn::Sub: "${ProjectName}-app-secret"
 
       Tags:
         - Key: Project
