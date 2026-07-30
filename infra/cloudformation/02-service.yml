@@ -1,0 +1,220 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  NIQS API service — an ECS Express Mode service on Fargate. Express Mode
+  provisions the ALB, HTTPS listener, ACM certificate, target group, security
+  groups, log group and auto-scaling policy from this single resource.
+  Requires 01-foundation.yml and an image already pushed to ECR.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: niqs
+    Description: Must match the value used for 01-foundation.yml.
+    AllowedPattern: "^[a-z][a-z0-9-]{1,20}$"
+
+  ImageUri:
+    Type: String
+    Description: >
+      Full ECR image URI including tag, e.g.
+      1234567890.dkr.ecr.eu-west-1.amazonaws.com/niqs-api:2026-07-30-1.
+      Use an immutable tag, never :latest — Express Mode only redeploys when
+      this value changes, so :latest would make deploys silent no-ops.
+
+  ClientUrl:
+    Type: String
+    Default: "https://niqs-website.vercel.app,http://localhost:5173"
+    Description: >
+      Comma-separated origins allowed through the API's CORS check. Read by
+      server.js at boot. Add the production domain here at cutover.
+
+  Cpu:
+    Type: String
+    Default: "512"
+    AllowedValues: ["256", "512", "1024", "2048"]
+    Description: >
+      512 (.5 vCPU) is a sensible start. 256 works but leaves little headroom for
+      the PDF/flyer endpoints, which are CPU-bound.
+
+  Memory:
+    Type: String
+    Default: "1024"
+    Description: >
+      Must be a valid Fargate pairing for Cpu — 512 CPU allows 1024-4096 MiB.
+
+  MinTaskCount:
+    Type: Number
+    Default: 1
+    MinValue: 1
+    Description: >
+      Keep at 1 or higher. This is the setting that eliminates the Render
+      cold start: a task is always warm, so there is no 30-50s first request.
+
+  MaxTaskCount:
+    Type: Number
+    Default: 4
+    MinValue: 1
+
+  AutoScalingMetric:
+    Type: String
+    Default: AVERAGE_CPU
+    AllowedValues: [AVERAGE_CPU, AVERAGE_MEMORY, REQUEST_COUNT_PER_TARGET]
+
+  AutoScalingTargetValue:
+    Type: Number
+    Default: 60
+
+  DnsServers:
+    Type: String
+    Default: "system"
+    Description: >
+      "system" uses the VPC resolver, which is what you want inside AWS. The
+      hardcoded public resolvers in config/db.js exist for flaky ISP DNS on
+      developer machines and would break a task in a private subnet.
+
+Resources:
+  ApiService:
+    Type: AWS::ECS::ExpressGatewayService
+    Properties:
+      ServiceName: !Sub "${ProjectName}-api"
+      Cluster:
+        Fn::ImportValue: !Sub "${ProjectName}-cluster"
+      InfrastructureRoleArn:
+        Fn::ImportValue: !Sub "${ProjectName}-infrastructure-role"
+      ExecutionRoleArn:
+        Fn::ImportValue: !Sub "${ProjectName}-execution-role"
+      # Lets the application code sign S3 PutObject calls without static keys.
+      TaskRoleArn:
+        Fn::ImportValue: !Sub "${ProjectName}-task-role"
+
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+
+      # Express Mode defaults to /ping, which this API does not serve. server.js
+      # answers /api/health with 200 normally and 503 while draining, so the ALB
+      # deregisters a task as soon as it receives SIGTERM.
+      HealthCheckPath: /api/health
+
+      ScalingTarget:
+        MinTaskCount: !Ref MinTaskCount
+        MaxTaskCount: !Ref MaxTaskCount
+        AutoScalingMetric: !Ref AutoScalingMetric
+        AutoScalingTargetValue: !Ref AutoScalingTargetValue
+
+      PrimaryContainer:
+        Image: !Ref ImageUri
+        ContainerPort: 8080
+
+        Environment:
+          - Name: NODE_ENV
+            Value: production
+          - Name: PORT
+            Value: "8080"
+          - Name: CLIENT_URL
+            Value: !Ref ClientUrl
+          - Name: DNS_SERVERS
+            Value: !Ref DnsServers
+          - Name: AWS_REGION
+            Value: !Ref AWS::Region
+          - Name: S3_BUCKET
+            Value:
+              Fn::ImportValue: !Sub "${ProjectName}-asset-bucket"
+          - Name: ASSET_CDN_URL
+            Value:
+              Fn::ImportValue: !Sub "${ProjectName}-asset-cdn-url"
+          # ECS waits 30s after SIGTERM before SIGKILL. 5s of deregistration
+          # plus a 10s drain leaves comfortable margin inside that window.
+          - Name: PRE_DRAIN_MS
+            Value: "5000"
+          - Name: DRAIN_TIMEOUT_MS
+            Value: "10000"
+
+        # Resolved from Secrets Manager at task start and injected as env vars.
+        # The "<arn>:<jsonKey>::" form pulls a single key out of the JSON secret.
+        Secrets:
+          - Name: MONGO_URI
+            ValueFrom: !Sub
+              - "${SecretArn}:MONGO_URI::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: JWT_SECRET
+            ValueFrom: !Sub
+              - "${SecretArn}:JWT_SECRET::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: CLOUDINARY_CLOUD_NAME
+            ValueFrom: !Sub
+              - "${SecretArn}:CLOUDINARY_CLOUD_NAME::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: CLOUDINARY_API_KEY
+            ValueFrom: !Sub
+              - "${SecretArn}:CLOUDINARY_API_KEY::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: CLOUDINARY_API_SECRET
+            ValueFrom: !Sub
+              - "${SecretArn}:CLOUDINARY_API_SECRET::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: SMTP_HOST
+            ValueFrom: !Sub
+              - "${SecretArn}:SMTP_HOST::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: SMTP_PORT
+            ValueFrom: !Sub
+              - "${SecretArn}:SMTP_PORT::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: SMTP_USER
+            ValueFrom: !Sub
+              - "${SecretArn}:SMTP_USER::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: SMTP_PASS
+            ValueFrom: !Sub
+              - "${SecretArn}:SMTP_PASS::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: SMTP_FROM
+            ValueFrom: !Sub
+              - "${SecretArn}:SMTP_FROM::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: PORTAL_API_URL
+            ValueFrom: !Sub
+              - "${SecretArn}:PORTAL_API_URL::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: PORTAL_API_KEY
+            ValueFrom: !Sub
+              - "${SecretArn}:PORTAL_API_KEY::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Component
+          Value: api
+
+Outputs:
+  ApiEndpoint:
+    Description: >
+      AWS-provided HTTPS endpoint for the API. Point the client's VITE_API_URL at
+      this + /api, or map a custom domain onto the managed ALB.
+    Value: !GetAtt ApiService.Endpoint
+
+  ApiHealthPath:
+    Description: >
+      Append this to the endpoint above to smoke-test. Check whether Endpoint
+      comes back as a bare hostname or a full URL and prefix https:// only if
+      it is bare — see the runbook's verification step.
+    Value: /api/health
+
+  ServiceArn:
+    Value: !GetAtt ApiService.ServiceArn
+
+  LoadBalancerArn:
+    Description: The ALB Express Mode created — needed to attach a custom domain.
+    Value: !GetAtt ApiService.ECSManagedResourceArns.IngressPath.LoadBalancerArn
