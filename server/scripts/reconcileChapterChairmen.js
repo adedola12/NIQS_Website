@@ -46,6 +46,9 @@ const PREFER_PHOTO = {
   FCT: 'chapter',
 };
 
+/* Only chapters whose chairman also holds an NEC seat belong here — there are 13
+   of those, and Rivers is not among them, so its chairman exists once and needs
+   no reconciling. */
 const STATES = ['FCT', 'Delta', 'Ebonyi', 'Nasarawa'];
 
 (async () => {

@@ -46,6 +46,13 @@ const QUERIES = [
   ['Katsina Chapter', 'QS Maryam Mua\'azu and QS Sadiya Sani Yar\'Adua are on the site, but their '
     + 'images were cut from the chapter senate poster and cannot be separated from the background '
     + 'cleanly. Original photographs would let them match the rest of the chapter.'],
+  ['Rivers Chapter', 'Two files in the chapter pack are the same photograph, byte for byte — the one '
+    + 'captioned QS Mercy Adesayo Omotayo, MNIQS (Financial Secretary) and the one captioned '
+    + 'Ms Izidor Smith Nwachukwu (YQSF Coordinator). Rather than guess whose face it is, neither '
+    + 'card carries it. Please resend both, and confirm which of the two the shared photograph is.'],
+  ['Rivers Chapter', 'QS Tochukwu Blessed, MNIQS (Research & Development Secretary) is cropped to the '
+    + 'head and upper chest, which leaves nothing of the suit to work with. A photograph taken from '
+    + 'the waist up would let his card match the rest of the chapter.'],
   ['YQSF', 'What does NAQSS stand for in full? The page currently prints the acronym, where every '
     + 'other body on the site is spelt out.'],
 ];

@@ -319,6 +319,57 @@ const CHAPTERS = [
       ['uwem-justine-glory', 'QS Uwem Justine Glory, MNIQS', 'Co-opted Member II', 14],
     ],
   },
+  {
+    key: 'rivers',
+    chapterName: 'Rivers Chapter',
+    state: 'Rivers',
+    stateLabel: 'Rivers State',
+    chairperson: 'QS Dr. Naomi Landue-Oguzo, FNIQS',
+    secretary: 'QS Chukwuma Elumeze, FNIQS',
+    about:
+      'The Rivers State Chapter of the Nigerian Institute of Quantity Surveyors serves '
+      + 'registered quantity surveyors practising across Rivers State in the South South '
+      + 'geopolitical zone. A twelve-member executive committee leads the chapter across '
+      + 'administration, finance, public relations and research and development, working '
+      + 'with the National Secretariat to deliver continuing professional development, '
+      + 'uphold professional standards in construction cost management, and represent the '
+      + 'profession before government, industry and the academic community in a state at '
+      + "the centre of Nigeria's oil and gas construction economy. The chapter also hosts "
+      + 'the Young Quantity Surveyors Forum (YQSF) and West African Quantity Surveyors '
+      + 'Network coordination for Rivers.',
+    heroPortrait: 'naomi-landue-oguzo',
+    /* Roster from the chapter's "Rivers State Senate Members" pack, whose photo
+       captions carry the names and titles. Three obvious slips in those captions
+       are corrected here rather than published — "PUBLIC RELATION SECRETARY",
+       "SECRETARYY" and "CORODINATOR" — and the chairman's name is taken from the
+       caption burned into her own portrait. The committee's Chapter Chairmen List
+       has her as "QS Naomi Sibi Landue, FNIQS", so her NEC-scope card and this
+       one still disagree; reconcileChapterChairmen.js settles that.
+
+       Twelve executives, nine portraits:
+       - The Financial Secretary's and the YQSF Coordinator's files are the same
+         photograph, byte for byte, of one woman. Publishing it under either name
+         would be a coin flip on whose face it is, so neither card gets it until
+         the chapter resends.
+       - The Research & Development Secretary's photo is cropped mid-chest, and a
+         suit with a lapel, white shirt and striped tie is exactly what the
+         bottom extension cannot invent — it smears into a tabletop. Needs a
+         fuller photograph, not a retouch. */
+    roster: [
+      ['naomi-landue-oguzo', 'QS Dr. Naomi Landue-Oguzo, FNIQS', 'Chapter Chairman', 1],
+      ['chile-humphrey-anyawata', 'QS Chile Humphrey Anyawata, FNIQS', 'Deputy Chairman', 2],
+      ['chukwuma-elumeze', 'QS Chukwuma Elumeze, FNIQS', 'General Secretary', 3],
+      ['bethel-nweke', 'Mr Bethel Nweke', 'Assistant General Secretary', 4],
+      ['nnenda-nwofor', 'QS Nnenda Nwofor, FNIQS', 'Treasurer', 5],
+      ['mercy-adesayo-omotayo', 'QS Mercy Adesayo Omotayo, MNIQS', 'Financial Secretary', 6],
+      ['obilor-romanus-amaechi', 'QS Obilor Romanus Amaechi, MNIQS', 'Public Relations Secretary', 7],
+      ['tochukwu-blessed', 'QS Tochukwu Blessed, MNIQS', 'Research & Development Secretary', 8],
+      ['egwuonwu-obinna-goodnews', 'QS Egwuonwu Obinna Goodnews, MNIQS', 'Ex-Officio I', 9],
+      ['obiageri-juliet-asogu', 'QS Obiageri Juliet Asogu, MNIQS', 'Co-opted Member', 10],
+      ['izidor-smith-nwachukwu', 'Ms Izidor Smith Nwachukwu', 'YQSF Coordinator', 11],
+      ['okwukwu-precious-oma', 'QS Okwukwu Precious Oma, MNIQS', 'WAQSN Coordinator', 12],
+    ],
+  },
 ];
 
 (async () => {
