@@ -286,10 +286,18 @@ Resources:
         - CapacityProvider: FARGATE
           Weight: 1
       ClusterSettings:
-        # "enabled" gives cluster/service metrics. "enhanced" adds per-task
-        # granularity but bills per metric — overkill for one small service.
+        # Disabled deliberately, to hold total spend under the £/$50 monthly
+        # ceiling this project is running to. Container Insights publishes a
+        # large set of custom metrics and bills per metric per month, which is
+        # real money for a single small service.
+        #
+        # Nothing important is lost. ECS still publishes CPUUtilization and
+        # MemoryUtilization as standard CloudWatch metrics for free, and those
+        # are what the Express service's target-tracking autoscaling policy
+        # reads — scaling is unaffected. Container logs are unaffected too.
+        # Turn it back on if per-container breakdowns are ever worth the cost.
         - Name: containerInsights
-          Value: enabled
+          Value: disabled
 
   # ── IAM ────────────────────────────────────────────────────────────────────
   # Used by the ECS agent to pull the image, ship logs and resolve secrets.
