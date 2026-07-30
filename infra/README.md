@@ -15,9 +15,59 @@ S3/CloudFront would not make it faster.
 
 | Tool | Check | Notes |
 |---|---|---|
-| AWS CLI v2 | `aws --version` | Not currently installed on this machine |
-| Docker | `docker --version` | Not currently installed on this machine |
-| AWS credentials | `aws sts get-caller-identity` | Needs permission to create IAM roles |
+| AWS CLI v2 | `aws --version` | Installed at `C:\Program Files\Amazon\AWSCLIV2` — on the machine PATH, so a *new* shell picks it up |
+| AWS credentials | `aws sts get-caller-identity` | Profile `adlm-deploy`, account `065634457992`. Needs permission to create IAM roles |
+| Docker | — | **Not required.** See Step 3: the image is built by CodeBuild in the cloud, because Docker Desktop needs local administrator rights |
+
+---
+
+## Step 0a — Service-linked roles (do this first, in a fresh account or region)
+
+ECS, its autoscaling, and the load balancer each need a service-linked role in
+the account. IAM is global, so this is once per account, not per region.
+
+```bash
+aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com --profile adlm-deploy
+aws iam create-service-linked-role --aws-service-name ecs.application-autoscaling.amazonaws.com --profile adlm-deploy
+aws iam create-service-linked-role --aws-service-name elasticloadbalancing.amazonaws.com --profile adlm-deploy
+```
+
+`InvalidInput ... has been taken` means it already exists — that is a success, not
+a failure. Verify with:
+
+```bash
+aws iam get-role --role-name AWSServiceRoleForECS --profile adlm-deploy --query Role.Arn --output text
+```
+
+**Why this is a separate step and not left to CloudFormation.** On the first
+deploy of `01-foundation.yml` the cluster failed with:
+
+```
+Unable to assume the service linked role. Please verify that the ECS service
+linked role exists.
+```
+
+The role was not missing — creating the cluster had triggered its creation, and
+the cluster then tried to assume it before IAM had propagated. It is a race, and
+it only shows up on the very first ECS workload in an account, which is exactly
+when nobody is expecting it. Creating the roles up front and letting them settle
+removes the race. Done for account `065634457992` on 2026-07-30.
+
+### If the stack still rolls back on the first attempt
+
+The asset bucket carries `DeletionPolicy: Retain` — correct for a bucket holding
+the only copy of uploaded constitutions and portraits, but it means a *failed
+first deploy* leaves the bucket behind, and the retry then fails early validation
+with `AWS::EarlyValidation::ResourceExistenceCheck`. Confirm the orphan is empty
+before removing it:
+
+```bash
+aws s3 ls s3://niqs-assets-<account>-<region> --recursive
+aws s3api delete-bucket --bucket niqs-assets-<account>-<region> --region <region> --profile adlm-deploy
+```
+
+Only do this for a bucket you just created and know is empty. Once real uploads
+exist, import it into the stack instead.
 
 ---
 
