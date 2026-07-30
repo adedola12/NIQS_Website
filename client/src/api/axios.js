@@ -1,7 +1,12 @@
 import axios from 'axios';
 
-// In production (Vercel), VITE_API_URL points to the Render backend.
+// In production, VITE_API_URL points at the ECS Express service in eu-west-3.
 // In dev, Vite's proxy forwards /api → localhost:5000, so we keep '/api'.
+//
+// NOTE: the value that actually ships is whichever VITE_API_URL is set in the
+// Vercel project's Environment Variables — not client/.env.production. Vite reads
+// .env files via dotenv, and dotenv does not overwrite a variable already present
+// in the build environment, so the dashboard silently wins. Change it there.
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   withCredentials: true,
