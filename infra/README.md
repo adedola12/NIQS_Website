@@ -123,7 +123,18 @@ environment. Easiest path is the console:
 **Secrets Manager → `niqs/api` → Retrieve secret value → Edit**
 
 Keys to fill: `MONGO_URI`, `JWT_SECRET`, `CLOUDINARY_*`, `SMTP_*`,
-`PORTAL_API_URL`, `PORTAL_API_KEY`.
+`PORTAL_API_URL`, `PORTAL_API_KEY`, `NIQS_STATS_API_KEY`.
+
+`NIQS_STATS_API_KEY` is the NIQS public statistics key (see
+[`../docs/PUBLIC_STATS_API.md`](../docs/PUBLIC_STATS_API.md)). Without it the site
+still works — `/api/stats/membership` answers 503 and every figure falls back to
+its static copy — but no membership number on the site is live.
+
+> ⚠️ **`load-secrets.ps1` replaces the whole secret, it does not merge.** It calls
+> `put-secret-value` with whatever it found in `server/.env`, so a key missing
+> from your local `.env` is a key deleted from the secret — and a task that
+> references a deleted key fails to launch. To add one key to a populated secret,
+> edit it in the console. Use the script when `server/.env` is complete.
 
 Reuse the *same* `JWT_SECRET` as Render, or every signed-in admin gets logged out
 at cutover.
@@ -136,34 +147,79 @@ passed as plain environment variables by the service stack.
 
 ## Step 3 — Build and push the image
 
-```bash
-aws ecr get-login-password | docker login --username AWS --password-stdin $(aws sts get-caller-identity --query Account --output text).dkr.ecr.$(aws configure get region).amazonaws.com
-```
-
-PowerShell needs `$(...)` spelled out — grab the account id and region into
-variables first:
+The image is built by **CodeBuild in the cloud**, not on the workstation: Docker
+Desktop needs local administrator rights, which the deploying account does not
+have. There is no Docker step here and none is needed.
 
 ```powershell
-$acct = aws sts get-caller-identity --query Account --output text
-$region = aws configure get region
-$repo = "$acct.dkr.ecr.$region.amazonaws.com/niqs-api"
-aws ecr get-login-password | docker login --username AWS --password-stdin "$acct.dkr.ecr.$region.amazonaws.com"
-docker build -t "${repo}:2026-07-30-1" ./server
-docker push "${repo}:2026-07-30-1"
+powershell -ExecutionPolicy Bypass -File .\infra\build-and-push.ps1
 ```
 
-**Use a dated, immutable tag — never `:latest`.** Express Mode redeploys only when
-`ImageUri` changes, so `:latest` makes every subsequent deploy a silent no-op.
+That packages `server/`, uploads it to the `build/` prefix of the asset bucket,
+starts `niqs-api-build`, waits for it, and prints the image URI plus the deploy
+command for Step 4. Pin the tag with `-ImageTag 2026-07-31-hotfix` if you want
+something more meaningful than the timestamp.
 
-The image is `linux/amd64`. On an Apple Silicon machine add
-`--platform linux/amd64` or Fargate will fail to start the task.
+If you would rather run it by hand:
+
+```powershell
+$p = 'adlm-deploy'; $r = 'eu-west-3'
+$bucket = aws cloudformation list-exports --region $r --profile $p `
+  --query "Exports[?Name=='niqs-asset-bucket'].Value" --output text
+$tag = Get-Date -Format 'yyyy-MM-dd-HHmm'
+
+git archive --format=zip --output server-source.zip HEAD:server
+aws s3 cp server-source.zip "s3://$bucket/build/server-source.zip" --region $r --profile $p
+
+$build = aws codebuild start-build --project-name niqs-api-build `
+  --environment-variables-override "name=IMAGE_TAG,value=$tag,type=PLAINTEXT" `
+  --region $r --profile $p --query 'build.id' --output text
+
+aws codebuild batch-get-builds --ids $build --region $r --profile $p `
+  --query 'builds[0].buildStatus' --output text   # poll until SUCCEEDED, ~2-4 min
+```
+
+Three things that bite:
+
+- **The zip comes from `git archive`, so it contains committed files only.**
+  Uncommitted work in `server/` is silently absent from the image. The script
+  refuses to run on a dirty tree for exactly this reason; by hand, you get no
+  warning. `git archive` is also what keeps `server/.env` and the 47 MB of
+  `node_modules` out of S3 — `.dockerignore` only governs the build context
+  inside CodeBuild, not what you upload.
+- **`HEAD:server` puts the Dockerfile at the root of the zip,** which is where the
+  buildspec's `docker build .` looks for it. Zipping the `server` folder itself
+  nests everything one level down and the build fails.
+- **Use a dated, immutable tag — never `:latest`.** Express Mode redeploys only
+  when `ImageUri` changes, so a floating tag makes every subsequent deploy a
+  silent no-op.
+
+Merging to `main` does **not** trigger any of this. The CodeBuild source is an S3
+zip, not a GitHub webhook, so a backend change ships only when someone runs this
+step. Vercel does auto-deploy the client, so after a merge the front end can be
+ahead of the API — which shows up as the site falling back to its static copy
+rather than as an error.
 
 ---
 
 ## Step 4 — Deploy the service
 
 ```bash
-aws cloudformation deploy --template-file infra/cloudformation/02-service.yml --stack-name niqs-api --parameter-overrides ProjectName=niqs ImageUri=<the URI you just pushed> ClientUrl=https://niqs-website.vercel.app,http://localhost:5173
+aws cloudformation deploy --template-file infra/cloudformation/02-service.yml --stack-name niqs-api --parameter-overrides ProjectName=niqs ImageUri=<the URI you just pushed> ClientUrl=https://niqs-website.vercel.app,http://localhost:5173 IncludeStatsSecret=true
+```
+
+`IncludeStatsSecret=true` is what actually injects `NIQS_STATS_API_KEY` into the
+task. It is gated separately from `IncludeOptionalSecrets` (which covers `SMTP_*`
+and `PORTAL_*`) because the statistics key exists today while those credentials do
+not — one shared switch would hold the live figures hostage to credentials nobody
+has yet. **The key must already be in the secret from Step 2**, or ECS refuses to
+start the task.
+
+Check the current parameters before deploying and pass them back explicitly, so
+nothing silently reverts to a template default:
+
+```bash
+aws cloudformation describe-stacks --stack-name niqs-api --query "Stacks[0].Parameters" --output table
 ```
 
 Express Mode now builds the ALB, ACM certificate, HTTPS listener, target group,
