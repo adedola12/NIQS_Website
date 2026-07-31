@@ -59,6 +59,7 @@ Server runs on `http://localhost:5000`, Client on `http://localhost:5173`
 | `CRUD /api/members` | Members |
 | `POST /api/contact` | Contact form |
 | `POST /api/upload` | File upload |
+| `GET /api/stats/membership` | Live membership statistics, proxied from the NIQS public API ([docs](docs/PUBLIC_STATS_API.md)) |
 
 ## Project Structure
 ```

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../../api/axios';
+import useMembershipStats, { formatCount, formatApprox } from '../../hooks/useMembershipStats';
+
+/* Founding year, for the "years of excellence" tile — computed rather than typed
+   so it does not quietly go stale each January. */
+const FOUNDED = 1969;
 
 /* ── fallback data ── */
 const fallbackNews = [
@@ -95,6 +100,13 @@ export default function Home() {
   const [platinumPartners, setPlatinumPartners] = useState([]);
   const [tickerItems, setTickerItems] = useState(defaultTickerItems);
 
+  /* Live membership figures. `stats` is null while loading and whenever the
+     endpoint is unavailable, so every use below falls back to the approved static
+     copy — the hero must never render a membership figure of zero. */
+  const { stats } = useMembershipStats();
+  const fellows = stats?.by_grade?.find(g => g.grade === 'Fellow')?.count ?? null;
+  const memberCopy = stats ? formatApprox(stats.total_members) : '10,000+';
+
   useEffect(() => {
     API.get('/news?limit=3').then(res => {
       const data = res.data?.news || res.data?.data || res.data;
@@ -181,7 +193,7 @@ export default function Home() {
             Advancing Nigeria's<br />Built <em>Environment</em>
           </h1>
           <p className="hc-sub">
-            The premier professional body for quantity surveying in Nigeria — setting the gold standard for construction cost management, procurement, and contract administration across 10,000+ professionals in every state.
+            The premier professional body for quantity surveying in Nigeria — setting the gold standard for construction cost management, procurement, and contract administration across {memberCopy} professionals in every state.
           </p>
           <div className="hc-btns">
             <Link to="/membership" className="hc-btn-p">
@@ -207,12 +219,27 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Stat bar */}
+        {/* Stat bar. The first two tiles are live from the membership register;
+            the rest are Institute facts held in this repo. */}
         <div className="hstat-row">
-          <div className="hstat"><div className="hstat-n">10,000+</div><div className="hstat-l">Total Members</div></div>
-          <div className="hstat"><div className="hstat-n">4,000+</div><div className="hstat-l">Corporate QS</div></div>
+          <div className="hstat">
+            <div className="hstat-n">{stats ? formatCount(stats.total_members) : '10,000+'}</div>
+            <div className="hstat-l">Total Members</div>
+          </div>
+          {/* Grade labels are the Institute's to change, so this tile is only drawn
+              when the register actually returns a Fellow grade — it is never
+              approximated from a hard-coded figure. */}
+          {fellows !== null && (
+            <div className="hstat">
+              <div className="hstat-n">{formatCount(fellows)}</div>
+              <div className="hstat-l">Fellows</div>
+            </div>
+          )}
           <div className="hstat"><div className="hstat-n">37</div><div className="hstat-l">State Chapters</div></div>
-          <div className="hstat"><div className="hstat-n">56</div><div className="hstat-l">Years of Excellence</div></div>
+          <div className="hstat">
+            <div className="hstat-n">{new Date().getFullYear() - FOUNDED}</div>
+            <div className="hstat-l">Years of Excellence</div>
+          </div>
           <div className="hstat"><div className="hstat-n">15+</div><div className="hstat-l">International Agreements</div></div>
         </div>
       </div>
@@ -423,7 +450,7 @@ export default function Home() {
         <div className="ct">
           <div className="ctaw">
             <h2>Ready to Join <em>NIQS?</em></h2>
-            <p>Join 10,000+ professionals and unlock examinations, CPD, networking, and career growth across Nigeria and beyond.</p>
+            <p>Join {memberCopy} professionals and unlock examinations, CPD, networking, and career growth across Nigeria and beyond.</p>
             <div className="ctarow">
               <Link to="/membership" className="btn bg">Apply for Membership</Link>
               <Link

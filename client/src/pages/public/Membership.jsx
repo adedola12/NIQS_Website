@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
+import MembershipStats from '../../components/stats/MembershipStats';
 
 const categories = [
   {
@@ -131,6 +132,10 @@ export default function Membership() {
           </div>
         </div>
       </section>
+
+      {/* Live register figures. Renders nothing when the statistics endpoint is
+          unavailable, so the page simply reads as it did before. */}
+      <MembershipStats />
 
       {/* How to Apply + Search */}
       <section className="section-alt">
