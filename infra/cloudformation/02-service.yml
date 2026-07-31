@@ -92,8 +92,20 @@ Parameters:
       JSON key which is not there. Flip to true once load-secrets.ps1 has
       uploaded them, and redeploy.
 
+  IncludeStatsSecret:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: >
+      Wire NIQS_STATS_API_KEY through from the secret. Gated separately from
+      IncludeOptionalSecrets because this key is available now while the SMTP and
+      portal credentials are not — sharing one switch would keep the live
+      membership figures waiting on credentials nobody has yet. Without it
+      /api/stats/membership answers 503 and the site shows its static fallback.
+
 Conditions:
   WithOptionalSecrets: !Equals [!Ref IncludeOptionalSecrets, "true"]
+  WithStatsSecret:     !Equals [!Ref IncludeStatsSecret, "true"]
 
 Resources:
   ApiService:
@@ -156,101 +168,107 @@ Resources:
         # The "<arn>:<jsonKey>::" form pulls a single key out of the JSON secret.
         #
         # A referenced key that is not present in the secret makes the task fail
-        # to start — not degrade, fail. So the optional group is gated behind a
-        # parameter rather than listed unconditionally: email.js and
-        # portalClient.js are both written to no-op when their variables are
-        # unset, so the API runs correctly without them, but neither survives
-        # ECS refusing to launch the task at all.
-        Secrets: !If
-          - WithOptionalSecrets
-          -
-            - Name: MONGO_URI
-              ValueFrom: !Sub
-                - "${SecretArn}:MONGO_URI::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
-            - Name: JWT_SECRET
-              ValueFrom: !Sub
-                - "${SecretArn}:JWT_SECRET::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
-            - Name: CLOUDINARY_CLOUD_NAME
-              ValueFrom: !Sub
-                - "${SecretArn}:CLOUDINARY_CLOUD_NAME::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
-            - Name: CLOUDINARY_API_KEY
-              ValueFrom: !Sub
-                - "${SecretArn}:CLOUDINARY_API_KEY::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
-            - Name: CLOUDINARY_API_SECRET
-              ValueFrom: !Sub
-                - "${SecretArn}:CLOUDINARY_API_SECRET::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
+        # to start — not degrade, fail. So every key that may not be in the secret
+        # yet is wrapped in a condition and drops out of the list entirely when
+        # that condition is false. email.js, portalClient.js and niqsStatsClient.js
+        # are all written to no-op when their variables are unset, so the API runs
+        # correctly without them — but none of that helps if ECS refuses to launch
+        # the task at all.
+        #
+        # The two optional groups are gated separately on purpose. The membership
+        # statistics key exists today; the SMTP and portal credentials do not. One
+        # shared switch would hold the live figures hostage to credentials nobody
+        # has yet.
+        Secrets:
+          - Name: MONGO_URI
+            ValueFrom: !Sub
+              - "${SecretArn}:MONGO_URI::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: JWT_SECRET
+            ValueFrom: !Sub
+              - "${SecretArn}:JWT_SECRET::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: CLOUDINARY_CLOUD_NAME
+            ValueFrom: !Sub
+              - "${SecretArn}:CLOUDINARY_CLOUD_NAME::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: CLOUDINARY_API_KEY
+            ValueFrom: !Sub
+              - "${SecretArn}:CLOUDINARY_API_KEY::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - Name: CLOUDINARY_API_SECRET
+            ValueFrom: !Sub
+              - "${SecretArn}:CLOUDINARY_API_SECRET::"
+              - SecretArn: !ImportValue
+                  Fn::Sub: "${ProjectName}-app-secret"
+          - !If
+            - WithOptionalSecrets
             - Name: SMTP_HOST
               ValueFrom: !Sub
                 - "${SecretArn}:SMTP_HOST::"
                 - SecretArn: !ImportValue
                     Fn::Sub: "${ProjectName}-app-secret"
+            - !Ref "AWS::NoValue"
+          - !If
+            - WithOptionalSecrets
             - Name: SMTP_PORT
               ValueFrom: !Sub
                 - "${SecretArn}:SMTP_PORT::"
                 - SecretArn: !ImportValue
                     Fn::Sub: "${ProjectName}-app-secret"
+            - !Ref "AWS::NoValue"
+          - !If
+            - WithOptionalSecrets
             - Name: SMTP_USER
               ValueFrom: !Sub
                 - "${SecretArn}:SMTP_USER::"
                 - SecretArn: !ImportValue
                     Fn::Sub: "${ProjectName}-app-secret"
+            - !Ref "AWS::NoValue"
+          - !If
+            - WithOptionalSecrets
             - Name: SMTP_PASS
               ValueFrom: !Sub
                 - "${SecretArn}:SMTP_PASS::"
                 - SecretArn: !ImportValue
                     Fn::Sub: "${ProjectName}-app-secret"
+            - !Ref "AWS::NoValue"
+          - !If
+            - WithOptionalSecrets
             - Name: SMTP_FROM
               ValueFrom: !Sub
                 - "${SecretArn}:SMTP_FROM::"
                 - SecretArn: !ImportValue
                     Fn::Sub: "${ProjectName}-app-secret"
+            - !Ref "AWS::NoValue"
+          - !If
+            - WithOptionalSecrets
             - Name: PORTAL_API_URL
               ValueFrom: !Sub
                 - "${SecretArn}:PORTAL_API_URL::"
                 - SecretArn: !ImportValue
                     Fn::Sub: "${ProjectName}-app-secret"
+            - !Ref "AWS::NoValue"
+          - !If
+            - WithOptionalSecrets
             - Name: PORTAL_API_KEY
               ValueFrom: !Sub
                 - "${SecretArn}:PORTAL_API_KEY::"
                 - SecretArn: !ImportValue
                     Fn::Sub: "${ProjectName}-app-secret"
-          -
-            - Name: MONGO_URI
+            - !Ref "AWS::NoValue"
+          - !If
+            - WithStatsSecret
+            - Name: NIQS_STATS_API_KEY
               ValueFrom: !Sub
-                - "${SecretArn}:MONGO_URI::"
+                - "${SecretArn}:NIQS_STATS_API_KEY::"
                 - SecretArn: !ImportValue
                     Fn::Sub: "${ProjectName}-app-secret"
-            - Name: JWT_SECRET
-              ValueFrom: !Sub
-                - "${SecretArn}:JWT_SECRET::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
-            - Name: CLOUDINARY_CLOUD_NAME
-              ValueFrom: !Sub
-                - "${SecretArn}:CLOUDINARY_CLOUD_NAME::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
-            - Name: CLOUDINARY_API_KEY
-              ValueFrom: !Sub
-                - "${SecretArn}:CLOUDINARY_API_KEY::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
-            - Name: CLOUDINARY_API_SECRET
-              ValueFrom: !Sub
-                - "${SecretArn}:CLOUDINARY_API_SECRET::"
-                - SecretArn: !ImportValue
-                    Fn::Sub: "${ProjectName}-app-secret"
-
+            - !Ref "AWS::NoValue"
       Tags:
         - Key: Project
           Value: !Ref ProjectName

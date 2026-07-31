@@ -112,7 +112,27 @@ Server environment (see `server/.env.example`):
 | `NIQS_STATS_CACHE_MS` | `1800000` | Matches the upstream 30-minute cache |
 | `NIQS_STATS_STALE_MS` | `86400000` | How long stale figures stay servable |
 
-The key is **not** in this repository and must not be added to it. Set it in the ECS task definition for production and in a local `server/.env` for development. It is revocable per consumer; report a suspected exposure to the NIQS technical contact for a same-day replacement.
+The key is **not** in this repository and must not be added to it. It is revocable per consumer; report a suspected exposure to the NIQS technical contact for a same-day replacement.
+
+### Turning the figures on in production
+
+Deploying the code is not enough — without the key the route answers 503 and the site keeps its static fallback. Three steps, in order:
+
+1. **Put the key in `server/.env`** locally, as `NIQS_STATS_API_KEY=niqs_pub_…`.
+2. **Upload it:** `powershell -ExecutionPolicy Bypass -File .\infra\load-secrets.ps1`. The key name must match the task definition exactly; the script's `$KEYS` list already carries it.
+3. **Redeploy `02-service.yml` with `IncludeStatsSecret=true`.**
+
+Step 3 is the one that is easy to miss. The task definition only references a secret key when its condition is on, because **ECS fails to start a task that references a JSON key which is not in the secret** — it does not degrade, it refuses to launch. So the reference is gated, and the gate defaults to off.
+
+`IncludeStatsSecret` is deliberately separate from `IncludeOptionalSecrets` (which covers `SMTP_*` and `PORTAL_*`). This key exists today; those credentials do not. One shared switch would hold the live membership figures hostage to credentials nobody has yet.
+
+To verify after deploy:
+
+```bash
+curl -s https://<api-host>/api/stats/membership | head -c 200
+# available:true  → figures are live
+# available:false, configured:false → the key did not reach the task; check step 3
+```
 
 There is no staging environment upstream. Develop against production and **do not load-test** — ask NIQS first if you need to.
 

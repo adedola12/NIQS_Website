@@ -273,7 +273,8 @@ Resources:
           "SMTP_PASS": "REPLACE_ME",
           "SMTP_FROM": "REPLACE_ME",
           "PORTAL_API_URL": "REPLACE_ME",
-          "PORTAL_API_KEY": "REPLACE_ME"
+          "PORTAL_API_KEY": "REPLACE_ME",
+          "NIQS_STATS_API_KEY": "REPLACE_ME"
         }
 
   # ── ECS cluster ────────────────────────────────────────────────────────────
