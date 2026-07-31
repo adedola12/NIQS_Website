@@ -24,6 +24,24 @@ export default function useMembershipStats() {
   return { stats, loading };
 }
 
+/**
+ * Shown only when the membership register is unreachable. Deliberately vague and
+ * deliberately low: it is the last figure the Institute approved in writing, and
+ * an understatement is the safe way to be wrong on a headline number.
+ */
+export const MEMBERS_FALLBACK = '10,000+';
+
+/**
+ * The membership figure as body copy — "14,000+" live, the approved fallback
+ * otherwise. Several pages quote the size of the Institute in a sentence; this
+ * keeps them from drifting apart, which is how one page came to say 10,000 while
+ * another said 4,000.
+ */
+export function useMemberCopy() {
+  const { stats } = useMembershipStats();
+  return stats ? formatApprox(stats.total_members) : MEMBERS_FALLBACK;
+}
+
 /** 14023 → "14,023". Nigerian sites read grouped thousands, same as en-GB. */
 export function formatCount(n) {
   return typeof n === 'number' ? n.toLocaleString('en-NG') : '—';

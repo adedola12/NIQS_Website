@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../../api/axios';
-import useMembershipStats, { formatCount, formatApprox } from '../../hooks/useMembershipStats';
+import useMembershipStats, { formatCount, formatApprox, MEMBERS_FALLBACK } from '../../hooks/useMembershipStats';
+import { AGREEMENT_COUNT } from '../../data/reciprocity';
 
 /* Founding year, for the "years of excellence" tile — computed rather than typed
    so it does not quietly go stale each January. */
 const FOUNDED = 1969;
+
+/* 36 states plus the FCT. The tile prefers the live count of chapter records and
+   falls back to this, because a chapter the secretariat has not yet loaded is a
+   gap in our content rather than a chapter that does not exist. */
+const CHAPTERS_FALLBACK = 37;
 
 /* ── fallback data ── */
 const fallbackNews = [
@@ -99,13 +105,14 @@ export default function Home() {
   const [hasUpcoming, setHasUpcoming] = useState(true);
   const [platinumPartners, setPlatinumPartners] = useState([]);
   const [tickerItems, setTickerItems] = useState(defaultTickerItems);
+  const [chapterCount, setChapterCount] = useState(null);
 
   /* Live membership figures. `stats` is null while loading and whenever the
      endpoint is unavailable, so every use below falls back to the approved static
      copy — the hero must never render a membership figure of zero. */
   const { stats } = useMembershipStats();
   const fellows = stats?.by_grade?.find(g => g.grade === 'Fellow')?.count ?? null;
-  const memberCopy = stats ? formatApprox(stats.total_members) : '10,000+';
+  const memberCopy = stats ? formatApprox(stats.total_members) : MEMBERS_FALLBACK;
 
   useEffect(() => {
     API.get('/news?limit=3').then(res => {
@@ -131,6 +138,11 @@ export default function Home() {
           }
         });
       }
+    }).catch(() => {});
+
+    API.get('/chapters').then(res => {
+      const data = res.data?.chapters || res.data?.data || res.data;
+      if (Array.isArray(data) && data.length) setChapterCount(data.length);
     }).catch(() => {});
 
     API.get('/partners?tier=platinum&limit=3').then(res => {
@@ -219,11 +231,12 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Stat bar. The first two tiles are live from the membership register;
-            the rest are Institute facts held in this repo. */}
+        {/* Stat bar. Every tile is now derived — from the membership register, the
+            chapter records, the reciprocity list, or the founding year. Nothing
+            here is a number typed into the markup. */}
         <div className="hstat-row">
           <div className="hstat">
-            <div className="hstat-n">{stats ? formatCount(stats.total_members) : '10,000+'}</div>
+            <div className="hstat-n">{stats ? formatCount(stats.total_members) : MEMBERS_FALLBACK}</div>
             <div className="hstat-l">Total Members</div>
           </div>
           {/* Grade labels are the Institute's to change, so this tile is only drawn
@@ -235,12 +248,18 @@ export default function Home() {
               <div className="hstat-l">Fellows</div>
             </div>
           )}
-          <div className="hstat"><div className="hstat-n">37</div><div className="hstat-l">State Chapters</div></div>
+          <div className="hstat">
+            <div className="hstat-n">{chapterCount ?? CHAPTERS_FALLBACK}</div>
+            <div className="hstat-l">State Chapters</div>
+          </div>
           <div className="hstat">
             <div className="hstat-n">{new Date().getFullYear() - FOUNDED}</div>
             <div className="hstat-l">Years of Excellence</div>
           </div>
-          <div className="hstat"><div className="hstat-n">15+</div><div className="hstat-l">International Agreements</div></div>
+          <div className="hstat">
+            <div className="hstat-n">{AGREEMENT_COUNT}</div>
+            <div className="hstat-l">International Agreements</div>
+          </div>
         </div>
       </div>
 
@@ -421,7 +440,7 @@ export default function Home() {
               </h3>
               <p style={{ fontSize: '.88rem', color: 'rgba(255,255,255,.75)', maxWidth: 620, margin: '0 auto 1.5rem', lineHeight: 1.8 }}>
                 NIQS is opening its platform to organisations committed to raising the bar in
-                Nigeria's construction industry. Partner with the home of over 10,000 quantity
+                Nigeria's construction industry. Partner with the home of {memberCopy} quantity
                 surveying professionals and put your brand before the industry's decision-makers.
               </p>
               <div style={{ display: 'flex', gap: '.8rem', justifyContent: 'center', flexWrap: 'wrap' }}>

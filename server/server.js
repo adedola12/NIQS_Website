@@ -88,6 +88,7 @@ app.use("/api/webinars", require("./routes/webinars"));
 app.use("/api/workshop-materials", require("./routes/workshopMaterials"));
 app.use("/api/journals", require("./routes/journals"));
 app.use("/api/stats", require("./routes/stats"));
+app.use("/api/qs", require("./routes/qs"));
 
 // Health check — also the ALB target-group probe for the ECS Express service.
 // Deliberately does NOT fail on a Mongo blip: a transient database outage would

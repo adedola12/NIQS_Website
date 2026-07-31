@@ -203,6 +203,27 @@ Webhook body (Phase 3): `{ "event": "member.updated|member.suspended|member.rene
 
 ---
 
+## 8a. What the website has already built against this contract
+
+Implemented, env-gated, and inert until `PORTAL_API_URL` + `PORTAL_API_KEY` are set. Nothing below needs the portal team to change anything on our side once credentials arrive — the code is written to this document as-is.
+
+| Route (website) | Backs onto | Notes |
+|---|---|---|
+| `GET /api/qs/lookup?q=` | §4.1 or §4.3 | One search box, two behaviours. A membership number verifies; anything else searches. Used by the "Verify a Member" panel on `/membership`. |
+| `GET /api/qs/search?q=&state=&type=&page=` | §4.3 | Directory search. Refuses an entirely unfiltered query — the directory answers questions about a person, it is not a bulk export. |
+| `GET /api/qs/verify?membershipNumber=` | §4.1 | Membership number only. Verifying by email address would let anyone test whether an address belongs to a member. |
+| `GET /api/qs-firms` | §4.5 (optional) | Asks the portal first when configured, falls back to the website's own `QSFirm` records. This is decision **§9.2** made safe either way — whichever side ends up owning firms, the page above it does not change. |
+
+Three things worth knowing, because they constrain what the portal may send back:
+
+- **PII minimisation is enforced on our side, not just agreed** (§8). The proxy projects every member record down to `membershipNumber`, `fullName`, `membershipType`, `status`, `chapter`, `state` before it leaves the server. If the portal returns `email`, `phone`, `expiresOn` or `cpdBalance` on a search result, the website drops them — they never reach the browser. Please still avoid sending them on a public search endpoint.
+- **Only `status: active` is listed publicly.** Expired, suspended and pending members are not returned by the website's directory search.
+- **The public routes are rate limited** to 30 requests/minute per IP, so the register cannot be walked through our proxy. Per task, not global — see `server/middleware/rateLimit.js`.
+
+**Status as at July 2026:** `portal.niqsng.org` serves the member-portal React app; its `/api/v1/*` paths return that app's `index.html`, so the REST API in §4 is not live yet. The NIQS public statistics key (`NIQS/API/PUBLIC-001`, see [`PUBLIC_STATS_API.md`](./PUBLIC_STATS_API.md)) does **not** grant member records — the Institute's written position on schedule items B1–B4 is that they are not provided, and that a key of that kind would not be an appropriate control for them. So the member-facing directory stays dark until this contract is served.
+
+---
+
 ## 9. Open decisions (need the portal team / NIQS)
 1. **Canonical domains** — website emails/flyers use `niqs.org.ng`; portal is `portal.niqsng.org`. Is the institute domain `niqs.org.ng` or `niqsng.org`? (affects SSO redirect URIs, email From, CORS).
 2. **QS Firm directory** — stays website-managed (current) or moves to the portal? If portal, we switch `/search-qs-firms` to proxy §4.5.

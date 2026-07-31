@@ -60,6 +60,7 @@ Server runs on `http://localhost:5000`, Client on `http://localhost:5173`
 | `POST /api/contact` | Contact form |
 | `POST /api/upload` | File upload |
 | `GET /api/stats/membership` | Live membership statistics, proxied from the NIQS public API ([docs](docs/PUBLIC_STATS_API.md)) |
+| `GET /api/qs/lookup\|search\|verify` | Registered-QS directory, proxied from the membership portal ([docs](docs/PORTAL_INTEGRATION_SPEC.md#8a-what-the-website-has-already-built-against-this-contract)) |
 
 ## Project Structure
 ```

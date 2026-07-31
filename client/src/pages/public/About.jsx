@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 import MembershipStats from '../../components/stats/MembershipStats';
+import { useMemberCopy } from '../../hooks/useMembershipStats';
+import { AGREEMENT_COUNT } from '../../data/reciprocity';
 
 export default function About() {
+  const memberCopy = useMemberCopy();
   const [partners, setPartners]   = useState([]);
   const [loadingP, setLoadingP]   = useState(true);
 
@@ -134,7 +137,7 @@ export default function About() {
                 </li>
                 <li style={{ display: 'flex', gap: '.8rem', fontSize: '.86rem', color: 'var(--text2)' }}>
                   <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}>✓</span>
-                  15+ international reciprocity agreements
+                  {AGREEMENT_COUNT} international reciprocity agreements
                 </li>
               </ul>
               <Link to="/contact" className="btn bp">Get In Touch</Link>
@@ -168,7 +171,7 @@ export default function About() {
               </h3>
               <p style={{ fontSize: '.88rem', color: 'rgba(255,255,255,.75)', maxWidth: 620, margin: '0 auto 1.5rem', lineHeight: 1.8 }}>
                 We are inviting organisations that share our commitment to excellence in the built
-                environment to partner with the Institute. Reach over 10,000 quantity surveying
+                environment to partner with the Institute. Reach {memberCopy} quantity surveying
                 professionals across all 36 states and the FCT.
               </p>
               <div style={{ display: 'flex', gap: '.8rem', justifyContent: 'center', flexWrap: 'wrap' }}>

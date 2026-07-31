@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import MembershipStats from '../../components/stats/MembershipStats';
+import MemberLookup from '../../components/qs/MemberLookup';
 
 const categories = [
   {
@@ -81,8 +82,6 @@ const steps = [
 ];
 
 export default function Membership() {
-  const [searchVal, setSearchVal] = useState('');
-
   return (
     <>
       <PageHero
@@ -172,22 +171,7 @@ export default function Membership() {
                 Verify a quantity surveyor's membership status and registration with NIQS. Enter
                 the practitioner's name or membership number to search.
               </p>
-              <div style={{ background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 14, padding: '2rem' }}>
-                <div className="fg">
-                  <label className="flbl">Name or Membership Number</label>
-                  <input
-                    type="text"
-                    className="fi"
-                    placeholder="Enter name or membership number..."
-                    value={searchVal}
-                    onChange={e => setSearchVal(e.target.value)}
-                  />
-                </div>
-                <button className="bsub" disabled style={{ opacity: .5 }}>Search Register</button>
-                <p style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--color-txt-3)', fontSize: '.76rem' }}>
-                  This feature will be available soon. Please contact the Secretariat for verification.
-                </p>
-              </div>
+              <MemberLookup />
             </div>
           </div>
         </div>
