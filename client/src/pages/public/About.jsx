@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
+import MembershipStats from '../../components/stats/MembershipStats';
 
 export default function About() {
   const [partners, setPartners]   = useState([]);
@@ -63,6 +64,17 @@ export default function About() {
           </div>
         </div>
       </section>
+
+      {/* ── THE REGISTER TODAY ──
+          Placed straight after the founding story: the numbers are the evidence
+          for it. Renders nothing when the statistics endpoint is unavailable, so
+          the page simply reads as it did before. */}
+      <MembershipStats
+        background="var(--off)"
+        flushBottom
+        eyebrow="The Institute Today"
+        intro="From that founding group in 1969 to the register as it stands now — aggregate figures drawn live from NIQS membership records. Counts only; no personal details are published here."
+      />
 
       {/* ── VISION / MISSION / VALUE ── */}
       <section style={{ background: 'var(--off)', paddingTop: 0 }}>

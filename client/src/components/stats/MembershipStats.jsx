@@ -187,7 +187,23 @@ function DataTable({ stats }) {
   );
 }
 
-export default function MembershipStats() {
+/**
+ * @param {object}  props
+ * @param {string} [props.background] Section fill. Each page alternates white and
+ *        off-white down the page, and this block has to take whichever colour its
+ *        slot calls for rather than forcing white into the middle of a run.
+ * @param {string} [props.eyebrow] Overline above the heading.
+ * @param {string} [props.intro]   Standfirst under the heading.
+ * @param {boolean} [props.flushBottom] Drop the section's own bottom padding. Set
+ *        it when the next section shares this background and opens with its own
+ *        top padding — otherwise the two stack into a band of dead colour.
+ */
+export default function MembershipStats({
+  background = '#fff',
+  eyebrow = 'The Register',
+  intro = 'Aggregate figures drawn live from the NIQS membership register. Counts only — no personal details are published here.',
+  flushBottom = false,
+}) {
   const { stats, loading } = useMembershipStats();
   const [showTable, setShowTable] = useState(false);
 
@@ -200,14 +216,11 @@ export default function MembershipStats() {
   const lastFull = stats.new_members_complete_years?.[stats.new_members_complete_years.length - 1];
 
   return (
-    <section className="viz-root" style={{ background: '#fff' }}>
+    <section className="viz-root" style={{ background, ...(flushBottom && { paddingBottom: 0 }) }}>
       <div className="ct" style={{ paddingTop: '4.5rem', paddingBottom: '4.5rem' }}>
-        <div className="ey">The Register</div>
+        <div className="ey">{eyebrow}</div>
         <h2 className="sh">Membership by the <em>Numbers</em></h2>
-        <p className="sd">
-          Aggregate figures drawn live from the NIQS membership register. Counts only —
-          no personal details are published here.
-        </p>
+        <p className="sd">{intro}</p>
 
         {/* KPI row — headline figures that need no plot. */}
         <div className="viz-kpis">

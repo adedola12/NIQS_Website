@@ -1050,7 +1050,9 @@
   .viz-toggle:hover { background: var(--color-off); border-color: var(--color-bdr-gold); }
 
   .viz-table-wrap { @apply grid gap-6 mt-5; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
-  .viz-table { @apply w-full text-left; border-collapse: collapse; border: 1px solid var(--color-bdr); }
+  /* Explicitly white so the header and total rows keep their off-white tint when
+     the section itself is laid on off-white. */
+  .viz-table { @apply w-full text-left bg-white; border-collapse: collapse; border: 1px solid var(--color-bdr); }
   .viz-table caption { @apply font-heading text-[.85rem] font-bold text-navy text-left pb-2; }
   .viz-table th, .viz-table td { @apply px-3 py-2 text-[.75rem]; border-bottom: 1px solid var(--color-bdr); }
   .viz-table thead th { @apply text-[.68rem] font-semibold uppercase tracking-wider text-txt-3; background: var(--color-off); }
