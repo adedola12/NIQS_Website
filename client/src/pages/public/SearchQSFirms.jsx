@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
 
@@ -10,53 +11,7 @@ const NIGERIAN_STATES = [
   'Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara',
 ];
 
-/* Placeholder firms shown until admin populates the database */
-const PLACEHOLDERS = [
-  {
-    _id: 'p1', name: 'Greenfield Quantity Surveyors Ltd',
-    logo: '', regNumber: 'QSRBN/001/2010',
-    address: '14 Ahmadu Bello Way, Victoria Island', city: 'Lagos', state: 'Lagos',
-    phone: '+234 801 000 0001', email: 'info@greenfieldqs.com.ng',
-    description: 'Leading QS firm specialising in commercial and industrial projects across Lagos.',
-  },
-  {
-    _id: 'p2', name: 'Apex Cost Consultants',
-    logo: '', regNumber: 'QSRBN/045/2008',
-    address: 'Plot 12, Central Business District', city: 'Abuja', state: 'FCT',
-    phone: '+234 802 000 0002', email: 'contact@apexcost.com.ng',
-    description: 'Federal capital specialists in public sector infrastructure and project management.',
-  },
-  {
-    _id: 'p3', name: 'Delta Surveying & Cost Advisory',
-    logo: '', regNumber: 'QSRBN/089/2015',
-    address: '7 Effurun-Sapele Road', city: 'Warri', state: 'Delta',
-    phone: '+234 803 000 0003', email: 'info@deltasurveying.ng',
-    description: 'Oil & gas sector expertise with over 15 years of Niger Delta project delivery.',
-  },
-  {
-    _id: 'p4', name: 'Millennium QS Partnership',
-    logo: '', regNumber: 'QSRBN/120/2001',
-    address: '33 Agodi Gate Road', city: 'Ibadan', state: 'Oyo',
-    phone: '+234 804 000 0004', email: 'office@millenniumqs.com',
-    description: 'Residential, educational and healthcare project cost management across the Southwest.',
-  },
-  {
-    _id: 'p5', name: 'Horizon Building Economics Ltd',
-    logo: '', regNumber: 'QSRBN/203/2018',
-    address: '5 Trans-Amadi Industrial Layout', city: 'Port Harcourt', state: 'Rivers',
-    phone: '+234 805 000 0005', email: 'contact@horizonbe.com.ng',
-    description: 'Specialists in marine, industrial and oil sector construction economics.',
-  },
-  {
-    _id: 'p6', name: 'Pinnacle Estimating Services',
-    logo: '', regNumber: 'QSRBN/174/2012',
-    address: '22 Maiduguri Road, GRA', city: 'Kano', state: 'Kano',
-    phone: '+234 806 000 0006', email: 'info@pinnacleestimate.ng',
-    description: "Northern Nigeria's premier cost consultancy serving government and private developers.",
-  },
-];
-
-function FirmCard({ firm, isPlaceholder }) {
+function FirmCard({ firm }) {
   const initials = firm.name
     .split(' ')
     .slice(0, 2)
@@ -78,17 +33,6 @@ function FirmCard({ firm, isPlaceholder }) {
       onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 32px rgba(11,31,75,.10)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.transform = ''; }}
     >
-      {isPlaceholder && (
-        <div style={{
-          position: 'absolute', top: 10, right: 10, fontSize: '.6rem', fontWeight: 700,
-          letterSpacing: '.1em', textTransform: 'uppercase', padding: '2px 7px',
-          borderRadius: 4, background: 'rgba(201,151,74,.12)', color: 'var(--color-gold)',
-          border: '1px solid rgba(201,151,74,.25)',
-        }}>
-          Sample
-        </div>
-      )}
-
       {/* Logo / Initials banner */}
       <div style={{
         height: 110, background: 'linear-gradient(135deg, var(--color-navy) 60%, #1a3a7a)',
@@ -183,6 +127,7 @@ export default function SearchQSFirms() {
   const [search, setSearch]       = useState('');
   const [stateFilter, setStateFilter] = useState('');
   const [query, setQuery]         = useState({ search: '', state: '' });
+  const [failed, setFailed]       = useState(false);
 
   /* Debounce the search input */
   useEffect(() => {
@@ -198,23 +143,18 @@ export default function SearchQSFirms() {
     params.set('limit', '100');
 
     API.get(`/qs-firms?${params}`)
-      .then(res => setFirms(res.data?.firms || []))
-      .catch(() => setFirms([]))
+      .then(res => { setFirms(res.data?.firms || []); setFailed(false); })
+      .catch(() => { setFirms([]); setFailed(true); })
       .finally(() => setLoading(false));
   }, [query]);
 
-  const isPlaceholder = firms.length === 0;
-  const displayFirms  = isPlaceholder ? PLACEHOLDERS : firms;
-
-  /* Client-side filter for placeholders */
-  const filtered = isPlaceholder
-    ? displayFirms.filter(f => {
-        const q = search.toLowerCase();
-        const matchSearch = !q || f.name.toLowerCase().includes(q) || f.city.toLowerCase().includes(q) || f.address.toLowerCase().includes(q);
-        const matchState  = !stateFilter || f.state === stateFilter;
-        return matchSearch && matchState;
-      })
-    : displayFirms;
+  /* The results come from the server already filtered, so what is on screen is
+     what the register holds. Three different reasons for an empty grid, and they
+     are not interchangeable on a page whose whole purpose is verifying that a
+     firm is genuine: the request failed, nobody matched the search, or the
+     directory has not been published yet. */
+  const filtered = firms;
+  const hasFilters = Boolean(query.search || query.state);
 
   return (
     <>
@@ -279,11 +219,9 @@ export default function SearchQSFirms() {
           {/* Result count */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '.5rem' }}>
             <div style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', fontWeight: 600 }}>
-              {loading
-                ? 'Loading…'
-                : isPlaceholder
-                  ? `Showing ${filtered.length} sample firm${filtered.length !== 1 ? 's' : ''} — real listings will appear once the admin adds them`
-                  : `${filtered.length} firm${filtered.length !== 1 ? 's' : ''} found`
+              {loading || failed || filtered.length === 0
+                ? (loading ? 'Loading…' : '')
+                : `${filtered.length} firm${filtered.length !== 1 ? 's' : ''} found`
               }
             </div>
             {(search || stateFilter) && (
@@ -300,11 +238,42 @@ export default function SearchQSFirms() {
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
               Loading firms…
             </div>
-          ) : filtered.length === 0 ? (
+          ) : failed ? (
+            /* Could not ask the register — deliberately not phrased as "none
+               found", which would tell a visitor a firm is unregistered when in
+               fact we simply could not check. */
+            <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '.8rem' }}>⚠️</div>
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-navy)', marginBottom: '.4rem' }}>
+                The directory could not be loaded
+              </div>
+              <div style={{ fontSize: '.82rem', maxWidth: 460, margin: '0 auto', lineHeight: 1.7 }}>
+                This is a problem at our end, not a statement about any firm. Please try
+                again shortly, or contact the National Secretariat to verify a firm directly.
+              </div>
+            </div>
+          ) : filtered.length === 0 && hasFilters ? (
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
               <div style={{ fontSize: '2rem', marginBottom: '.8rem' }}>🔍</div>
               <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-navy)', marginBottom: '.4rem' }}>No firms found</div>
               <div style={{ fontSize: '.82rem' }}>Try adjusting your search or clearing the filters.</div>
+            </div>
+          ) : filtered.length === 0 ? (
+            /* The register is genuinely empty. Say so plainly rather than filling
+               the grid with invented firms — this page exists so a client can
+               check that a practice is real, and a specimen listing is the one
+               thing it must never show. */
+            <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '.8rem' }}>🗂️</div>
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-navy)', marginBottom: '.4rem' }}>
+                The firm directory is not published yet
+              </div>
+              <div style={{ fontSize: '.82rem', maxWidth: 500, margin: '0 auto 1.4rem', lineHeight: 1.7 }}>
+                NIQS is compiling the register of registered quantity surveying firms.
+                Until it is published here, the National Secretariat can confirm whether
+                a firm is NIQS-registered and in good standing.
+              </div>
+              <Link to="/contact" className="btn bp">Contact the Secretariat</Link>
             </div>
           ) : (
             <div style={{
@@ -313,7 +282,7 @@ export default function SearchQSFirms() {
               gap: '1.4rem',
             }}>
               {filtered.map(firm => (
-                <FirmCard key={firm._id} firm={firm} isPlaceholder={isPlaceholder} />
+                <FirmCard key={firm._id} firm={firm} />
               ))}
             </div>
           )}

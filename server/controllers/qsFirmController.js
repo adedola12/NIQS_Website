@@ -1,9 +1,32 @@
 const QSFirm = require('../models/QSFirm');
+const portal = require('../utils/portalClient');
 
-/* ── Public: list / search ── */
+/* ── Public: list / search ──
+   Who owns the firm directory is still open (PORTAL_INTEGRATION_SPEC.md §9): the
+   website holds it today, the portal may take it. Rather than wait for that
+   decision, this asks the portal first whenever it is configured and falls back
+   to the website's own records otherwise — so whichever way it lands, the client
+   contract and the page above it are unchanged. */
 exports.getAllFirms = async (req, res) => {
   try {
     const { search = '', state = '', page = 1, limit = 24 } = req.query;
+
+    if (portal.isConfigured()) {
+      const r = await portal.searchFirms({ q: search, state, page: Number(page), pageSize: Number(limit) });
+      // Only defer to the portal when it actually has the directory. An empty
+      // result from a portal that does not own firms must not blank a page the
+      // website can still serve from its own records.
+      if (Array.isArray(r.results) && r.results.length) {
+        return res.json({
+          firms: r.results,
+          total: r.total ?? r.results.length,
+          page: r.page ?? Number(page),
+          pages: Math.ceil((r.total ?? r.results.length) / (r.pageSize || limit)),
+          source: 'portal',
+        });
+      }
+    }
+
     const filter = { isActive: true };
 
     if (state)  filter.state = state;
@@ -20,7 +43,7 @@ exports.getAllFirms = async (req, res) => {
       .limit(Number(limit));
 
     const total = await QSFirm.countDocuments(filter);
-    res.json({ firms, total, page: Number(page), pages: Math.ceil(total / limit) });
+    res.json({ firms, total, page: Number(page), pages: Math.ceil(total / limit), source: 'website' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

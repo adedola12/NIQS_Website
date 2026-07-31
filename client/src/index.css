@@ -984,6 +984,81 @@
   .data-table th { @apply px-4 py-3 text-left text-[.76rem] font-semibold text-white; background: var(--color-navy); }
   .data-table td { @apply px-4 py-3 text-[.79rem] text-txt-2; border-bottom: 1px solid var(--color-bdr); }
   .pill, .badge { @apply inline-block px-3 py-1 rounded-full text-[.68rem] font-bold tracking-wider uppercase; background: var(--color-gold-xl); color: var(--color-gold); border: 1px solid var(--color-bdr-gold); }
+
+  /* ═══ MEMBERSHIP STATISTICS (components/stats/MembershipStats.jsx) ═══
+     Marks stay thin and the data is the only loud thing: hairline grid, no mark
+     borders (a surface-coloured gap does the separating), values direct-labelled
+     rather than printed on every gridline. Series hues live in the component so
+     they sit beside the validation note that justifies them. */
+  .viz-root { --viz-track: #EDF0F7; --viz-line: #DDE3F0; --viz-surface: #fff; }
+
+  /* KPI row — headline numbers that need no plot */
+  .viz-kpis { @apply grid gap-4 mt-8; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); }
+  .viz-kpi { @apply bg-white rounded-[14px] px-6 py-5; border: 1px solid var(--color-bdr); }
+  .viz-kpi-n { @apply font-heading text-[2.1rem] font-extrabold text-navy leading-none; letter-spacing: -.04em; }
+  .viz-kpi-l { @apply text-[.78rem] text-txt-2 mt-2; }
+
+  /* Two across on a desktop container. Three would squeeze the year columns past
+     legibility and leave the meter card padding out a full-height slot. */
+  .viz-grid { @apply grid gap-6 mt-6; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); }
+  .viz-fig { @apply bg-white rounded-[14px] px-6 py-6 m-0; border: 1px solid var(--color-bdr); }
+  /* A meter is one bar and a sentence — it reads better across the row than
+     stranded in a half-empty column beside a chart twice its height. */
+  .viz-fig--wide { grid-column: 1 / -1; }
+  .viz-fig-t { @apply font-heading text-[1.05rem] font-bold text-navy leading-tight; }
+  .viz-fig-s { @apply text-[.76rem] text-txt-2 mt-1 mb-5 leading-relaxed; }
+  .viz-note { @apply text-[.7rem] text-txt-3 mt-4 pt-3 leading-relaxed; border-top: 1px solid var(--color-bdr); }
+
+  /* Horizontal bars */
+  .viz-bars { @apply flex flex-col gap-2.5; }
+  .viz-bar-row { @apply grid items-center gap-3; grid-template-columns: 130px 1fr auto; }
+  .viz-bar-lbl { @apply text-[.74rem] text-txt-2 truncate; }
+  .viz-bar-track { @apply h-3.5 rounded-sm; background: var(--viz-track); }
+  /* Square where it meets the baseline, rounded at the data end. */
+  .viz-bar { @apply h-full transition-all duration-500; border-radius: 0 4px 4px 0; min-width: 2px; }
+  /* Hover feedback on the mark itself — the hit target is the full-height row. */
+  .viz-bar-row:hover .viz-bar, .viz-col-slot:hover .viz-col { filter: saturate(1.35) brightness(1.08); }
+  .viz-bar-val { @apply font-heading text-[.8rem] font-bold text-navy text-right tabular-nums; min-width: 82px; }
+  .viz-bar-pct { @apply block text-[.64rem] font-semibold text-txt-3; }
+
+  /* Columns */
+  .viz-cols { @apply relative grid items-end gap-0.5 pl-11; grid-auto-columns: 1fr; grid-auto-flow: column; height: 210px; }
+  .viz-col-grid { @apply absolute inset-y-0 left-0 right-0 flex flex-col justify-between pointer-events-none; }
+  .viz-col-grid span { @apply relative block; border-top: 1px solid var(--viz-line); }
+  .viz-col-grid span i { @apply absolute -top-2 left-0 not-italic text-[.62rem] tabular-nums text-txt-3; }
+  .viz-col-slot { @apply relative flex flex-col justify-end h-full; }
+  .viz-col-plot { @apply relative flex flex-col justify-end flex-1; }
+  /* 2px of surface between neighbours does the separating — never a stroke. */
+  .viz-col { @apply mx-[2px] transition-all duration-500; border-radius: 4px 4px 0 0; max-width: 24px; min-height: 2px; margin-inline: auto; width: 100%; }
+  /* Value rides the cap, offset by the column's own height. */
+  .viz-col-val { @apply absolute inset-x-0 text-[.62rem] font-bold text-navy text-center tabular-nums pb-1; }
+  .viz-col-lbl { @apply text-[.62rem] text-txt-3 text-center pt-1.5; }
+  .viz-legend { @apply flex flex-wrap gap-4 mt-4 text-[.7rem] text-txt-2; }
+  .viz-legend span { @apply inline-flex items-center gap-1.5; }
+  .viz-legend i { @apply inline-block w-2.5 h-2.5 rounded-sm; }
+
+  /* Meter — one ratio against its denominator */
+  .viz-meter-wrap { @apply pt-2; }
+  .viz-meter-n { @apply font-heading text-[2.6rem] font-extrabold text-navy leading-none mb-3; letter-spacing: -.04em; }
+  .viz-meter { @apply h-3.5 rounded-sm overflow-hidden; background: var(--viz-track); }
+  .viz-meter-fill { @apply h-full transition-all duration-700; border-radius: 0 4px 4px 0; }
+  .viz-meter-lbl { @apply text-[.76rem] text-txt-2 mt-3 leading-relaxed; }
+
+  .viz-foot { @apply flex flex-wrap items-center justify-between gap-3 mt-6; }
+  .viz-asat { @apply text-[.72rem] text-txt-3; }
+  .viz-toggle { @apply text-[.72rem] font-semibold px-3 py-1.5 rounded-lg cursor-pointer bg-transparent transition-colors duration-200; color: var(--color-navy); border: 1px solid var(--color-bdr); }
+  .viz-toggle:hover { background: var(--color-off); border-color: var(--color-bdr-gold); }
+
+  .viz-table-wrap { @apply grid gap-6 mt-5; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+  /* Explicitly white so the header and total rows keep their off-white tint when
+     the section itself is laid on off-white. */
+  .viz-table { @apply w-full text-left bg-white; border-collapse: collapse; border: 1px solid var(--color-bdr); }
+  .viz-table caption { @apply font-heading text-[.85rem] font-bold text-navy text-left pb-2; }
+  .viz-table th, .viz-table td { @apply px-3 py-2 text-[.75rem]; border-bottom: 1px solid var(--color-bdr); }
+  .viz-table thead th { @apply text-[.68rem] font-semibold uppercase tracking-wider text-txt-3; background: var(--color-off); }
+  .viz-table tbody th { @apply font-medium text-txt-2; }
+  .viz-table td { @apply text-txt tabular-nums; }
+  .viz-table tfoot th, .viz-table tfoot td { @apply font-bold text-navy; background: var(--color-off); }
 }
 
 /* ═══ RESPONSIVE ═══ */
@@ -1023,6 +1098,13 @@
   .hstrip-img:nth-child(3) { width: 170px; height: 220px; }
   .hc-title { font-size: clamp(2rem, 7vw, 2.8rem); }
   .hstat-row { display: none; }
+
+  /* Grade labels get their own line rather than a 110px column that truncates
+     "Probationer" to nothing on a narrow phone. */
+  .viz-bar-row { grid-template-columns: 1fr auto; }
+  .viz-bar-lbl { grid-column: 1 / -1; @apply text-[.72rem] font-semibold; }
+  .viz-cols { height: 170px; }
+  .viz-col-val { display: none; }   /* the tooltip and the table still carry it */
 }
 /* The chapter map keeps its 7-column shape down to tablet — collapsing it would
    destroy the only thing the layout communicates — but the tiles shrink and the
