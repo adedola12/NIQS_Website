@@ -1,68 +1,7 @@
 import React from 'react';
 import PageHero from '../../components/common/PageHero';
+import { agreements } from '../../data/reciprocity';
 
-const agreements = [
-  {
-    body: 'Royal Institution of Chartered Surveyors (RICS)',
-    country: 'United Kingdom', year: '2005', flag: '🇬🇧',
-    desc: 'Full reciprocity for FNIQS members to attain MRICS status through an assessment of professional competence.',
-  },
-  {
-    body: 'Australian Institute of Quantity Surveyors (AIQS)',
-    country: 'Australia', year: '2012', flag: '🇦🇺',
-    desc: 'Mutual recognition agreement enabling members to practice in either jurisdiction subject to local requirements.',
-  },
-  {
-    body: 'Singapore Institute of Surveyors and Valuers (SISV)',
-    country: 'Singapore', year: '2015', flag: '🇸🇬',
-    desc: 'Professional reciprocity covering quantity surveying practice and professional development.',
-  },
-  {
-    body: 'Ghana Institution of Surveyors (GhIS)',
-    country: 'Ghana', year: '2008', flag: '🇬🇭',
-    desc: 'Bilateral agreement for mutual recognition of professional qualifications within West Africa.',
-  },
-  {
-    body: 'Institute of Quantity Surveyors of Kenya (IQSK)',
-    country: 'Kenya', year: '2010', flag: '🇰🇪',
-    desc: 'East-West African partnership for professional exchange and standards harmonisation.',
-  },
-  {
-    body: 'Association of South African Quantity Surveyors (ASAQS)',
-    country: 'South Africa', year: '2014', flag: '🇿🇦',
-    desc: 'Reciprocity for qualified members to practice across both countries.',
-  },
-  {
-    body: 'Hong Kong Institute of Surveyors (HKIS)',
-    country: 'Hong Kong', year: '2017', flag: '🇭🇰',
-    desc: 'Agreement covering professional recognition and collaborative research initiatives.',
-  },
-  {
-    body: 'Chartered Institute of Building (CIOB)',
-    country: 'United Kingdom', year: '2019', flag: '🇬🇧',
-    desc: 'MoU for joint CPD programmes and shared professional development resources.',
-  },
-  {
-    body: 'Pacific Association of Quantity Surveyors (PAQS)',
-    country: 'International', year: '2016', flag: '🌏',
-    desc: 'Membership in the Pacific rim QS alliance for international collaboration.',
-  },
-  {
-    body: 'International Cost Engineering Council (ICEC)',
-    country: 'International', year: '2003', flag: '🌐',
-    desc: 'Affiliation with the global body for cost engineering and quantity surveying.',
-  },
-  {
-    body: 'New Zealand Institute of Quantity Surveyors (NZIQS)',
-    country: 'New Zealand', year: '2018', flag: '🇳🇿',
-    desc: 'Mutual recognition and professional exchange framework.',
-  },
-  {
-    body: 'Canadian Institute of Quantity Surveyors (CIQS)',
-    country: 'Canada', year: '2021', flag: '🇨🇦',
-    desc: 'Partnership for professional development and knowledge sharing.',
-  },
-];
 
 export default function Reciprocity() {
   return (
@@ -81,7 +20,7 @@ export default function Reciprocity() {
             <div className="ey" style={{ justifyContent: 'center' }}>Global Reach</div>
             <h2 className="sh">International <em>Partnerships</em></h2>
             <p className="sd" style={{ maxWidth: '100%' }}>
-              NIQS maintains reciprocity and mutual recognition agreements with over 12 professional
+              NIQS maintains reciprocity and mutual recognition agreements with {agreements.length} professional
               bodies worldwide, enabling members to practice internationally and access global
               professional development opportunities.
             </p>
