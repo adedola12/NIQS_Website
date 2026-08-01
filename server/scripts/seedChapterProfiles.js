@@ -366,7 +366,14 @@ const CHAPTERS = [
       ['tochukwu-blessed', 'QS Tochukwu Blessed, MNIQS', 'Research & Development Secretary', 8],
       ['egwuonwu-obinna-goodnews', 'QS Egwuonwu Obinna Goodnews, MNIQS', 'Ex-Officio I', 9],
       ['obiageri-juliet-asogu', 'QS Obiageri Juliet Asogu, MNIQS', 'Co-opted Member', 10],
-      ['izidor-smith-nwachukwu', 'Ms Izidor Smith Nwachukwu', 'YQSF Coordinator', 11],
+      /* The chapter's two submissions disagree on this member's honorific: the
+         committee list that seeded this roster said "Ms", the later portrait pack
+         is captioned "MR. IZIDOR SMITH NWACHUKWU". Rather than pick one and risk
+         addressing a member wrongly, the professional style is used — which the
+         operator instructed for the bare-honorific names in this batch anyway, and
+         which every other Rivers entry already carries. Worth the chapter
+         confirming. */
+      ['izidor-smith-nwachukwu', 'QS Izidor Smith Nwachukwu', 'YQSF Coordinator', 11],
       ['okwukwu-precious-oma', 'QS Okwukwu Precious Oma, MNIQS', 'WAQSN Coordinator', 12],
     ],
   },
@@ -461,6 +468,179 @@ const CHAPTERS = [
       ['olawale-ogunkua-atinuke', 'QS Olawale-Ogunkua Atinuke, MNIQS', 'WAQSN Representative', 9],
       ['momoh-temitope', 'QS Momoh Temitope, FNIQS', 'Immediate Past Chairman', 10],
       ['aina-olanrewaju', 'QS Aina Olanrewaju, MNIQS', 'Ex-Officio II', 11],
+    ],
+  },
+  {
+    key: 'kwara',
+    chapterName: 'Kwara Chapter',
+    state: 'Kwara',
+    stateLabel: 'Kwara State',
+    chairperson: 'QS Dr T. O. O. Olowa, FNIQS',
+    secretary: "QS Muhammed Naja'atu, MNIQS",
+    about:
+      'The Kwara State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Kwara State in the '
+      + 'North Central geopolitical zone. A twelve-member executive committee leads '
+      + 'the chapter across administration, finance, research and development and public '
+      + 'relations, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry in the '
+      + 'state.',
+    heroPortrait: 't-o-o-olowa',
+    /* Twelve portraits, all clean once matted with u2net_human_seg; the general
+     u2net model lost the torso on two of them. The pack titled two different
+     people "Ex Officio 2". Exco is keyed (scope, chapter, title), so seeding
+     that verbatim would have had the second record overwrite the first and a
+     member vanish silently. Numbered I and II in pack order - CONFIRM WITH THE
+     CHAPTER, the ordering is an assumption. */
+    roster: [
+      ['t-o-o-olowa', 'QS Dr T. O. O. Olowa, FNIQS', 'Chairman', 1],
+      ['zakari-mahmud-tsaragi', 'QS Zakari Mahmud Tsaragi, FNIQS', 'Deputy Chairman', 2],
+      ['muhammed-najaatu', "QS Muhammed Naja'atu, MNIQS", 'General Secretary', 3],
+      ['kolawole-samuel-oluwatobi', 'QS Kolawole Samuel Oluwatobi, MNIQS', 'Assistant General Secretary', 4],
+      ['abdulganiyu-sekinat-titilayo', 'QS Abdulganiyu Sekinat Titilayo, MNIQS', 'Treasurer', 5],
+      ['abdulsalam-solihu-ajagba', 'QS Abdulsalam Solihu Ajagba, MNIQS', 'Financial Secretary', 6],
+      ['olorunlogbon-olayemi', 'QS Olorunlogbon Olayemi, MNIQS', 'Research & Development Secretary', 7],
+      ['adeoti-bashir-olanrewaju', 'QS Adeoti Bashir Olanrewaju, MNIQS', 'Public Relations Secretary', 8],
+      ['afolabi-iyabo-tina', 'QS Afolabi Iyabo Tina, MNIQS', 'Ex-Officio I', 9],
+      ['giwa-yusuf', 'QS Giwa Yusuf, MNIQS', 'Ex-Officio II', 10],
+      ['bagbansoro-uthman', 'QS Bagbansoro Uthman, MNIQS', 'YQSF Representative', 11],
+      ['idayat-oladipo', 'QS Idayat Oladipo, MNIQS', 'WAQSN Representative', 12],
+    ],
+  },
+  {
+    key: 'ogun',
+    chapterName: 'Ogun Chapter',
+    state: 'Ogun',
+    stateLabel: 'Ogun State',
+    chairperson: 'QS Esther Ola-Ade',
+    secretary: 'QS Morenike Sonde',
+    about:
+      'The Ogun State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Ogun State in the '
+      + 'South West geopolitical zone. A eleven-member executive committee leads '
+      + 'the chapter across administration, finance, research and development and public '
+      + 'relations, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry in the '
+      + 'state.',
+    heroPortrait: 'esther-ola-ade',
+    /* Eleven portraits. The archive also carries eleven macOS "._" resource forks;
+     they are not images and are skipped. Names arrive without post-nominals and
+     are published as supplied. One source is too tightly cropped for the matte
+     to find shoulders. */
+    roster: [
+      ['esther-ola-ade', 'QS Esther Ola-Ade', 'Chairman', 1],
+      ['temitayo-fasasi', 'QS Temitayo Fasasi', 'Deputy Chairman', 2],
+      ['morenike-sonde', 'QS Morenike Sonde', 'General Secretary', 3],
+      ['lukman-adewunmi', 'QS Lukman Adewunmi', 'Assistant General Secretary', 4],
+      ['olamide-okunowo', 'QS Olamide Okunowo', 'Treasurer', 5],
+      ['adewunmi-adejobi', 'QS Adewunmi Adejobi', 'Financial Secretary', 6],
+      ['gbemisola-akinola', 'QS Dr. Gbemisola Akinola', 'Research and Development Secretary', 7],
+      ['damilola-akinyele', 'QS Damilola Akinyele', 'Publicity Relations Secretary', 8],
+      ['azeez-mustapha', 'QS Azeez Mustapha', 'Welfare Secretary', 9],
+      ['ifeoluwa-ogundele', 'QS Ifeoluwa Ogundele', 'YQSF Coordinator', 10],
+      ['aderayo-kajebora', 'QS Aderayo Kajebora', 'WAQSN Representative', 11],
+    ],
+  },
+  {
+    key: 'niger',
+    chapterName: 'Niger Chapter',
+    state: 'Niger',
+    stateLabel: 'Niger State',
+    chairperson: 'Musa Umar Dantani',
+    secretary: 'Abdullahi Ado Nakanti',
+    about:
+      'The Niger State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Niger State in the '
+      + 'North Central geopolitical zone. A ten-member executive committee leads '
+      + 'the chapter across administration, finance, research and development and public '
+      + 'relations, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry in the '
+      + 'state.',
+    heroPortrait: 'musa-umar-dantani',
+    /* Ten portraits, all clean. Filenames run Niger_<surname>_<first>_<role>, and no
+     name in the pack carries a QS prefix or post-nominals - published exactly as
+     supplied, as Katsina's bare names already are. */
+    roster: [
+      ['musa-umar-dantani', 'Musa Umar Dantani', 'Chairman', 1],
+      ['saba-mohammed', 'Saba Mohammed', 'Deputy Chairman', 2],
+      ['abdullahi-ado-nakanti', 'Abdullahi Ado Nakanti', 'General Secretary', 3],
+      ['adamu-ibrahim-inyass', 'Adamu Ibrahim Inyass', 'Assistant General Secretary', 4],
+      ['abdulsalam-asmau', 'Abdulsalam Asmau', 'Treasurer', 5],
+      ['abdulmalik-amina', 'Abdulmalik Amina', 'Financial Secretary', 6],
+      ['ayenajeyi-philemon-tolonu', 'Ayenajeyi Philemon Tolonu', 'Research & Development', 7],
+      ['abubakar-akbar-azozo', 'Abubakar Akbar Azozo', 'Public Relations Officer', 8],
+      ['yahaya-isah', 'Yahaya Isah', 'Ex-Officio I', 9],
+      ['isah-leje-mohammed', 'Isah Leje Mohammed', 'Ex-Officio II', 10],
+    ],
+  },
+  {
+    key: 'borno',
+    chapterName: 'Borno Chapter',
+    state: 'Borno',
+    stateLabel: 'Borno State',
+    chairperson: 'QS Zanna Sumayin, FNIQS',
+    secretary: 'QS Abdullahi Muhammad',
+    about:
+      'The Borno State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Borno State in the '
+      + 'North East geopolitical zone. A nine-member executive committee leads '
+      + 'the chapter across administration, finance, research and development and public '
+      + 'relations, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry in the '
+      + 'state.',
+    heroPortrait: 'zanna-sumayin',
+    /* Eight portraits plus a .docx reading "QS BASHIR TANKO - DEPUTY CHAIRMAN -
+     PICTURE STILL OUTSTANDING", so he is on the roster without one. The pack
+     titled two members "Ex Officio" with no ordinal; numbered I and II in pack
+     order - CONFIRM WITH THE CHAPTER. */
+    roster: [
+      ['zanna-sumayin', 'QS Zanna Sumayin, FNIQS', 'Chairman', 1],
+      ['bashir-tanko', 'QS Bashir Tanko', 'Deputy Chairman', 2],   // no photograph supplied
+      ['abdullahi-muhammad', 'QS Abdullahi Muhammad', 'Secretary General', 3],
+      ['mamman-modu-gana', 'QS Mamman Modu Gana', 'Treasurer', 4],
+      ['stephen-simon', 'QS Stephen Simon', 'Financial Secretary', 5],
+      ['tijani-idris', 'QS Tijani Idris', 'Secretary Education & Research', 6],
+      ['dauda-wadai', 'QS Dauda Wadai', 'Public Relations Officer', 7],
+      ['ibrahim-alhaji-modu', 'QS Ibrahim Alhaji Modu', 'Ex-Officio I', 8],
+      ['yakubu-askarju-margima', 'QS Yakubu Askarju Margima', 'Ex-Officio II', 9],
+    ],
+  },
+  {
+    key: 'zamfara',
+    chapterName: 'Zamfara Chapter',
+    state: 'Zamfara',
+    stateLabel: 'Zamfara State',
+    chairperson: 'QS Aliyu Abdullahi, MNIQS',
+    secretary: 'QS Murna Damago, MNIQS',
+    about:
+      'The Zamfara State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Zamfara State in the '
+      + 'North West geopolitical zone. A ten-member executive committee leads '
+      + 'the chapter across administration, finance, research and development and public '
+      + 'relations, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry in the '
+      + 'state.',
+    heroPortrait: 'aliyu-abdullahi',
+    /* Ten portraits, six clean. Four sources are tight head-and-shoulders crops the
+     matte cannot recover shoulders from; they publish with the backdrop fade
+     rather than a smear, but are worth re-shooting. One member is styled Mr in
+     the pack and was restyled QS on the operator's instruction. */
+    roster: [
+      ['aliyu-abdullahi', 'QS Aliyu Abdullahi, MNIQS', 'Chairman', 1],
+      ['nasiru-mainasara-mada', 'QS Nasiru Mainasara Mada, MNIQS', 'Deputy Chairman', 2],
+      ['murna-damago', 'QS Murna Damago, MNIQS', 'Secretary General', 3],
+      ['maryam-aliyu', 'QS Maryam Aliyu, MNIQS', 'Treasurer', 4],
+      ['aminu-shuaibu', 'QS Aminu Shuaibu, MNIQS', 'Financial Secretary', 5],
+      ['abdurrahman-ibrahim', 'QS Abdurrahman Ibrahim', 'PRO II', 6],
+      ['kabiru-bala-idris', 'QS Kabiru Bala Idris, MNIQS', 'PRO I', 7],
+      ['yahayya-s-pawa', 'QS Yahayya S Pawa, MNIQS', 'Secretary Professional Development', 8],
+      ['attahiru-muhammad-maradun', 'QS Attahiru Muhammad Maradun, FNIQS', 'Ex-Officio I', 9],
+      ['musa-taiwo-moyosore', 'QS Musa Taiwo Moyosore, FNIQS', 'Ex-Officio II', 10],
     ],
   },
 ];
