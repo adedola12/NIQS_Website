@@ -19,7 +19,10 @@ const siteSettingsSchema = new mongoose.Schema({
   /* YQSF stats (admin-editable; shown on YQSF public page) */
   yqsfCpdEvents:  { type: String, trim: true, default: '' }, // e.g. "40"
   yqsfTotalAwards:{ type: String, trim: true, default: '' }, // e.g. "10+"
-  yqsfUnder40Count: { type: String, trim: true, default: '' }, // registered QS under 40
+  // YQSF eligibility is under 35, not under 40 — confirmed by the secretariat
+  // 2026-07-30. Renamed from yqsfUnder40Count; the old key held no value, so
+  // nothing needed migrating and any stale key on the singleton is ignored.
+  yqsfUnder35Count: { type: String, trim: true, default: '' }, // registered QS under 35
 
   /* WAQSN stats (admin-editable; shown on WAQSN public page) */
   waqsnFemaleQSCount: { type: String, trim: true, default: '' }, // registered female QS

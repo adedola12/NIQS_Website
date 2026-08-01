@@ -19,7 +19,7 @@ const DEFAULTS = { cpdEvents: '40', totalAwards: '10+' };
 export default function YQSF() {
   const [cpdEvents,    setCpdEvents]    = useState(DEFAULTS.cpdEvents);
   const [totalAwards,  setTotalAwards]  = useState(DEFAULTS.totalAwards);
-  const [under40,      setUnder40]      = useState('');
+  const [under35,      setUnder35]      = useState('');
   const [council, setCouncil] = useState([]);
 
   /* The Chairman heads the council and also sits on the NEC. His council record
@@ -31,7 +31,7 @@ export default function YQSF() {
       .then(res => {
         if (res.data?.yqsfCpdEvents)   setCpdEvents(res.data.yqsfCpdEvents);
         if (res.data?.yqsfTotalAwards) setTotalAwards(res.data.yqsfTotalAwards);
-        if (res.data?.yqsfUnder40Count) setUnder40(res.data.yqsfUnder40Count);
+        if (res.data?.yqsfUnder35Count) setUnder35(res.data.yqsfUnder35Count);
       })
       .catch(() => {});
 
@@ -56,11 +56,19 @@ export default function YQSF() {
         .catch(() => {}));
   }, []);
 
-  /* Young Members count is a future TODO:
-     Will be auto-calculated from Member portal users whose dateOfBirth < 40 years ago.
-     Members >= 40 will automatically exit YQSF membership. */
+  /* Young Members count is set by hand in admin site settings, and stays a dash
+     until the secretariat supplies it.
+
+     It cannot currently be taken from the portal. The public statistics endpoint
+     (NIQS/API/PUBLIC-001, GET /api/public/stats) returns
+     under_40: { count, known_dob, age_limit: 40 } — an under-40 aggregate. YQSF
+     eligibility is under 35, and an under-35 figure cannot be derived from an
+     under-40 count. Publishing the API's number under this heading would label it
+     with a bracket the register does not support.
+
+     To automate this, NIQS would need to expose the count at age_limit 35. */
   const stats = [
-    { n: under40 || '—', l: 'Registered QS Under 40' },
+    { n: under35 || '—', l: 'Registered QS Under 35' },
     { n: '37',           l: 'State Chapters' },
     { n: cpdEvents,      l: 'CPD Events/Year' },
     { n: totalAwards,    l: 'Total Awards' },

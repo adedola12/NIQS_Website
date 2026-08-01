@@ -49,7 +49,7 @@ const EMPTY = {
   instagramUrl: '',
   yqsfCpdEvents: '',
   yqsfTotalAwards: '',
-  yqsfUnder40Count: '',
+  yqsfUnder35Count: '',
   waqsnFemaleQSCount: '',
   phone1: '',
   phone2: '',
@@ -189,7 +189,7 @@ export default function ManageSiteSettings() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.5rem' }}>
           <Field label="CPD Events / Year" name="yqsfCpdEvents" value={form.yqsfCpdEvents} onChange={handleChange} placeholder="e.g. 40" />
           <Field label="Total Awards So Far" name="yqsfTotalAwards" value={form.yqsfTotalAwards} onChange={handleChange} placeholder="e.g. 10+" />
-          <Field label="Registered QS Under 40" name="yqsfUnder40Count" value={form.yqsfUnder40Count} onChange={handleChange} placeholder="e.g. 2,400+" />
+          <Field label="Registered QS Under 35" name="yqsfUnder35Count" value={form.yqsfUnder35Count} onChange={handleChange} placeholder="e.g. 2,400+" />
         </div>
 
         {/* ── WAQSN Stats ── */}
