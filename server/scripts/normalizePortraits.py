@@ -296,8 +296,26 @@ def place(rgba, det, target, backdrop):
         rng = np.random.default_rng(11)
         for i in range(n):
             t = (i + 1) / n
-            row = cv2.GaussianBlur(src[None, :, :], (0, 0), 0.4 + 44.0 * t ** 1.5, 1e-6)[0]
+            row = cv2.GaussianBlur(src[None, :, :], (0, 0), 0.4 + 22.0 * t ** 1.5, 1e-6)[0]
             row[:, :3] = row[:, :3] * (1.0 - 0.45 * t ** 0.8) + rng.normal(0, 1.6, (CANVAS_W, 3))
+
+            # Fade the carried region out to the backdrop instead of driving
+            # opaque cloth all the way to the bottom edge.
+            #
+            # Carrying it down at full alpha is what produced the smear visible on
+            # the published Delta and Kaduna cards: where a source is a tight
+            # head-and-shoulders crop the synthetic region can be a third of the
+            # frame, and a third of a frame of blurred fabric at full opacity reads
+            # as a rendering fault. Dissolving into the studio backdrop reads as
+            # the backdrop's own falloff below the key light — which is what a real
+            # portrait does — so the eye accepts it.
+            #
+            # The exponent keeps the first rows nearly solid, so the join at the
+            # real hem is not visible; it only lets go further down. The sideways
+            # blur is also halved from 44 to 22: at 44 the last rows were a wash
+            # with no structure left to fade.
+            row[:, 3] = row[:, 3] * max(0.0, 1.0 - t ** 1.7)
+
             canvas[start + i] = np.clip(row, 0, 255).astype(np.uint8)
 
     a = (canvas[:, :, 3:4].astype(np.float64) / 255.0)
