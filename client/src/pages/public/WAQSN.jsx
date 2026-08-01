@@ -16,6 +16,7 @@ export default function WAQSN() {
   const [waqsnUrl, setWaqsnUrl] = useState('');
   const [femaleQS, setFemaleQS] = useState('');
   const [chair, setChair] = useState(null);
+  const [exec, setExec] = useState([]);
 
   useEffect(() => {
     API.get('/site-settings')
@@ -24,17 +25,39 @@ export default function WAQSN() {
         if (res.data?.waqsnFemaleQSCount) setFemaleQS(res.data.waqsnFemaleQSCount);
       })
       .catch(() => {});
-    /* The WAQSN Chairperson sits on the NEC — pull her record from there. */
-    API.get('/exco?scope=national')
+
+    /* The association's own executive. Its Chairperson also sits on the NEC, so
+       if this scope is empty — as it was before the roster was seeded — fall back
+       to finding her there, and the page still shows a Chairperson rather than
+       nothing. Same shape as YQSF. */
+    API.get('/exco?scope=waqsn')
       .then(res => {
         const data = res.data?.exco || res.data?.data || res.data;
-        if (Array.isArray(data)) {
-          const found = data.find(m => (m.title || '').toUpperCase().includes('WAQSN'));
-          if (found) setChair(found);
+        if (Array.isArray(data) && data.length) {
+          setExec(data);
+          const head = data.find(m => /chairperson/i.test(m.title || '')
+                                   && !/deputy|past/i.test(m.title || ''));
+          if (head) setChair(head);
+          return;
         }
+        throw new Error('no waqsn-scope records');
       })
-      .catch(() => {});
+      .catch(() => API.get('/exco?scope=national')
+        .then(res => {
+          const data = res.data?.exco || res.data?.data || res.data;
+          if (Array.isArray(data)) {
+            const found = data.find(m => (m.title || '').toUpperCase().includes('WAQSN'));
+            if (found) setChair(found);
+          }
+        })
+        .catch(() => {}));
   }, []);
+
+  /* Officers and zonal coordinators are one roster in the register, separated by
+     order: 1-10 are national officers, 11-21 the zonal coordinators. Splitting
+     them here keeps the page honest if the association adds either. */
+  const officers = exec.filter(m => !/zonal/i.test(m.title || ''));
+  const zonal    = exec.filter(m =>  /zonal/i.test(m.title || ''));
 
   return (
     <>
@@ -142,6 +165,48 @@ export default function WAQSN() {
             </div>
             <div style={{ maxWidth: 320, margin: '0 auto' }}>
               <LeaderCard member={chair} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── National executive ──
+          Only drawn once the waqsn scope has records; before that the page shows
+          the Chairperson alone, as it did previously. The Chairperson is already
+          above, so she is dropped from the officers grid rather than printed
+          twice. */}
+      {officers.length > 1 && (
+        <section style={{ background: 'var(--color-off)' }}>
+          <div className="ct" style={{ paddingTop: '4.5rem', paddingBottom: '4.5rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: 620, margin: '0 auto 2.5rem' }}>
+              <div className="ey" style={{ justifyContent: 'center' }}>Governance</div>
+              <h2 className="sh" style={{ textAlign: 'center' }}>National <em>Executive</em></h2>
+              <p className="sd" style={{ maxWidth: '100%', textAlign: 'center' }}>
+                The officers who run the association nationally, alongside the Chairperson.
+              </p>
+            </div>
+            <div className="grid-4 stagger">
+              {officers
+                .filter(m => m._id !== chair?._id)
+                .map(m => <div className="reveal" key={m._id}><LeaderCard member={m} /></div>)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Zonal coordinators ── */}
+      {zonal.length > 0 && (
+        <section style={{ background: '#fff' }}>
+          <div className="ct" style={{ paddingTop: '4.5rem', paddingBottom: '4.5rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: 620, margin: '0 auto 2.5rem' }}>
+              <div className="ey" style={{ justifyContent: 'center' }}>Nationwide</div>
+              <h2 className="sh" style={{ textAlign: 'center' }}>Zonal <em>Coordinators</em></h2>
+              <p className="sd" style={{ maxWidth: '100%', textAlign: 'center' }}>
+                WAQSN coordinates its work across the northern, southern and western zones.
+              </p>
+            </div>
+            <div className="grid-4 stagger">
+              {zonal.map(m => <div className="reveal" key={m._id}><LeaderCard member={m} /></div>)}
             </div>
           </div>
         </section>
