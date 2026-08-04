@@ -137,8 +137,14 @@ const CHAPTERS = [
       + 'academic community in the state. The chapter also hosts the Young Quantity '
       + 'Surveyors Forum (YQSF) for Delta.',
     heroPortrait: 'julius-safuakemefa-apodor',
-    // Delta's pack gave bare names; the chapter confirmed all fourteen are QS
-    // (2026-07-28). Post-nominals still to come for everyone but the chairman.
+    /* Delta's pack gave bare names; the chapter confirmed all fourteen are QS
+       (2026-07-28). Post-nominals still to come for everyone but the chairman.
+
+       That blanket confirmation was wrong about one of them: the secretariat
+       corrected the YQSF Coordinator to Ms Nneli Esther Ifeoma on 2026-08-04,
+       she being a probationer and not yet registered. Which is the general rule
+       — a name a chapter supplies without QS is a member who has not registered
+       yet, not a caption they were careless with. */
     roster: [
       ['julius-safuakemefa-apodor', 'QS Julius Safuakemefa Apodor, FNIQS', 'Chapter Chairman', 1],
       ['francis-ogheneyare-okorho', 'QS Francis Ogheneyare Okorho', 'Deputy Chairman', 2],
@@ -150,7 +156,7 @@ const CHAPTERS = [
       ['ibatere-prosper-un', 'QS Ibatere Prosper U.N.', 'Public Relations Officer', 8],
       ['nwazodoni-samuel-ifechukwude', 'QS Nwazodoni Samuel Ifechukwude', 'Assistant Public Relations Officer', 9],
       ['paul-olorunfemi', 'QS Paul Olorunfemi', 'Research & Development Secretary', 10],
-      ['nneli-esther-ifeoma', 'QS Nneli Esther Ifeoma', 'YQSF Coordinator', 11],
+      ['nneli-esther-ifeoma', 'Ms Nneli Esther Ifeoma', 'YQSF Coordinator', 11],
       // The pack labels three people simply "Ex. Officio"; numbered here in the
       // order supplied so the records stay distinct.
       ['clement-onowono-aduze', 'QS Dr. Clement Onowono Aduze', 'Ex-Officio I', 12],
