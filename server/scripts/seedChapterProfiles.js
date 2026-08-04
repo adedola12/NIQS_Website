@@ -643,6 +643,204 @@ const CHAPTERS = [
       ['musa-taiwo-moyosore', 'QS Musa Taiwo Moyosore, FNIQS', 'Ex-Officio II', 10],
     ],
   },
+  {
+    key: 'abia',
+    chapterName: 'Abia Chapter',
+    state: 'Abia',
+    stateLabel: 'Abia State',
+    chairperson: 'QS Dr. Nwabueze M. Anosike, MNIQS',
+    secretary: 'QS Chimaroke Ibeabuchi, MNIQS',
+    about:
+      'The Abia State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Abia State in the '
+      + 'South East geopolitical zone. A seven-member executive committee leads '
+      + 'the chapter across administration, finance and public relations, working '
+      + 'with the National Secretariat to deliver continuing professional '
+      + 'development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry in '
+      + 'the state.',
+    heroPortrait: 'nwabueze-m-anosike',
+    /* Seven portraits, all published. Two are wide sitting-room shots the QC gate
+     flagged for a short torso; both extend into the same backdrop fade the cards
+     that passed already carry, so they publish as they are.
+
+     The committee's Chapter Chairmen List has the chairman as "QS Dr. Michael
+     Nwabueze Anosike, MNIQS"; his own chapter's caption drops the Michael and
+     puts the initial in the middle. The chapter's version is published, so his
+     NEC-scope card and this one disagree — reconcileChapterChairmen.js settles it. */
+    roster: [
+      ['nwabueze-m-anosike', 'QS Dr. Nwabueze M. Anosike, MNIQS', 'Chapter Chairman', 1],
+      ['ukawuba-anthony-i', 'QS Ukawuba Anthony I., MNIQS', 'Deputy Chairman', 2],
+      ['chimaroke-ibeabuchi', 'QS Chimaroke Ibeabuchi, MNIQS', 'General Secretary', 3],
+      ['nwagbara-nwokodimkpa', 'QS Nwagbara Nwokodimkpa', 'Assistant General Secretary', 4],
+      ['ogenkwa-esther-onyinyechi', 'QS Ogenkwa Esther Onyinyechi', 'Treasurer', 5],
+      ['wamah-kelechi-prince', 'QS Wamah Kelechi Prince, MNIQS', 'Financial Secretary', 6],
+      ['okorie-bassey-o', 'QS Okorie Bassey O., MNIQS', 'Public Relations Secretary', 7],
+    ],
+  },
+  {
+    key: 'adamawa',
+    chapterName: 'Adamawa Chapter',
+    state: 'Adamawa',
+    stateLabel: 'Adamawa State',
+    chairperson: 'QS Benitareni Telu, MNIQS',
+    secretary: 'QS Dauda Thliza Sule, MNIQS',
+    about:
+      'The Adamawa State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Adamawa State in the '
+      + 'North East geopolitical zone. A twelve-member executive committee leads '
+      + 'the chapter across administration, finance, professional development and '
+      + 'public relations, working with the National Secretariat to deliver '
+      + 'continuing professional development, uphold professional standards in '
+      + 'construction cost management, and represent the profession before '
+      + 'government and industry in the state.',
+    heroPortrait: 'benitareni-telu',
+    /* Twelve portraits, all twelve clean. The pack titles three people simply
+     "EX-OFFICIO" (one spelt "EX-OFFCIO"); numbered I, II and III in pack order —
+     CONFIRM WITH THE CHAPTER, the ordering is an assumption, and Exco is keyed
+     (scope, chapter, title) so identical titles would overwrite each other.
+
+     Two names arrive without the QS prefix — Moses Junior Bulus and Queen Yusuf
+     Ifitumi — and are published exactly as supplied. */
+    roster: [
+      ['benitareni-telu', 'QS Benitareni Telu, MNIQS', 'Chapter Chairman', 1],
+      ['mahmud-babangida-aliyu', 'QS Mahmud Babangida Aliyu, MNIQS', 'Deputy Chairman', 2],
+      ['dauda-thliza-sule', 'QS Dauda Thliza Sule, MNIQS', 'General Secretary', 3],
+      ['moses-junior-bulus', 'Moses Junior Bulus', 'Assistant General Secretary', 4],
+      ['aderonke-m-ariyo', 'QS Aderonke M. Ariyo, MNIQS', 'Treasurer', 5],
+      ['queen-yusuf-ifitumi', 'Queen Yusuf Ifitumi', 'Assistant Treasurer', 6],
+      ['hamza-halilu', 'QS Hamza Halilu, MNIQS', 'Financial Secretary', 7],
+      ['inalegwu-ocheche', 'QS Inalegwu Ocheche, MNIQS', 'Professional Development Secretary', 8],
+      ['umar-bello', 'QS Umar Bello, MNIQS', 'Public Relations Officer', 9],
+      ['emmanuel-w-dzasu', 'QS Dr. Emmanuel W. Dzasu, MNIQS', 'Ex-Officio I', 10],
+      ['muhammed-muawiyah', 'QS Muhammed Muawiyah, MNIQS', 'Ex-Officio II', 11],
+      ['sam-alara-abiodun', 'QS Sam Alara Abiodun, MNIQS', 'Ex-Officio III', 12],
+    ],
+  },
+  {
+    key: 'akwa-ibom',
+    chapterName: 'Akwa Ibom Chapter',
+    state: 'Akwa Ibom',
+    stateLabel: 'Akwa Ibom State',
+    chairperson: 'QS Iniobong Wilson, MNIQS',
+    secretary: 'QS Aloysius Essien, MNIQS',
+    about:
+      'The Akwa Ibom State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Akwa Ibom State in the '
+      + 'South South geopolitical zone. A nine-member executive committee leads '
+      + 'the chapter across administration, finance, research and development, public '
+      + 'relations and member welfare, working with the National Secretariat to deliver '
+      + 'continuing professional development, uphold professional standards in '
+      + 'construction cost management, and represent the profession before '
+      + 'government and industry in the state.',
+    heroPortrait: 'iniobong-wilson',
+    /* Nine portraits, all nine clean. The pack arrived titled "AWKA IBOM"; the
+     state is Akwa Ibom and the chapter record is named accordingly.
+
+     Two names run shorter here than on the committee's July 2026 list — the
+     chairman ("QS Iniobong Gabriel Wilson, MNIQS" there) and the deputy
+     ("QS Edith Sunday Ibanga" there against QS Edith Ibang, FNIQS in her own
+     chapter's caption, which also gives her post-nominals the list omits). The
+     chapter's own material is published; both are worth confirming. */
+    roster: [
+      ['iniobong-wilson', 'QS Iniobong Wilson, MNIQS', 'Chapter Chairman', 1],
+      ['edith-ibang', 'QS Edith Ibang, FNIQS', 'Deputy Chairman', 2],
+      ['aloysius-essien', 'QS Aloysius Essien, MNIQS', 'General Secretary', 3],
+      ['benjamin-jackson', 'QS Benjamin Jackson, MNIQS', 'Assistant General Secretary', 4],
+      ['francis-udoekaebe', 'QS Francis Udoekaebe, MNIQS', 'Treasurer', 5],
+      ['blessing-ibong', 'QS Blessing Ibong, MNIQS', 'Financial Secretary', 6],
+      ['mbikoli-ntente', 'QS Mbikoli Ntente, MNIQS', 'Public Relations Secretary', 7],
+      ['nsikak-udo', 'QS Nsikak Udo, MNIQS', 'Research & Development Secretary', 8],
+      ['narrel-udombang', 'QS Narrel Udombang, MNIQS', 'Welfare Secretary', 9],
+    ],
+  },
+  {
+    key: 'bauchi',
+    chapterName: 'Bauchi Chapter',
+    state: 'Bauchi',
+    stateLabel: 'Bauchi State',
+    chairperson: 'QS Abdulhamid Mohammed, MNIQS',
+    secretary: 'QS Shuaibu Adamu, MNIQS',
+    about:
+      'The Bauchi State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Bauchi State in the '
+      + 'North East geopolitical zone. A twelve-member executive committee leads '
+      + 'the chapter across administration, finance, professional development and '
+      + 'public relations, working with the National Secretariat to deliver '
+      + 'continuing professional development, uphold professional standards in '
+      + 'construction cost management, and represent the profession before '
+      + 'government and industry in the state. The chapter also hosts the Young '
+      + 'Quantity Surveyors Forum (YQSF) and West African Quantity Surveyors '
+      + 'Network representation for Bauchi.',
+    heroPortrait: 'abdulhamid-mohammed',
+    /* Roster from the chapter's own "SENATE MEMBERS 2025-2027" document, which
+     also settles the ordering the photo captions leave open. Two of its slips are
+     fixed on the way in — "WAQSN PREPRESENTATIVE", and "SEC. PROF. DEV. & LIB."
+     written out — and none of its names are.
+
+     Twelve members, eleven portraits: no photograph came for Ex-Officio II, so
+     his card renders as a monogram until one does.
+
+     The Financial Secretary is the one person both the document and her own
+     caption decline to style QS — the document gives her bare, the caption "MS.",
+     so Ms is published rather than a prefix neither source claims.
+
+     The committee's Chapter Chairmen List has the chairman the other way round
+     ("QS Mohammed Abdulhamid, MNIQS"); his chapter's document and caption agree
+     on Abdulhamid Mohammed, so that is published. */
+    roster: [
+      ['abdulhamid-mohammed', 'QS Abdulhamid Mohammed, MNIQS', 'Chairman', 1],
+      ['bala-hassan', 'QS Bala Hassan, MNIQS', 'Deputy Chairman', 2],
+      ['shuaibu-adamu', 'QS Shuaibu Adamu, MNIQS', 'General Secretary', 3],
+      ['abdullahi-m-sanusi', 'QS Abdullahi M. Sanusi, MNIQS', 'Assistant General Secretary', 4],
+      ['usman-datti-mohammad', 'QS Usman Datti Mohammad, MNIQS', 'Treasurer', 5],
+      ['cynthia-onyemaobi-chizaram', 'Ms Cynthia Onyemaobi Chizaram', 'Financial Secretary', 6],
+      ['ahmad-m-ahmad', 'QS Ahmad M. Ahmad, MNIQS', 'Professional Development & Library Secretary', 7],
+      ['halilu-mudi-abdullahi', 'QS Halilu Mudi Abdullahi, MNIQS', 'Public Relations Officer', 8],
+      ['mariya-muqaddas', 'QS Mariya Muqaddas, MNIQS', 'WAQSN Representative', 9],
+      ['dahiru-abdullahi', 'QS Dahiru Abdullahi, MNIQS', 'YQSF Representative', 10],
+      ['bala-barde', 'QS Bala Barde, MNIQS', 'Ex-Officio I', 11],
+      ['auwal-shehu-sani', 'QS Auwal Shehu Sani, FNIQS', 'Ex-Officio II', 12],  // no photograph supplied
+    ],
+  },
+  {
+    key: 'kogi',
+    chapterName: 'Kogi Chapter',
+    state: 'Kogi',
+    stateLabel: 'Kogi State',
+    chairperson: 'QS Audu Akoji Samuel',
+    secretary: 'QS Egamana Kabo Jeremiah',
+    about:
+      'The Kogi State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Kogi State in the '
+      + 'North Central geopolitical zone. A six-member executive committee leads '
+      + 'the chapter across administration, finance and public relations, working '
+      + 'with the National Secretariat to deliver continuing professional '
+      + 'development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry in '
+      + 'the state.',
+    heroPortrait: 'audu-akoji-samuel',
+    /* Six portraits, all six clean — and six is the whole pack, so this roster is
+     shorter than most and may simply be the offices the chapter filled.
+
+     Nobody in the pack carries post-nominals. The Treasurer's caption reads
+     "Q Omowunmi Samuel", read as a truncated QS since every other caption in the
+     pack has it — worth the chapter confirming. The PRO's caption gives no prefix
+     at all and is published bare.
+
+     "Isreal" is the chapter's own spelling and is left alone.
+
+     The committee's Chapter Chairmen List has the chairman as "QS Samuel Akoji
+     Audu, MNIQS"; the pack runs surname-first and carries no post-nominals. */
+    roster: [
+      ['audu-akoji-samuel', 'QS Audu Akoji Samuel', 'Chapter Chairman', 1],
+      ['ogunseemi-isreal-bayo', 'QS Ogunseemi Isreal Bayo', 'Deputy Chairman', 2],
+      ['egamana-kabo-jeremiah', 'QS Egamana Kabo Jeremiah', 'General Secretary', 3],
+      ['mohammad-hadiza', 'QS Mohammad Hadiza', 'Assistant General Secretary', 4],
+      ['omowunmi-samuel', 'QS Omowunmi Samuel', 'Treasurer', 5],
+      ['onimisi-casimir', 'Onimisi Casimir', 'Public Relations Officer', 6],
+    ],
+  },
 ];
 
 (async () => {
