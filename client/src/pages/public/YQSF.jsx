@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import LeaderCard from '../../components/common/LeaderCard';
 import API from '../../api/axios';
+import useChapterCount, { CHAPTERS_FALLBACK } from '../../hooks/useChapterCount';
 
 const offerings = [
   { icon: '🧑‍🏫', title: 'Mentorship Programme',  desc: 'Pairing young QS professionals with experienced Fellows for career guidance, knowledge transfer, and professional development.',                        tag: 'Mentorship'  },
@@ -21,6 +22,7 @@ export default function YQSF() {
   const [totalAwards,  setTotalAwards]  = useState(DEFAULTS.totalAwards);
   const [under35,      setUnder35]      = useState('');
   const [council, setCouncil] = useState([]);
+  const chapterCount = useChapterCount();
 
   /* The Chairman heads the council and also sits on the NEC. His council record
      is the one to show here — same portrait treatment as the rest of the EC. */
@@ -69,7 +71,7 @@ export default function YQSF() {
      To automate this, NIQS would need to expose the count at age_limit 35. */
   const stats = [
     { n: under35 || '—', l: 'Registered QS Under 35' },
-    { n: '37',           l: 'State Chapters' },
+    { n: chapterCount ?? CHAPTERS_FALLBACK, l: 'State Chapters' },
     { n: cpdEvents,      l: 'CPD Events/Year' },
     { n: totalAwards,    l: 'Total Awards' },
   ];

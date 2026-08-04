@@ -3,15 +3,11 @@ import { Link } from 'react-router-dom';
 import API from '../../api/axios';
 import useMembershipStats, { formatCount, formatApprox, MEMBERS_FALLBACK } from '../../hooks/useMembershipStats';
 import { AGREEMENT_COUNT } from '../../data/reciprocity';
+import useChapterCount, { CHAPTERS_FALLBACK } from '../../hooks/useChapterCount';
 
 /* Founding year, for the "years of excellence" tile — computed rather than typed
    so it does not quietly go stale each January. */
 const FOUNDED = 1969;
-
-/* 36 states plus the FCT. The tile prefers the live count of chapter records and
-   falls back to this, because a chapter the secretariat has not yet loaded is a
-   gap in our content rather than a chapter that does not exist. */
-const CHAPTERS_FALLBACK = 37;
 
 /* ── fallback data ── */
 const fallbackNews = [
@@ -105,12 +101,12 @@ export default function Home() {
   const [hasUpcoming, setHasUpcoming] = useState(true);
   const [platinumPartners, setPlatinumPartners] = useState([]);
   const [tickerItems, setTickerItems] = useState(defaultTickerItems);
-  const [chapterCount, setChapterCount] = useState(null);
 
   /* Live membership figures. `stats` is null while loading and whenever the
      endpoint is unavailable, so every use below falls back to the approved static
      copy — the hero must never render a membership figure of zero. */
   const { stats } = useMembershipStats();
+  const chapterCount = useChapterCount();
   const fellows = stats?.by_grade?.find(g => g.grade === 'Fellow')?.count ?? null;
   const memberCopy = stats ? formatApprox(stats.total_members) : MEMBERS_FALLBACK;
 
@@ -138,11 +134,6 @@ export default function Home() {
           }
         });
       }
-    }).catch(() => {});
-
-    API.get('/chapters').then(res => {
-      const data = res.data?.chapters || res.data?.data || res.data;
-      if (Array.isArray(data) && data.length) setChapterCount(data.length);
     }).catch(() => {});
 
     API.get('/partners?tier=platinum&limit=3').then(res => {
