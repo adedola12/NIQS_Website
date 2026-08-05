@@ -218,7 +218,7 @@ export default function ManageSiteSettings() {
             value={form.address}
             onChange={handleChange}
             rows={3}
-            placeholder="QS Olusegun Ajalekoko House, Plot 759 Cadastral Zone, Central Business District, Abuja, FCT, Nigeria"
+            placeholder="QS Olusegun Ajalekoko House, No. 24, NIQS Crescent, Mabushi District, Abuja, Nigeria"
             style={{
               width: '100%', padding: '10px 12px', fontSize: '.84rem', borderRadius: 8,
               border: '1.5px solid var(--color-bdr)', background: 'var(--color-off)',

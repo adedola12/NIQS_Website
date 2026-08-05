@@ -209,7 +209,7 @@ export default function YQSF() {
             heading={<>Reach <em>YQSF</em></>}
             fallback={{
               email1: 'yqsf@niqs.org.ng',
-              address: 'c/o NIQS National Secretariat,\nAbuja, FCT, Nigeria',
+              address: 'c/o NIQS National Secretariat,\nQS Olusegun Ajalekoko House,\nNo. 24, NIQS Crescent, Mabushi District,\nAbuja, Nigeria',
               officeHours: 'Monday — Friday: 9:00 AM — 4:00 PM',
             }}
           />
