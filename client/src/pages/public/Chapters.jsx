@@ -106,9 +106,13 @@ export default function Chapters() {
                   {c.chairperson && (
                     <p style={{ marginTop: 4, color: 'var(--color-txt-2)', fontWeight: 600 }}>{c.chairperson}</p>
                   )}
-                  {/* A chapter with about copy has had its full profile + exco published,
-                      so flag it — otherwise every card looks identical and the completed
-                      ones are impossible to find in a 35-chapter grid. */}
+                  {/* A chapter with about copy has had its exco published, so flag it —
+                      otherwise every card looks identical and the ones with something
+                      to read are impossible to find in a 37-chapter grid.
+
+                      The badge says what the card has, not how complete it is: "Full
+                      profile" graded the other chapters as unfinished, which the
+                      secretariat asked us to stop doing (2026-08-05). */}
                   {c.about && (
                     <span style={{
                       display: 'inline-block', marginTop: 8, padding: '2px 8px', borderRadius: 20,
@@ -116,7 +120,7 @@ export default function Chapters() {
                       fontSize: '.6rem', fontWeight: 700, letterSpacing: '.06em',
                       textTransform: 'uppercase', color: 'var(--color-gold)',
                     }}>
-                      Full profile
+                      Executives
                     </span>
                   )}
                 </div>

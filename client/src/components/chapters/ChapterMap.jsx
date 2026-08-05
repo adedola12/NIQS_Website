@@ -103,11 +103,6 @@ export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) 
     return m;
   }, [chapters]);
 
-  const profiledCount = useMemo(
-    () => STATES.filter((s) => isProfiled(byState.get(s.name))).length,
-    [byState]
-  );
-
   const zones = useMemo(() => {
     const set = new Set();
     chapters.forEach((c) => c.zone && set.add(c.zone));
@@ -124,8 +119,12 @@ export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) 
           <h2 className="sh" style={{ marginBottom: '.4rem' }}>
             All 37 <em>Chapters</em>
           </h2>
+          {/* No completeness statistic here. It read as "17 chapters have not
+              bothered", which is not what an incremental rollout means and not
+              something the institute should publish about itself (secretariat,
+              2026-08-05). The map still distinguishes the two states of a chapter
+              so the page navigates sensibly — it just does not score them. */}
           <p className="sd" style={{ marginBottom: 0 }}>
-            {profiledCount} of {STATES.length} chapters have published a full profile.
             Select any state to open its chapter.
           </p>
         </div>
@@ -182,10 +181,7 @@ export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) 
                   onMouseLeave={() => setHovered(null)}
                   onFocus={() => setHovered(s.name)}
                   onBlur={() => setHovered(null)}
-                  aria-label={
-                    `${s.name} chapter${zone ? `, ${zone} zone` : ''}` +
-                    (profiled ? '' : ' — full profile not yet published')
-                  }
+                  aria-label={`${s.name} chapter${zone ? `, ${zone} zone` : ''}`}
                 >
                   <path
                     d={s.d}
@@ -251,8 +247,8 @@ export default function ChapterMap({ chapters = [], activeZone, onZoneChange }) 
       </div>
 
       <p className="cmap-note">
-        <span className="cmap-key"><span className="cmap-dot" aria-hidden="true" /> full profile published</span>
-        <span className="cmap-key"><span className="cmap-dash" aria-hidden="true" /> chapter listed, profile pending</span>
+        <span className="cmap-key"><span className="cmap-dot" aria-hidden="true" /> executives published</span>
+        <span className="cmap-key"><span className="cmap-dash" aria-hidden="true" /> chapter listed</span>
         {hovered && <span className="cmap-hovered">{hovered}</span>}
       </p>
     </div>

@@ -80,6 +80,20 @@ const CHAPTERS = [
       + 'African Quantity Surveyors coordination for Katsina.',
     // Portrait used as the chapter's hero / card image
     heroPortrait: 'abubakar-yahaya-kusada',
+    /* Six of these sixteen carry no photograph on the live site any more, and
+       must not get one back from this script: they were cut from the chapter's
+       printed group poster, and the print crushed the green channel and clipped
+       red. Four came out magenta or violet (B/G up to 1.48 against 0.83 on a
+       correct portrait) and two never matted at all, showing the source's own
+       rectangle. White balance cannot undo it — correcting the ratio amplifies
+       green noise into a wash, tried and abandoned 2026-08-05 — so the
+       secretariat's instruction is the placeholder until the chapter sends real
+       photographs. `placeholderPoorPortraits.js` is what cleared them.
+
+       Sadiya Sani Yar'Adua, Maryam Mua'azu, Ahmed Salisu, Aminu Labo,
+       Muhammad Laminu Ibrahim and Adamu Idris. Delete their files from
+       <portraitsDir>/katsina/ before re-running this, or they come straight
+       back — a roster entry with no file is written as text only. */
     roster: [
       ['abubakar-yahaya-kusada', 'QS Abubakar Yahaya Kusada, FNIQS', 'Chapter Chairman', 1],
       ['kabir-lawal', 'QS Kabir Lawal, MNIQS', 'Vice Chairman', 2],
@@ -856,6 +870,90 @@ const CHAPTERS = [
       ['mohammad-hadiza', 'QS Mohammad Hadiza', 'Assistant General Secretary', 4],
       ['omowunmi-samuel', 'QS Omowunmi Samuel', 'Treasurer', 5],
       ['onimisi-casimir', 'Onimisi Casimir', 'Public Relations Officer', 6],
+    ],
+  },
+  {
+    key: 'oyo',
+    chapterName: 'Oyo Chapter',
+    state: 'Oyo',
+    stateLabel: 'Oyo State',
+    chairperson: 'QS Oluwade Kolawole, FNIQS',
+    secretary: 'QS Afe Peter, MNIQS',
+    about:
+      'The Oyo State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Oyo State in the '
+      + 'South West geopolitical zone. A fourteen-member executive committee leads '
+      + 'the chapter across administration, finance, research and development, '
+      + 'publicity and member welfare, working with the National Secretariat to '
+      + 'deliver continuing professional development, uphold professional standards '
+      + 'in construction cost management, and represent the profession before '
+      + 'government, industry and the academic community in the state. The chapter '
+      + 'also hosts the Young Quantity Surveyors Forum (YQSF) and West African '
+      + 'Quantity Surveyors Network representation for Oyo.',
+    heroPortrait: 'oluwade-kolawole',
+    /* Fourteen portraits, all fourteen clean — the largest pack to come in
+     without a single QC flag. Four caption typos fixed on the way in
+     ("REASEARCH", "SCERETARY", "EX-OFFCIO", and the missing space in
+     "HEZEKIAHOLATUNJI"); no name touched, so Ex-Officio II stays Olufunmilay
+     even though it reads like a truncated Olufunmilayo. Worth confirming.
+
+     The YQSF Representative here is QS Agboola Tolu, MNIQS. The national YQSF
+     roster carries what looks like the same person as "Tolu Samuel Agboola"
+     with no prefix at all — one of the 29 bare names outstanding. Oyo styling
+     him QS MNIQS is the chapter contradicting that list, not confirmation. */
+    roster: [
+      ['oluwade-kolawole', 'QS Oluwade Kolawole, FNIQS', 'Chairman', 1],
+      ['abass-adelayo', 'QS Abass Adelayo, MNIQS', 'Deputy Chairman', 2],
+      ['afe-peter', 'QS Afe Peter, MNIQS', 'General Secretary', 3],
+      ['oluwagbemiro-tunde-gabriel', 'QS Oluwagbemiro Tunde Gabriel, MNIQS', 'Assistant General Secretary', 4],
+      ['balogun-margret', 'QS Balogun Margret, FNIQS', 'Treasurer', 5],
+      ['hezekiah-olatunji', 'QS Hezekiah Olatunji, MNIQS', 'Financial Secretary', 6],
+      ['leo-olagbaye-feyisetan', 'QS Dr. Leo-Olagbaye Feyisetan, FNIQS', 'Publicity Secretary', 7],
+      ['ayobami-siyanbola', 'QS Ayobami Siyanbola, MNIQS', 'Research & Development Secretary', 8],
+      ['ajadioni-simeon-adebusola', 'QS Ajadioni Simeon Adebusola, MNIQS', 'Welfare Secretary', 9],
+      ['okeyinka-florence-mojirayo', 'QS Okeyinka Florence Mojirayo, MNIQS', 'WAQSN Representative', 10],
+      ['agboola-tolu', 'QS Agboola Tolu, MNIQS', 'YQSF Representative', 11],
+      ['abdulsalam-el-mubashir', 'QS Abdulsalam El-Mubashir, MNIQS', 'Ex-Officio I', 12],
+      ['egbedayo-olufunmilay', 'QS Egbedayo Olufunmilay, MNIQS', 'Ex-Officio II', 13],
+      ['morakinyo-victoria-mercy', 'QS Morakinyo Victoria Mercy, MNIQS', 'Co-opted Member', 14],
+    ],
+  },
+  {
+    key: 'yobe',
+    chapterName: 'Yobe Chapter',
+    state: 'Yobe',
+    stateLabel: 'Yobe State',
+    chairperson: 'QS Dikko Bakari Yerima, MNIQS',
+    secretary: 'QS Bulama Gana Abatcha, MNIQS',
+    about:
+      'The Yobe State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Yobe State in the '
+      + 'North East geopolitical zone. A nine-member executive committee leads '
+      + 'the chapter across administration, finance and public relations, working '
+      + 'with the National Secretariat to deliver continuing professional '
+      + 'development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry in '
+      + 'the state.',
+    heroPortrait: 'dikko-bakari-yerima',
+    /* Nine portraits, all nine clean, and among them the chairman's — which
+     closes the older of the two outstanding "chapter owes us an original photo"
+     items. What was published for him until now was a low-resolution crop off a
+     printed poster, pale clothing on a pale card, which no amount of model or
+     parameter tuning could matte. A real photograph settled it in one pass.
+
+     The chapter runs a deputy for both the treasurer and the financial
+     secretary, and an assistant PRO, but has no research or welfare officer —
+     its own structure, published as supplied. */
+    roster: [
+      ['dikko-bakari-yerima', 'QS Dikko Bakari Yerima, MNIQS', 'Chairman', 1],
+      ['mohammad-bala-abdullahi', 'QS Mohammad Bala Abdullahi, MNIQS', 'Deputy Chairman', 2],
+      ['bulama-gana-abatcha', 'QS Bulama Gana Abatcha, MNIQS', 'General Secretary', 3],
+      ['abdullahi-buba', 'QS Abdullahi Buba, MNIQS', 'Treasurer', 4],
+      ['muhammad-aliyu-lawan', 'QS Muhammad Aliyu Lawan, MNIQS', 'Assistant Treasurer', 5],
+      ['hassan-ali-yerima', 'QS Hassan Ali Yerima, MNIQS', 'Financial Secretary', 6],
+      ['olubummo-adeniyi-sola', 'QS Olubummo Adeniyi Sola, MNIQS', 'Assistant Financial Secretary', 7],
+      ['ibrahim-hyelakumi', 'QS Ibrahim Hyelakumi, MNIQS', 'Public Relations Officer', 8],
+      ['aliyu-shehu-mamman', 'QS Aliyu Shehu Mamman, MNIQS', 'Assistant Public Relations Officer', 9],
     ],
   },
 ];
