@@ -956,6 +956,53 @@ const CHAPTERS = [
       ['aliyu-shehu-mamman', 'QS Aliyu Shehu Mamman, MNIQS', 'Assistant Public Relations Officer', 9],
     ],
   },
+  {
+    key: 'cross-river',
+    chapterName: 'Cross River Chapter',
+    state: 'Cross River',
+    stateLabel: 'Cross River State',
+    chairperson: 'QS Victor Okon Etifit, MNIQS',
+    secretary: 'QS Victor Owoeye, MNIQS',
+    about:
+      'The Cross River State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Cross River State in the '
+      + 'South South geopolitical zone. A nine-member executive committee leads the '
+      + 'chapter across administration, finance and public relations, working with the '
+      + 'National Secretariat to deliver continuing professional development, uphold '
+      + 'professional standards in construction cost management, and represent the '
+      + 'profession before government and industry in the state. The chapter also '
+      + 'carries its own West African Quantity Surveyors Network representation.',
+    heroPortrait: 'victor-okon-etifit',
+    /* Nine executives, eight portraits published. The pack is mostly proper studio
+       work — the chairman's face measures sharper than any other source received.
+
+       Ex-Officio I carries the placeholder. Her photograph is a 481x481 candid taken
+       in a car park, three times softer at the face than anything else in the pack,
+       and a slab of the car behind her fuses to her neck in the matte where no crop
+       can reach it. That is the secretariat's own instruction of 2026-08-05 — use the
+       placeholder wherever the quality is poor — rather than a judgement call.
+
+       This chapter styles its own roster properly, which is worth noting because it is
+       the first pack to do so: two members are given Mr and Mrs with no post-nominals,
+       which under the convention settled on 2026-08-04 reads as probationers, and they
+       publish exactly as supplied.
+
+       The one exception is Ex-Officio I, captioned bare but with FNIQS after it. A
+       Fellow cannot be a probationer, so leaving her bare would assert something her
+       own post-nominal contradicts — that is a caption slip, and QS is restored. Worth
+       confirming, being the only name here not taken verbatim. */
+    roster: [
+      ['victor-okon-etifit', 'QS Victor Okon Etifit, MNIQS', 'Chairman', 1],
+      ['idongesit-usang', 'QS Idongesit Usang, MNIQS', 'Deputy Chairman', 2],
+      ['victor-owoeye', 'QS Victor Owoeye, MNIQS', 'General Secretary', 3],
+      ['jenifer-asada', 'QS Dr. Jenifer Asada, MNIQS', 'Treasurer', 4],
+      ['frederick-elemi', 'QS Frederick Elemi, MNIQS', 'Financial Secretary', 5],
+      ['jesam-etta-otosi', 'Mr Jesam Etta Otosi', 'Public Relations Secretary', 6],
+      ['winifred-edet-ekpeyong', 'Mrs Winifred Edet Ekpeyong', 'WAQSN Representative', 7],
+      ['njumamaku-b-ekanem', 'QS Njumamaku B. Ekanem, FNIQS', 'Ex-Officio I', 8],  // placeholder — see above
+      ['olajide-gboyega-adeoye', 'QS Olajide Gboyega Adeoye, FNIQS', 'Ex-Officio II', 9],
+    ],
+  },
 ];
 
 (async () => {
