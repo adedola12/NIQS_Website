@@ -45,6 +45,17 @@ if (!portraitsDir) {
    that reads as a claim about registration, and Ebonyi's pack shows the chapters
    do distinguish. Ask, then record who confirmed and when.
 
+   The secretariat settled what a bare name means on 2026-08-04: the person is a
+   probationer, not yet a registered member, and should be styled Mr or Ms — not
+   left bare and never QS. That is why Delta's YQSF Coordinator is Ms Nneli Esther
+   Ifeoma below, over the chapter's own blanket claim that all fourteen were QS.
+
+   Which cuts both ways, so do not sweep it: Niger's roster arrived bare to the
+   last man including the Chairman, and a chapter chairman is not a probationer.
+   A pack with no prefixes anywhere is a chapter that omitted them, not ten
+   unregistered officers. Confirm per person before restyling anyone — getting an
+   honorific wrong in public is worse than leaving a name bare.
+
    `address` is optional. Better absent than invented — the chapter page simply
    drops the line. */
 const CHAPTERS = [
