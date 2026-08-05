@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PageHero from '../../components/common/PageHero';
 import LeaderCard from '../../components/common/LeaderCard';
+import BodyContact from '../../components/common/BodyContact';
 import API from '../../api/axios';
 
 const roles = [
@@ -236,6 +237,25 @@ export default function WAQSN() {
         </div>
       </section>
 
+      {/* ── Contact ──
+          The association's own details, here rather than as a tab on /contact
+          (secretariat, 2026-08-05). The CTA below used to send people there for
+          them, which is why this section exists at all. */}
+      <section style={{ background: '#fff' }}>
+        <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+          <div className="ey">Get in Touch</div>
+          <BodyContact
+            bodyKey="waqsn"
+            heading={<>Reach <em>WAQSN</em></>}
+            fallback={{
+              email1: 'waqsn@niqs.org.ng',
+              address: 'c/o NIQS National Secretariat,\nAbuja, FCT, Nigeria',
+              officeHours: 'Monday — Friday: 9:00 AM — 4:00 PM',
+            }}
+          />
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section style={{ background: 'var(--color-off)' }}>
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
@@ -249,7 +269,6 @@ export default function WAQSN() {
               {waqsnUrl && (
                 <a href={waqsnUrl} target="_blank" rel="noopener noreferrer" className="btn bg">Visit WAQSN</a>
               )}
-              <a href="/contact?body=waqsn" className="btn bo" style={{ color: '#fff', borderColor: 'rgba(255,255,255,.3)' }}>Contact Us</a>
             </div>
           </div>
         </div>

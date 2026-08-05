@@ -1,45 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
-/* ── Fallback contact blocks ─────────────────────────────────────────────
+/* ── Fallback contact block ──────────────────────────────────────────────
    Defaults only, overlaid by /contact-info. No phone numbers here: the two
    that used to sit in this block were placeholder digits, and a wrong number
    on the contact page is worse than no number at all. The secretariat's real
-   lines belong in the admin contact settings, not in the bundle. */
+   lines belong in the admin contact settings, not in the bundle.
+
+   This page is the National Secretariat and nothing else (secretariat,
+   2026-08-05). It used to carry WAQSN and YQSF tabs alongside; every other
+   national body and all 37 chapters reach their audience through their own
+   landing page, and two of them holding a seat here would fairly invite the
+   rest to ask for one. Their blocks moved to WAQSN.jsx and YQSF.jsx, which is
+   where the pattern already pointed — /contact-info still serves all three, so
+   nothing was lost from the admin side. */
 const FALLBACK = {
   national: {
     label: 'National Secretariat',
     phone1: '', phone2: '',
     email1: 'info@niqs.org.ng', email2: 'secretary@niqs.org.ng',
-    address: 'NIQS House, Plot 759 Cadastral Zone,\nCentral Business District,\nAbuja, FCT, Nigeria',
+    address: 'QS Olusegun Ajalekoko House, Plot 759 Cadastral Zone,\nCentral Business District,\nAbuja, FCT, Nigeria',
     officeHours: 'Monday — Friday: 8:00 AM — 5:00 PM\nSaturday — Sunday: Closed',
     twitterUrl: '', facebookUrl: '', linkedinUrl: '',
   },
-  waqsn: {
-    label: 'WAQSN (Women Association of Quantity Surveyors in Nigeria)',
-    phone1: '', phone2: '',
-    email1: 'waqsn@niqs.org.ng', email2: '',
-    address: 'c/o NIQS National Secretariat,\nAbuja, FCT, Nigeria',
-    officeHours: 'Monday — Friday: 9:00 AM — 4:00 PM',
-    twitterUrl: '', facebookUrl: '', linkedinUrl: '',
-  },
-  yqsf: {
-    label: 'YQSF (Young Quantity Surveyors Forum)',
-    phone1: '', phone2: '',
-    email1: 'yqsf@niqs.org.ng', email2: '',
-    address: 'c/o NIQS National Secretariat,\nAbuja, FCT, Nigeria',
-    officeHours: 'Monday — Friday: 9:00 AM — 4:00 PM',
-    twitterUrl: '', facebookUrl: '', linkedinUrl: '',
-  },
 };
-
-const TABS = [
-  { key: 'national', label: 'NIQS National' },
-  { key: 'waqsn',    label: 'WAQSN'         },
-  { key: 'yqsf',     label: 'YQSF'          },
-];
 
 const SUBJECTS = ['General Inquiry', 'Membership', 'Examinations', 'Events', 'Chapters', 'WAQSN', 'YQSF', 'Partnership', 'Complaint', 'Other'];
 
@@ -97,12 +82,7 @@ function ContactBlock({ info }) {
 }
 
 export default function Contact() {
-  const [searchParams] = useSearchParams();
-  const validBodies    = ['national', 'waqsn', 'yqsf'];
-  const initialTab     = validBodies.includes(searchParams.get('body')) ? searchParams.get('body') : 'national';
-
   const [contactData, setContactData] = useState(FALLBACK);
-  const [activeTab, setActiveTab]     = useState(initialTab);
   const [form, setForm]               = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [status, setStatus]           = useState(null);
   const [submitting, setSubmitting]   = useState(false);
@@ -124,7 +104,7 @@ export default function Contact() {
     setSubmitting(true);
     setStatus(null);
     try {
-      await API.post('/contact', { ...form, body: activeTab });
+      await API.post('/contact', { ...form, body: 'national' });
       setStatus('success');
       setForm({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch {
@@ -134,7 +114,7 @@ export default function Contact() {
     }
   };
 
-  const info = contactData[activeTab] || FALLBACK[activeTab];
+  const info = contactData.national || FALLBACK.national;
 
   return (
     <>
@@ -148,31 +128,15 @@ export default function Contact() {
       <section style={{ background: '#fff' }}>
         <div className="ct" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
 
-          {/* Body Tabs */}
-          <div className="filter-bar" style={{ marginBottom: '3rem' }}>
-            {TABS.map(t => (
-              <button
-                key={t.key}
-                className={`fbtn${activeTab === t.key ? ' on' : ''}`}
-                onClick={() => setActiveTab(t.key)}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Active body label */}
           <div style={{ marginBottom: '2rem' }}>
-            <div className="ey">{info?.label || TABS.find(t => t.key === activeTab)?.label}</div>
+            <div className="ey">{info?.label || 'National Secretariat'}</div>
           </div>
 
           <div className="contlay">
             {/* Contact Info */}
             <div>
               <h2 className="sh" style={{ marginBottom: '1.8rem' }}>
-                {activeTab === 'national' && <>Reach <em>NIQS</em></>}
-                {activeTab === 'waqsn'    && <>Reach <em>WAQSN</em></>}
-                {activeTab === 'yqsf'     && <>Reach <em>YQSF</em></>}
+                Reach <em>NIQS</em>
               </h2>
               <ContactBlock info={info} />
             </div>
@@ -180,9 +144,7 @@ export default function Contact() {
             {/* Contact Form */}
             <div className="cform">
               <h3>
-                {activeTab === 'national' && 'Send a Message to NIQS'}
-                {activeTab === 'waqsn'    && 'Send a Message to WAQSN'}
-                {activeTab === 'yqsf'     && 'Send a Message to YQSF'}
+                Send a Message to NIQS
               </h3>
 
               {status === 'success' && (
