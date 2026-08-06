@@ -22,6 +22,7 @@ export default function YQSF() {
   const [cpdEvents,    setCpdEvents]    = useState(DEFAULTS.cpdEvents);
   const [totalAwards,  setTotalAwards]  = useState(DEFAULTS.totalAwards);
   const [under35,      setUnder35]      = useState('');
+  const [liveYoung,    setLiveYoung]    = useState(null);
   const [council, setCouncil] = useState([]);
   const chapterCount = useChapterCount();
 
@@ -36,6 +37,12 @@ export default function YQSF() {
         if (res.data?.yqsfTotalAwards) setTotalAwards(res.data.yqsfTotalAwards);
         if (res.data?.yqsfUnder35Count) setUnder35(res.data.yqsfUnder35Count);
       })
+      .catch(() => {});
+
+    /* 503 while the statistics key is unloaded, which is the designed path: the
+       tile simply falls back to the hand-set figure, or a dash. */
+    API.get('/stats/membership')
+      .then(res => { if (res.data?.young_members) setLiveYoung(res.data.young_members); })
       .catch(() => {});
 
     API.get('/exco?scope=yqsf')
@@ -59,19 +66,24 @@ export default function YQSF() {
         .catch(() => {}));
   }, []);
 
-  /* Young Members count is set by hand in admin site settings, and stays a dash
-     until the secretariat supplies it.
+  /* Young members. The register aggregates at under 40 and YQSF eligibility is
+     under 35, so this tile used to be a dash rather than publish a number under
+     a bracket the data does not support.
 
-     It cannot currently be taken from the portal. The public statistics endpoint
-     (NIQS/API/PUBLIC-001, GET /api/public/stats) returns
-     under_40: { count, known_dob, age_limit: 40 } — an under-40 aggregate. YQSF
-     eligibility is under 35, and an under-35 figure cannot be derived from an
-     under-40 count. Publishing the API's number under this heading would label it
-     with a bracket the register does not support.
+     The secretariat's call (2026-08-06) is to show the under-40 aggregate
+     meanwhile — so the tile is labelled from the figure's own age_limit rather
+     than from a hardcoded 35, and reads "Registered QS Under 40" while that is
+     what the number is. When NIQS exposes the count at 35 the server prefers it
+     and this relabels itself, with no change here.
 
-     To automate this, NIQS would need to expose the count at age_limit 35. */
+     A figure the secretariat has typed into site settings still wins: that one
+     is the forum's own count, not an aggregate standing in for it. */
+  const young = liveYoung && !under35
+    ? { n: liveYoung.count.toLocaleString(), l: `Registered QS Under ${liveYoung.age_limit}` }
+    : { n: under35 || '—', l: 'Registered QS Under 35' };
+
   const stats = [
-    { n: under35 || '—', l: 'Registered QS Under 35' },
+    young,
     { n: chapterCount ?? CHAPTERS_FALLBACK, l: 'State Chapters' },
     { n: cpdEvents,      l: 'CPD Events/Year' },
     { n: totalAwards,    l: 'Total Awards' },

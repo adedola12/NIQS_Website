@@ -16,6 +16,12 @@ const roles = [
 export default function WAQSN() {
   const [waqsnUrl, setWaqsnUrl] = useState('');
   const [femaleQS, setFemaleQS] = useState('');
+  /* Nothing in the public statistics endpoint distinguishes gender today, so this
+     stays null and the tile falls back to the figure the secretariat types into
+     site settings. The server already reads a `by_gender[]` array if one appears
+     (see normaliseFemaleMembers), so adding it upstream is the whole job — the
+     same arrangement as the YQSF under-35 count. */
+  const [liveFemale, setLiveFemale] = useState(null);
   const [chair, setChair] = useState(null);
   const [exec, setExec] = useState([]);
 
@@ -25,6 +31,10 @@ export default function WAQSN() {
         if (res.data?.waqsnUrl) setWaqsnUrl(res.data.waqsnUrl);
         if (res.data?.waqsnFemaleQSCount) setFemaleQS(res.data.waqsnFemaleQSCount);
       })
+      .catch(() => {});
+
+    API.get('/stats/membership')
+      .then(res => { if (res.data?.female_members) setLiveFemale(res.data.female_members); })
       .catch(() => {});
 
     /* The association's own executive. Its Chairperson also sits on the NEC, so
@@ -135,7 +145,7 @@ export default function WAQSN() {
               <div style={{ display: 'flex', gap: '1rem', margin: '0 0 1.8rem', flexWrap: 'wrap' }}>
                 <div style={{ background: 'var(--color-off)', borderRadius: 12, padding: '1rem 1.4rem', minWidth: 150 }}>
                   <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.9rem', fontWeight: 800, color: 'var(--color-navy)', letterSpacing: '-.04em' }}>
-                    {femaleQS || '—'}
+                    {femaleQS || (liveFemale ? liveFemale.count.toLocaleString() : '—')}
                   </div>
                   <div style={{ fontSize: '.66rem', fontWeight: 700, color: 'var(--color-txt-3)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Registered Female QS</div>
                 </div>

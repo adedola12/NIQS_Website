@@ -176,6 +176,72 @@ function normaliseUnder40(under40, total, warnings) {
 }
 
 /**
+ * The young-members figure the YQSF page renders, whatever bracket the register
+ * happens to publish it at.
+ *
+ * YQSF eligibility is under 35 and the live endpoint only aggregates at under
+ * 40, which is why this figure used to be a dash. The secretariat's decision of
+ * 2026-08-06 is to publish the under-40 aggregate meanwhile — correct, just
+ * broader than the forum's own bracket — so the number must always travel with
+ * the age limit it actually describes, and the page must caption itself from
+ * that rather than from a hardcoded 35.
+ *
+ * The consequence is the point: when NIQS exposes `under_35` (or re-aggregates
+ * `under_40` at 35), this starts returning it and the tile relabels itself. No
+ * website change, no deploy — which is what "so the portal can adjust later"
+ * has to mean if it is to be true without a developer in the loop.
+ *
+ * Narrower brackets win, because a bracket closer to 35 is closer to what the
+ * forum is.
+ */
+function normaliseYoungMembers(d, total) {
+  const candidates = [d.under_35, d.under_40, d.young_members]
+    .filter(u => u && typeof u.count === 'number')
+    .map(u => ({ ...u, age_limit: u.age_limit ?? (u === d.under_35 ? 35 : 40) }))
+    .sort((a, b) => a.age_limit - b.age_limit);
+
+  const u = candidates[0];
+  if (!u) return null;
+
+  const knownDob = typeof u.known_dob === 'number' ? u.known_dob : null;
+  return {
+    count: u.count,
+    age_limit: u.age_limit,
+    known_dob: knownDob,
+    dob_coverage: knownDob && total ? knownDob / total : null,
+    // True once the register publishes the forum's own bracket. Until then the
+    // page is showing a wider population and should not imply otherwise.
+    matches_yqsf_eligibility: u.age_limit === 35,
+  };
+}
+
+/**
+ * Registered female members, for the WAQSN page.
+ *
+ * Nothing in the live endpoint distinguishes gender, so this returns null and
+ * the page falls back to the figure the secretariat types into site settings.
+ * Written now, against the `by_gender[]` shape requested in
+ * docs/PUBLIC_STATS_API.md, so that adding it upstream is all that is needed.
+ */
+function normaliseFemaleMembers(d, total) {
+  const rows = Array.isArray(d.by_gender) ? d.by_gender : null;
+  if (!rows) return null;
+
+  const row = rows.find(r => /^f(emale)?$/i.test(String(r.gender ?? r.label ?? '')));
+  if (!row || typeof row.count !== 'number') return null;
+
+  const known = rows.reduce((n, r) => n + (typeof r.count === 'number' ? r.count : 0), 0);
+  return {
+    count: row.count,
+    known,
+    // As with date of birth, the honest denominator is those who can be
+    // classified, not every member on the register.
+    share_of_known: known ? row.count / known : null,
+    coverage: total ? known / total : null,
+  };
+}
+
+/**
  * GET /api/stats/membership
  *
  * 200 — figures, possibly stale (meta.stale). 503 — nothing known; the client
@@ -203,6 +269,18 @@ exports.getMembershipStats = async (req, res) => {
   const chapters = normaliseChapters(d.by_chapter, total, warnings);
   const registrations = normaliseRegistrations(d.new_members_per_year, d.generated_at, warnings);
   const under40 = normaliseUnder40(d.under_40, total, warnings);
+  const youngMembers = normaliseYoungMembers(d, total);
+  const femaleMembers = normaliseFemaleMembers(d, total);
+
+  if (youngMembers && !youngMembers.matches_yqsf_eligibility) {
+    warnings.push(
+      `young-members figure is an under-${youngMembers.age_limit} aggregate; YQSF ` +
+      'eligibility is under 35, so it covers a wider population than the forum',
+    );
+  }
+  if (!femaleMembers) {
+    warnings.push('no gender breakdown upstream — the WAQSN figure cannot be derived');
+  }
 
   // v1 of the spec documents both of these. The live endpoint omits them, so the
   // population a figure describes is currently unstated — surface that rather than
@@ -229,6 +307,10 @@ exports.getMembershipStats = async (req, res) => {
     by_chapter_complete: chapters.complete,
     by_chapter_publishable: chapters.publishable,
     under_40: under40,
+    // Age-limit-agnostic; the YQSF page captions itself from young_members.age_limit
+    // so a narrower bracket upstream needs no website change. See normaliseYoungMembers.
+    young_members: youngMembers,
+    female_members: femaleMembers,
     new_members_per_year: registrations.years,
     new_members_complete_years: registrations.complete_years,
     new_members_partial_year: registrations.partial_year,
