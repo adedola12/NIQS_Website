@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Copies the API's runtime secrets from server/.env into AWS Secrets Manager.
 

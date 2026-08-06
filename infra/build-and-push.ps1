@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Builds the NIQS API container image in CodeBuild and pushes it to ECR.
 

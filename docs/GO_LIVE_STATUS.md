@@ -107,14 +107,11 @@ now supports reduced-motion preferences, which it did not before.
 **1. Upload the current build.** Closes the 404 problem above and brings the live
 site up to date.
 
-**2. Load the membership statistics key.** The homepage reads **"10,000+ Total
-Members"**. The real figure from the Institute's own statistics API is
-**14,023**. The integration is built and deployed and is waiting only on the API
-key being loaded into AWS Secrets Manager. Until then the endpoint correctly
-reports itself unconfigured and the site shows its conservative fallback.
-
-*Worth closing before the Committee sees the site* — it replaces the only figure
-on the site that is understated.
+**2. ~~Load the membership statistics key.~~ Done, 6 August.** The key was in the
+Institute's own v1 API reference all along. It is loaded, the service is
+redeployed, and the site now carries live figures: **14,022 members** in place of
+the "10,000+" it showed, and **4,481 registered QS under 40** on the YQSF page in
+place of a dash.
 
 ### On the Secretariat and the chapters
 
@@ -135,12 +132,18 @@ plainly omitted them rather than describing ten unregistered officers. A
 checklist has been prepared. Nothing is wrong on screen; these are asking whether
 each name should carry QS, Mr or Ms.
 
-**6. Two membership figures cannot be automated.** The statistics API returns an
-under-**40** aggregate, but YQSF eligibility is under **35**, and the API returns
-no gender breakdown at all, so the WAQSN female-QS count cannot be derived.
-Both show a dash until the Secretariat supplies the numbers or the Institute
-exposes them. A dash is the right answer — a wrong membership figure on the
-Institute's own site would be worse.
+**6. Two figures the register must expose.** Confirmed against the Institute's own
+v1 API reference on 6 August, in the document and in the live response alike.
+
+*YQSF under-35.* The API aggregates at under **40**; forum eligibility is under
+**35**, and an under-40 count cannot be narrowed to one. The page now publishes
+the under-40 figure captioned as such — true, just broader than the forum.
+Exposing the same aggregate at 35 is the whole remaining job: the site prefers
+the narrowest bracket offered and relabels itself, with no release.
+
+*WAQSN female QS.* Section A carries five figures and none distinguishes gender.
+This one cannot be derived at all. The site reads a gender breakdown the moment
+one exists; until then the Secretariat enters it in the admin panel.
 
 **7. Eight sections are empty because no content has been loaded**: news, jobs,
 partners, QS firms, exam results, webinars, workshop materials and journals.

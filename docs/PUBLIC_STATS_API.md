@@ -116,6 +116,11 @@ The key is **not** in this repository and must not be added to it. It is revocab
 
 ### Turning the figures on in production
 
+**Done on 2026-08-06** — the key was issued in the v1 reference document, loaded into
+`niqs/api`, and the service redeployed with `IncludeStatsSecret=true`. The endpoint
+answers `available: true` and the site carries live figures. The steps below are kept
+for the next rotation.
+
 Deploying the code is not enough — without the key the route answers 503 and the site keeps its static fallback. Three steps, in order:
 
 1. **Put the key in `server/.env`** locally, as `NIQS_STATS_API_KEY=niqs_pub_…`.
@@ -142,7 +147,11 @@ There is no staging environment upstream. Develop against production and **do no
 2. Return `401` rather than `200` for auth failures (§3, item 1), or confirm the 200-with-envelope behaviour is intentional so it can be relied on.
 3. Confirm whether "new members registered per year" may be published as an *elected* figure, or stays as registered (spec's own note on A5).
 4. Chapter assignment in the register (§4) — until it improves, the website cannot publish per-chapter membership.
-5. **An under-35 count, for the YQSF page.** YQSF eligibility is under 35, and `under_40` cannot be narrowed to it. `/yqsf` therefore shows a dash until the Secretariat supplies the figure by hand. Exposing the same aggregate at `age_limit: 35` — or making the threshold a parameter — would automate it.
-6. **A gender breakdown, for the WAQSN page.** `/waqsn` carries a "Registered Female QS" figure that currently renders as a dash, because nothing in section A distinguishes gender and the member routes are not granted to this key. Either add a `by_gender[]` array to this endpoint, or the Secretariat supplies the number for the website CMS (`siteSettings.waqsnFemaleQSCount`). The website cannot derive it.
+5. **An under-35 count, for the YQSF page.** Confirmed outstanding against the published v1 reference (NIQS/API/PUBLIC-001, 31 July 2026) on 2026-08-06, both in the document and in the live response. The scope table answers item A4 with "`under_40` (aggregate count only)", and `age_limit` is documented as "the threshold used, for clarity in captions" — a value reported, not a parameter accepted. There is no `under_35`, and an under-40 count cannot be narrowed to one.
+
+   `/yqsf` now publishes the under-40 figure captioned from `young_members.age_limit`, so it reads "Registered QS Under 40" and states the bracket it actually describes (secretariat's decision, 2026-08-06). **Exposing the same aggregate at `age_limit: 35` is the entire remaining job** — the server prefers the narrowest bracket offered and the tile relabels itself, with no website change or release. A figure the secretariat types into site settings still overrides both.
+6. **A gender breakdown, for the WAQSN page.** Also confirmed outstanding on 2026-08-06: section A carries five figures and none distinguishes gender, and the live response's top-level keys are exactly `total_members`, `by_grade`, `by_chapter`, `under_40`, `new_members_per_year`, `generated_at`. The member routes that might carry it are closed to this key (item 7).
+
+   The website already reads a `by_gender[]` array of `{ gender, count }` and publishes it the moment one appears. Until then the Secretariat supplies the number through the website CMS (`siteSettings.waqsnFemaleQSCount`). The website cannot derive it.
 7. **Member routes are visible but closed.** `GET https://api.niqsng.org/api/members/search`, `/members/verify` and `/members/{id}` all exist and answer `{"message":"Unauthenticated."}`. The public statistics key is rejected on every one of them, in the `X-API-Key` header and as a bearer token alike — consistent with the written position on B1–B4. If a directory is ever granted, this is the base URL to point `PORTAL_API_URL` at (`https://api.niqsng.org/api`), not `portal.niqsng.org`, which serves the member-portal SPA.
 8. No origin allowlist change is needed while the website proxies server-side. If browser-side calls are ever wanted, the origins to add are `https://niqsng.org`, `https://www.niqsng.org`, and `https://niqs-website.vercel.app` (plus preview URLs, which are per-deployment and would need a wildcard).
