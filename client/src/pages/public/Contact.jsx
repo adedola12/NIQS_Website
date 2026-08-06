@@ -140,7 +140,11 @@ export default function Contact() {
             {/* Contact Info */}
             <div>
               <h2 className="sh" style={{ marginBottom: '1.8rem' }}>
-                Reach <em>NIQS</em>
+                {/* Spelled out rather than "Reach NIQS" (secretariat, 2026-08-06).
+                    The heading is the one place on the page the Institute names
+                    itself, and an acronym there assumes the reader already knows
+                    it — which a first-time visitor on a contact page does not. */}
+                Reach the <em>Nigerian Institute of Quantity Surveyors</em>
               </h2>
               <ContactBlock info={info} />
             </div>
@@ -148,7 +152,7 @@ export default function Contact() {
             {/* Contact Form */}
             <div className="cform">
               <h3>
-                Send a Message to NIQS
+                Send a Message to the Nigerian Institute of Quantity Surveyors
               </h3>
 
               {status === 'success' && (
