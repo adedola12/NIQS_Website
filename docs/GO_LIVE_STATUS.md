@@ -1,19 +1,59 @@
-# NIQS website — go-live status
+# NIQS website — status report
 
-**As at 1 August 2026.** Written to be handed to the secretariat, so it says what
-is true rather than what would be comfortable.
+**As at 6 August 2026.** Prepared for the Management Committee. Written to say
+what is true rather than what would be comfortable.
 
 ---
 
 ## Short answer
 
-**The site is ready to go live.** Everything a visitor sees works, is served from
-infrastructure that will stay up, and carries real content rather than
-placeholders.
+**The build is complete. The remaining work is content, and most of it is not
+ADLM's to do.**
 
-Four things are outstanding. **None of them blocks launch** — each one degrades to
-something honest rather than something broken — but each is worth closing, and
-two need somebody other than the developer.
+Every page, every feature and every administrative screen is built, tested and
+working. What is left divides cleanly:
+
+- **Two actions on ADLM**, both same-day.
+- **Content from the Secretariat and the chapters** — the pace of which sets the
+  conclusion date, not engineering effort.
+
+**Proposed conclusion period: end of August 2026**, on the assumption that
+chapter material keeps arriving at its recent rate. See *Conclusion period* below
+for what that depends on.
+
+---
+
+## One thing to fix before the site is shared widely
+
+**Every page except the homepage currently returns "404 Not Found" if opened
+directly.**
+
+This is worth stating plainly because it is easy to miss and easy to fix. Click
+through the site from the homepage and everything works — the site is fine.
+But if anyone reloads a page, opens a link sent on WhatsApp, or bookmarks a
+chapter page, they get an error from the web host.
+
+| | |
+|---|---|
+| Cause | The domain is served by Apache shared hosting, which does not know the site is a single-page application. It looks on disk for a folder called `/about`, finds none, and returns 404. |
+| Verified | Five routes tested on the live domain — `/about`, `/contact`, `/chapters`, `/waqsn`, `/events`. All five returned 404. |
+| Status | **Fixed in the code.** A configuration file (`.htaccess`) now ships inside every build and tells Apache to hand those URLs to the application. |
+| To close it | Upload the current build to the host. Nothing else. |
+
+**This also means search engines cannot index any page but the homepage**, so
+closing it has a direct effect on how the Institute is found online.
+
+### Related: the live site is a day behind
+
+The build currently on the domain predates yesterday's corrections. It does not
+yet carry the Contact page changes the Secretariat asked for (the QS Olusegun
+Ajalekoko House name, the corrected address, the removal of the WAQSN and YQSF
+tabs) or the Cross River chapter.
+
+The domain is **not** connected to automatic deployment — each release is a
+manual upload. That is worth a decision from the Committee: pointing the domain
+at the deployment platform would make every future correction go live by itself,
+within about a minute, with no upload step to forget.
 
 ---
 
@@ -21,124 +61,127 @@ two need somebody other than the developer.
 
 | | |
 |---|---|
-| Website | Vercel, global CDN |
-| API | AWS ECS Express Mode, eu-west-3 (Paris) |
-| Database | MongoDB Atlas, Paris — same city as the API |
-| Uploads | Cloudinary, with S3 + CloudFront provisioned |
+| Website | Apache shared hosting (see above) |
+| API | AWS ECS Express Mode, Paris |
+| Database | MongoDB Atlas, Paris — same city as the API, so queries are fast |
+| Uploads | Cloudinary |
 
-The API answers in 0.35–0.65s and has no cold start. It was moved off Render on
-31 July after Render suspended the service, which took every piece of live data
-off the site until the migration completed.
+**The API is healthy.** Twelve public endpoints checked on 6 August: all
+answered, between 0.41 and 1.10 seconds, with no cold start.
 
-**Deploys do not drop requests.** Verified by putting 163 consecutive requests
-through a full rolling deployment: 163 succeeded, none failed.
+**Deployments do not drop requests** — verified by putting 163 consecutive
+requests through a full rolling deployment. All 163 succeeded.
+
+**Every public page loads.** All 27 were checked on 6 August; all render, and
+after today's fix none has a broken image.
 
 ### Content published
 
-- **37 chapter records** — every state and the FCT
-- **15 chapters with full profiles**, up from 10: Bayelsa, Borno, Delta, Ebonyi,
-  FCT, Kaduna, Katsina, Kwara, Nasarawa, Niger, Ogun, Ondo, Osun, Rivers, Zamfara
-- **WAQSN** — 21 national officers and zonal coordinators, newly published
-- **YQSF** — 13-member executive council
-- National Executive Council, Board of Trustees, National Body Chairmen, Past
-  Presidents
+| | |
+|---|---|
+| Chapter records | **37** — every state and the FCT |
+| Chapters with a published executive roster | **23 of 37** |
+| Executive records across the site | **344** |
+| Portraits published | **316** (28 cards await a usable photograph) |
+| Past Presidents | 13 |
+| Events | 3 |
+
+Rosters cover the National Executive Council, the Board of Trustees, National
+Body Chairmen, Past Presidents, WAQSN (21 officers) and YQSF (13).
+
+**Every portrait on the site is put on the same studio backdrop at the same face
+size**, so a page of them reads as one photographic session rather than as a
+collection of whatever each chapter had to hand.
 
 ### Performance
 
-Initial page weight went from ~463 KB to ~98 KB — **4.7× lighter**. The site also
-now carries reduced-motion support, which it had none of.
+Initial page weight fell from ~463 KB to ~98 KB — **4.7× lighter**. The site also
+now supports reduced-motion preferences, which it did not before.
 
 ---
 
 ## Outstanding
 
-### 1. Membership figures show a fallback — needs one action from ADLM
+### On ADLM — both same-day
 
-The homepage reads **"10,000+ Total Members"**. The real figure from the NIQS
-statistics API is **14,023**. The integration is built and deployed; it is waiting
-on the API key being loaded into AWS Secrets Manager, which is two commands.
+**1. Upload the current build.** Closes the 404 problem above and brings the live
+site up to date.
 
-Until then the API answers 503 and the site shows its static fallback — which is
-the designed behaviour, not a fault. Nothing is broken; the number is just
-conservative.
+**2. Load the membership statistics key.** The homepage reads **"10,000+ Total
+Members"**. The real figure from the Institute's own statistics API is
+**14,023**. The integration is built and deployed and is waiting only on the API
+key being loaded into AWS Secrets Manager. Until then the endpoint correctly
+reports itself unconfigured and the site shows its conservative fallback.
 
-### 2. Two figures cannot come from the portal as things stand
+*Worth closing before the Committee sees the site* — it replaces the only figure
+on the site that is understated.
 
-**YQSF under-35 count.** The forum's eligibility is under 35. The statistics API
-returns an under-**40** aggregate (`age_limit: 40`) and an under-35 figure cannot
-be derived from it. The stat shows a dash until the secretariat supplies the
-number, or until NIQS exposes the count at 35.
+### On the Secretariat and the chapters
 
-**WAQSN female-QS count.** The statistics API returns no gender breakdown at all —
-the endpoint covers total, grade, chapter, under-40 and new-members-per-year. This
-figure cannot be automated without NIQS adding it, and shows a dash meanwhile.
+**3. Fourteen chapters have not sent their material.** They are listed and
+reachable on the site; each publishes within a day of its pack arriving.
 
-A dash is the right answer here. A wrong membership number on the Institute's own
-site would be worse.
+**4. Twenty-eight cards need a usable photograph.** Six in Katsina and one in
+Cross River carry the placeholder deliberately, under the Secretariat's own
+instruction of 5 August to use a placeholder wherever quality is poor. The
+Katsina six were cut from a printed group poster whose ink crushed the green
+channel — no correction recovers data the print never captured. Cross River's is
+a low-resolution photograph taken in a car park.
 
-### 3. Two chapters should confirm their Ex-Officio ordering
+**5. Twenty-nine names need confirming.** A name published without "QS" now
+means the person is a probationer. Niger State's entire roster arrived without
+prefixes — including its Chairman, who cannot be a probationer — so that chapter
+plainly omitted them rather than describing ten unregistered officers. A
+checklist has been prepared. Nothing is wrong on screen; these are asking whether
+each name should carry QS, Mr or Ms.
 
-Kwara sent two different people both titled "Ex Officio 2". Borno sent two both
-titled "Ex Officio", neither numbered. Executive records are keyed on chapter and
-title, so publishing either as supplied would have had the second record overwrite
-the first and **a member disappear from the roster silently**.
+**6. Two membership figures cannot be automated.** The statistics API returns an
+under-**40** aggregate, but YQSF eligibility is under **35**, and the API returns
+no gender breakdown at all, so the WAQSN female-QS count cannot be derived.
+Both show a dash until the Secretariat supplies the numbers or the Institute
+exposes them. A dash is the right answer — a wrong membership figure on the
+Institute's own site would be worse.
 
-Both are published as Ex-Officio I and II in the order the chapter's own pack
-listed them. That ordering is an assumption and should be confirmed. Nobody is
-missing from the site; the numbering may simply be the wrong way round.
+**7. Eight sections are empty because no content has been loaded**: news, jobs,
+partners, QS firms, exam results, webinars, workshop materials and journals.
+Placeholder entries were deliberately removed rather than left to pass as real
+content. Each page shows an honest empty state and fills as soon as the
+Secretariat loads material through the admin panel — no developer involvement.
 
-Rivers' two submissions also disagree on one member's honorific — the committee
-list said "Ms", the later portrait pack says "MR." — so the professional style is
-used, matching every other Rivers entry. Worth the chapter confirming.
+### Separate from this contract
 
-### 4. Ten portraits are worth re-shooting
-
-Of 75 portraits processed, 63 came through cleanly. Ten are from sources cropped
-too tightly for the background removal to find shoulders:
-
-- Zamfara — 4 of 10
-- WAQSN — 4 of 21
-- Ogun — 1 of 11
-- Rivers — 1 of 3
-
-They publish acceptably: the torso now dissolves into the studio backdrop rather
-than smearing, which reads as lighting rather than as a fault. But a re-shot
-head-and-shoulders photograph would look materially better. **No portrait on the
-site is broken** — this is a quality ceiling, not a defect.
-
-Borno's Deputy Chairman, QS Bashir Tanko, is on the roster without a photograph;
-the chapter's own document says his picture is still outstanding.
+**8. The membership portal** (portal.niqsng.org) is being built by another
+company. The integration points from the website's side are specified and ready.
 
 ---
 
-## Content gaps that are content, not engineering
+## Conclusion period
 
-Several sections are empty because the database is empty, not because anything is
-wrong: **news, jobs, partners, QS firms, exam results, webinars, workshop
-materials and journals**. Placeholder entries were deliberately removed rather
-than left to masquerade as real content. Each page shows an honest empty state and
-will fill as the secretariat loads material through the admin panel.
+**Engineering is complete.** No feature remains unbuilt.
 
-The chapters map shows 15 of 37 chapters carrying a full profile. The remaining 22
-are listed and reachable; they publish as soon as their packs arrive.
+| | |
+|---|---|
+| ADLM's two actions | Same day |
+| Chapter rosters | Chapters went from 10 to 23 published between 30 July and 5 August. At that pace the remaining 14 land within 2–3 weeks — **but this depends entirely on chapters sending their packs.** |
+| Photographs and name confirmations | Follow the same chapters |
+| Section content (news, jobs, etc.) | Secretariat's own pace, through the admin panel; the site does not wait on it |
 
----
+**Recommended framing: the website is complete and operational at end of August
+2026**, with the remaining chapters publishing as their material arrives.
 
-## Costs
-
-Roughly **$33–37 per month** for the AWS infrastructure, against a $50 ceiling.
-The largest single line is the load balancer at about $20; the API container is
-about $10.
-
-For comparison, a Render paid plan would be $7/month. The AWS setup buys
-co-location with the database in Paris, no cold starts, and room to grow. Worth
-the Institute seeing both numbers.
+The one thing that could move that date is chapter response. If the Committee
+wants a firm date, the effective lever is a deadline to chapters for their
+executive lists and photographs — that is the only outstanding item neither ADLM
+nor the Secretariat can close alone.
 
 ---
 
-## Recommendation
+## Recommendations to the Committee
 
-**Launch.** The four open items are visible, understood, and each degrades to an
-honest state rather than a broken one. Closing the first — loading the statistics
-key — takes minutes and replaces the only figure on the site that is currently
-conservative rather than accurate.
+1. **Approve pointing the domain at automatic deployment.** It removes the manual
+   upload step and the class of problem that produced the 404 issue.
+2. **Set a deadline for the fourteen outstanding chapters**, and ask for
+   photographs at the same time as names — the two arriving separately is what
+   creates the placeholder cards.
+3. **Note that eight content sections are ready and waiting**, and decide who at
+   the Secretariat owns loading each.
