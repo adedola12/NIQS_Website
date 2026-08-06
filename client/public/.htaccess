@@ -1,0 +1,46 @@
+# Apache config for the built site.
+#
+# niqs.org.ng and niqsng.org are served by Apache shared hosting, not by Vercel —
+# whatever vercel.json says applies only if the domain is pointed there, and it is
+# not. Without this file every URL except the homepage returns the host's own 404:
+# /about, /contact, /chapters/cross-river-chapter and every other route work when
+# reached by clicking inside the app (React Router handles those in the browser)
+# and fail the moment anyone reloads the page, opens a link from WhatsApp, or lets
+# Google index one. Found 2026-08-06, the day before the management committee saw
+# the site.
+#
+# Vite copies everything in client/public/ into the build output, so this ships
+# with every build from now on and does not need to be remembered at upload time.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Anything that exists on disk — assets, images, PDFs — is served as itself.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # The API lives on another host entirely; never rewrite those.
+  RewriteCond %{REQUEST_URI} !^/api/
+
+  # Everything else is a client-side route: hand it index.html and let the app
+  # read the URL. Status stays 200 — rewriting, not redirecting, so the address
+  # bar keeps the deep link.
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+# The hashed filenames in /assets are content-addressed, so they can be cached
+# hard. index.html must not be, or a deploy leaves visitors on the old bundle.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|woff2?|png|jpe?g|svg|webp|avif)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "^index\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>

@@ -21,7 +21,11 @@ const EXAM_CARDS = [
     tagBg: '#C9974A',
     title: 'GDE — Graduate Development Examination',
     desc: 'For graduates of accredited degree programmes. Tests applied knowledge in construction economics and procurement.',
-    heroBg: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=700&q=80&fit=crop',
+    // The graduation photo that sat here started 404ing sometime before
+    // 2026-08-06 — the only dead one of the 34 Unsplash images the site
+    // hotlinks, but it was on a card, not a background, so it showed as a
+    // broken image rather than a blank panel. Replacement checked live.
+    heroBg: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=700&q=80&fit=crop',
     icon: '🎓',
     action: { label: 'Registration Info', to: '/contact', locked: false },
   },
