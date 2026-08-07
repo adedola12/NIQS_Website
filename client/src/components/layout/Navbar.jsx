@@ -264,25 +264,22 @@ const Navbar = () => {
     <>
       <nav id="nav" className={scrolled ? "sc" : ""}>
         <div className="ninner">
-          {/* Logo */}
+          {/* Logo — the official horizontal lockup from the 2026 brand pack.
+              It already carries the emblem, the Institute's name and the
+              tagline, so the wordmark that used to sit beside the old crest
+              would now be the name twice over. Dark-BG variant: the bar is
+              navy at every scroll state. */}
           <Link to="/" className="nlogo">
             <img
-              src="/NIQS-LOGO-PNG-NAV.png"
+              src="/brand/lockup-horizontal-dark.png"
               alt="Nigerian Institute of Quantity Surveyors"
               style={{
-                height: 48,
+                height: 46,
                 width: "auto",
                 display: "block",
                 objectFit: "contain",
               }}
             />
-            <div className="nlogo-txt">
-              {/* <strong>NIQS</strong> */}
-              <span>
-                Nigerian Institute of <br />
-                Quantity Surveyors
-              </span>
-            </div>
           </Link>
 
           {/* Desktop Nav */}

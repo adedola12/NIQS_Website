@@ -82,6 +82,14 @@
    LEGACY CSS VARIABLES (for inline styles)
 ═══════════════════════════════════════ */
 :root {
+  /* --white and --radius-lg were referenced 22 times across the auth and
+     portal pages but never defined anywhere, so every var() reading them
+     resolved to nothing. That is why the login card had no background of its
+     own and the navy gradient and its 40px grid showed straight through it —
+     the card was never white, it was transparent. #FFFFFF is the guideline's
+     official neutral. */
+  --white: #FFFFFF;
+  --radius-lg: 14px;
   --navy-deep: #00004D;
   --navy: #000066;
   --navy2: #14149C;
@@ -545,25 +553,21 @@
     @apply w-1.5 h-1.5 rounded-full shrink-0;
     background: var(--color-gold);
   }
-  .hc-institute {
-    @apply font-heading font-extrabold mb-4 mx-auto;
-    color: #fff;
-    font-size: clamp(1.7rem, 3.8vw, 2.8rem);
-    line-height: 1.15;
-    letter-spacing: .09em;
-    text-transform: uppercase;
+  /* The official lockup stands where the Institute's name used to be set in
+     type. Kept the gold rule beneath it — it separated the mark from the
+     headline before and still has to. The artwork is 1222x381 with a real
+     alpha channel, so it needs no plate behind it; drop-shadow rather than
+     text-shadow so the glow follows the letterforms, not a box. */
+  .hc-institute-logo {
+    @apply block mb-4 mx-auto;
+    width: clamp(240px, 38vw, 430px);
+    height: auto;
     padding-bottom: 1.1rem;
-    max-width: 760px;
     border-bottom: 2px solid rgba(217, 182, 80,.55);
-    text-shadow: 0 2px 6px rgba(0,0,0,.45);
-    position: relative;
-  }
-  .hc-institute em {
-    @apply not-italic;
-    color: var(--color-gold);
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.45));
   }
   @media (max-width: 480px) {
-    .hc-institute { letter-spacing: .07em; padding-bottom: .8rem; max-width: 340px; }
+    .hc-institute-logo { width: min(78vw, 300px); padding-bottom: .8rem; }
   }
   .hc-title {
     @apply font-heading text-[clamp(2.6rem,5vw,4rem)] font-extrabold leading-[1.1] text-white mb-4;

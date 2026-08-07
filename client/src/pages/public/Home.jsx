@@ -189,9 +189,15 @@ export default function Home() {
             <div className="hc-eyebrow-dot"></div>
             Est. 1969 &nbsp;&middot;&nbsp; Chartered Professional Body
           </div>
-          <div className="hc-institute">
-            Nigerian Institute of<br /><em>Quantity Surveyors</em>
-          </div>
+          {/* The Institute named itself here in type, directly above the
+              headline. Richard asked for the mark instead (2026-08-07) — the
+              official lockup says the same thing and says it in the brand's
+              own letterforms. Dark-BG variant: the hero is navy. */}
+          <img
+            className="hc-institute-logo"
+            src="/brand/lockup-horizontal-dark.png"
+            alt="Nigerian Institute of Quantity Surveyors"
+          />
           <h1 className="hc-title">
             Advancing Nigeria's<br />Built <em>Environment</em>
           </h1>

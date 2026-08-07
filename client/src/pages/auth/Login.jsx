@@ -40,13 +40,15 @@ const Login = () => {
     <div className="login-wrap">
       <div className="login-card">
         {/* Logo */}
+        {/* Light-BG lockup: the card is white. It carries the Institute's
+            name already, so the sub-line underneath it would have been the
+            name a second time. */}
         <div className="login-logo">
           <img
-            src="/NIQS-LOGO-PNG-NAV.png"
-            alt="NIQS Logo"
-            style={{ height: 64, width: 'auto', objectFit: 'contain', display: 'block', margin: '0 auto 0.5rem' }}
+            src="/brand/lockup-horizontal-light.png"
+            alt="Nigerian Institute of Quantity Surveyors"
+            style={{ width: 'min(260px, 80%)', height: 'auto', objectFit: 'contain', display: 'block', margin: '0 auto' }}
           />
-          <span className="login-logo-sub">Nigerian Institute of Quantity Surveyors</span>
         </div>
 
         {/* Tabs */}
