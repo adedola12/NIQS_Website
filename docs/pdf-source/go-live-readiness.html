@@ -143,7 +143,7 @@
   <table class="tbl">
     <tr><th style="width:22%">Field</th><th>Detail</th></tr>
     <tr><td><b>Document</b></td><td>NIQS Website — Go-Live &amp; Onboarding Plan</td></tr>
-    <tr><td><b>Status</b></td><td>Draft v1.0 — issued to the NIQS Secretariat for action</td></tr>
+    <tr><td><b>Status</b></td><td><b>v1.1 — 7 August 2026.</b> Go-live approved by the President on 6 August. Sections 1–14 describe the position at v1.0 (20 June) and are retained for reference; the box below and Section 15 supersede them.</td></tr>
     <tr><td><b>Prepared by</b></td><td>ADLM Studio (website vendor)</td></tr>
     <tr><td><b>Purpose</b></td><td>List every task, decision and credential required to launch the website properly — and to hand it over to NIQS to run.</td></tr>
     <tr><td><b>Related</b></td><td>Membership Portal — API Integration Requirements (companion document)</td></tr>
@@ -155,6 +155,23 @@
     needs a decision · <span class="rag r">Action needed</span> not started — and an owner —
     <span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span> <span class="own portal">Portal team</span>.
     Section&nbsp;2 is the at-a-glance dashboard; Section&nbsp;14 is the cut-over runbook; Section&nbsp;15 is the consolidated list of what we need from NIQS.
+  </div>
+
+  <div class="box">
+    <div class="bt">Status update — 7 August 2026 (supersedes Sections 1–14)</div>
+    <p style="margin:0 0 7pt"><b>The website is built, deployed and carrying live data.</b> Most of what v1.0 listed as
+    outstanding is closed:</p>
+    <table class="tbl tbl-sm" style="margin:0 0 8pt">
+      <tr><th style="width:34%">Since 20 June</th><th>Now</th></tr>
+      <tr><td>API on Render free plan</td><td>Moved to <b>AWS (Paris)</b> on 31 July — no cold starts, co-located with the database</td></tr>
+      <tr><td>Membership figures typed by hand</td><td><b>Live from the Institute’s own register</b> — 14,022 members, refreshed automatically</td></tr>
+      <tr><td>Chapters partly published</td><td><b>23 of 37</b> chapters carry a full executive roster; 344 officers, 316 portraits</td></tr>
+      <tr><td>Leadership pages</td><td>National Executive Council, Board of Trustees, National Body Chairmen, Past Presidents, WAQSN and YQSF all published</td></tr>
+      <tr><td>Contact details</td><td>Corrected to <b>QS Olusegun Ajalekoko House, No. 24 NIQS Crescent</b>, per the Secretariat</td></tr>
+    </table>
+    <p style="margin:0"><b>One item now blocks launch:</b> the cPanel login for <code>niqs.org.ng</code>, so the domain can
+    be pointed at the live site. Everything else outstanding is content the Secretariat loads directly, and the site does
+    not wait on it. See Section 15.</p>
   </div>
 
   <h2 class="sub">Contents</h2>
@@ -448,26 +465,60 @@ PORTAL_API_URL=…  PORTAL_API_KEY=…</pre>
 <!-- ===================== 15. WHAT WE NEED ===================== -->
 <section class="pb">
   <h1 class="sec"><span class="n">15</span> What We Need From NIQS</h1>
-  <p>To move from staging to launch, please provide / decide the following:</p>
+  <p class="lead">Revised 7 August 2026. Development is complete and the site is live on a temporary address.
+  <b>One credential stands between the Institute and its own domain.</b></p>
+
+  <div class="box">
+    <div class="bt">Blocking launch — cPanel login for niqs.org.ng</div>
+    <p style="margin:0 0 7pt">The domain, the Institute’s email and the member portal all run from one cPanel account on
+    the current host. To point <code>niqs.org.ng</code> at the new website we need to edit two records inside that
+    account’s <b>Zone Editor</b> — and, first, to protect the mail records so email keeps flowing.</p>
+    <table class="tbl tbl-sm" style="margin:0 0 8pt">
+      <tr><th style="width:38%">Please provide</th><th>Notes</th></tr>
+      <tr><td><b>cPanel username and password</b><br><span class="small muted">for <code>niqs.org.ng</code></span></td>
+          <td>The login at <code>https://niqs.org.ng:2083</code>. Held by whoever originally arranged the hosting.</td></tr>
+      <tr><td><b>Confirmation that Zone&nbsp;Editor is enabled</b></td>
+          <td>Some resellers hide it. If it is hidden we need either WHM access or a named contact at the reseller.</td></tr>
+    </table>
+    <p style="margin:0"><b>Please send these through a password manager or a sealed handover — not by WhatsApp or email.</b>
+    The same login controls the Institute’s mailboxes, so it deserves the same care as any other master credential.
+    ADLM will use it only for the DNS change described below, and the password can be rotated immediately afterwards.</p>
+  </div>
+
+  <h2 class="sub">What we will do with it</h2>
+  <table class="tbl tbl-sm">
+    <tr><th style="width:8%">Step</th><th>Action</th><th style="width:26%">Risk if skipped</th></tr>
+    <tr><td><b>1</b></td><td>Point the mail record at <code>mail.niqs.org.ng</code> (which already exists), then wait and test</td>
+        <td><b>Email stops.</b> The mail record currently names the same address the website uses.</td></tr>
+    <tr><td><b>2</b></td><td>Register the domain against the live site and read back the exact records required</td><td>—</td></tr>
+    <tr><td><b>3</b></td><td>Repoint only the website records — <code>mail</code>, <code>webmail</code>, <code>api</code> and <code>portal</code> are left untouched</td>
+        <td>Portal and statistics API would break</td></tr>
+    <tr><td><b>4</b></td><td>Verify the site, a deep link, the statistics API and a test email</td><td>—</td></tr>
+  </table>
+  <p class="small muted">Nameservers do not move and the registrar is not involved. The full runbook is
+  <code>docs/GO_LIVE_DNS.md</code> and can be handed to the reseller verbatim if they must make the changes.</p>
+
+  <h2 class="sub">Still open, but not blocking</h2>
   <table class="tbl">
     <tr><th style="width:34%">Item</th><th>Detail</th></tr>
-    <tr><td><b>Official domain + DNS access</b></td><td>Confirm the domain and give access to the registrar (§4).</td></tr>
-    <tr><td><b>Real content &amp; photos</b></td><td>Text and high-resolution images for each section, or sign-off to keep selected stock (§5).</td></tr>
-    <tr><td><b>Email credentials</b></td><td>SMTP mailbox (e.g. <code>events@…</code>) + SPF/DKIM confirmation (§6).</td></tr>
-    <tr><td><b>Payments decision</b></td><td>Gateway choice + merchant account/keys, or "route via portal" (§7).</td></tr>
-    <tr><td><b>Hosting budget approval</b></td><td>Render upgrade + Atlas tier + domain — modest monthly cost (§3.6).</td></tr>
-    <tr><td><b>Legal content</b></td><td>Privacy Policy &amp; Terms text, or approval for us to draft (§10).</td></tr>
-    <tr><td><b>Admin users</b></td><td>Names, emails and roles of staff who will manage the site (§9, §13).</td></tr>
-    <tr><td><b>Portal API</b></td><td>From the portal team — per the companion document (§8).</td></tr>
+    <tr><td><b>Fourteen chapters</b></td><td>Executive lists <b>and photographs together</b> — sent separately is what leaves a card without a picture. Each chapter publishes within a day of its pack arriving.</td></tr>
+    <tr><td><b>Twenty-eight photographs</b></td><td>Cards showing a monogram because the supplied image was a poster crop or too low-resolution to publish.</td></tr>
+    <tr><td><b>Twenty-nine names</b></td><td>Confirmation of whether each is QS, Mr or Ms. A name published without “QS” now signals a probationer, so this is a factual matter, not styling.</td></tr>
+    <tr><td><b>Two register figures</b></td><td>A count of members under 35 (for YQSF — the register only aggregates at 40) and a gender breakdown (for WAQSN). Both from the portal team; the site publishes them the day they exist.</td></tr>
+    <tr><td><b>Eight content sections</b></td><td>News, jobs, partners, QS firms, exam results, webinars, workshop materials and journals — all built and loaded by the Secretariat through the admin panel, no developer needed.</td></tr>
+    <tr><td><b>Admin users</b></td><td>Names, emails and roles of the staff who will manage the site (§9, §13).</td></tr>
+    <tr><td><b>Legal content</b></td><td>Privacy Policy &amp; Terms text, or approval for ADLM to draft (§10).</td></tr>
+    <tr><td><b>Payments decision</b></td><td>Gateway choice + merchant keys, or “route via portal” (§7).</td></tr>
   </table>
 
   <div class="box"><div class="bt">In short</div>
-    Development is done. With the items above — chiefly <b>real content</b>, the <b>hosting upgrade</b>, the <b>domain</b>,
-    and <b>email</b> — the NIQS website is ready to launch as a fast, professional, fully owned platform.</div>
+    The website is finished and running. Send the <b>cPanel login</b> and the Institute’s own domain can be live the same
+    day; the countdown page now covering the site retires itself at launch. Everything else on this page is content
+    that fills in as it arrives, without holding up the launch.</div>
 
   <p class="small muted" style="margin-top:16pt; text-align:center; border-top:1px solid var(--line); padding-top:9pt;">
-    End of document &nbsp;·&nbsp; NIQS Website — Go-Live &amp; Onboarding Plan v1.0 &nbsp;·&nbsp;
-    Prepared by ADLM Studio &nbsp;·&nbsp; 20 June 2026
+    End of document &nbsp;·&nbsp; NIQS Website — Go-Live &amp; Onboarding Plan v1.1 &nbsp;·&nbsp;
+    Prepared by ADLM Studio &nbsp;·&nbsp; 7 August 2026
   </p>
 </section>
 
