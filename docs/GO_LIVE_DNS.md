@@ -24,6 +24,30 @@ Everything the Institute runs is on **one server, `50.6.229.107`**, at HostBurly
 
 Only the first two rows change. Everything else stays exactly as it is.
 
+### Where the DNS is actually edited
+
+Searching for "HostBurly" finds nothing, which is expected — it is not a company with
+a website. `ns1.hostburly.com` is a **white-label nameserver**, and it resolves to
+`50.6.229.107`: the same machine as everything else above. The IP block
+`50.6.0.0/16` is registered to **Newfold Digital** (the parent of HostGator and
+Bluehost), so this is a cPanel account on their shared hosting, with private
+nameservers branded by whoever set it up.
+
+The zone is therefore edited in cPanel, not at the registrar:
+
+| | |
+|---|---|
+| cPanel | `https://niqs.org.ng:2083` — confirmed live, "cPanel Login" |
+| WHM (reseller) | `https://niqs.org.ng:2087` — confirmed live |
+| Where the records are | cPanel → **Domains → Zone Editor** → Manage, for `niqs.org.ng` |
+
+Ask the secretariat, or whoever originally set the hosting up, for the cPanel login.
+If the account's Zone Editor is hidden — some resellers disable it — then the records
+have to be changed by the reseller, through WHM.
+
+**The registrar is not involved.** Nameservers stay where they are; only records
+inside the zone change.
+
 ---
 
 ## ⚠️ The email warning
