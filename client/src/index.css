@@ -1,6 +1,32 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════
+   BRAND TYPEFACES — self-hosted
+   Both faces came from the NIQS brand pack as variable fonts: one file each
+   covering every weight, 518KB for the pair against 10.5MB for the same
+   families as static instances. They were loaded from the Google Fonts CDN
+   before, which put the Institute's typography behind a third-party request
+   on every first paint.
+   format('truetype') rather than 'truetype-variations': the declared weight
+   range is what switches on the variable axes, and this spelling is the one
+   every current browser accepts.
+═══════════════════════════════════════ */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/BricolageGrotesque-Variable.ttf') format('truetype');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Sora';
+  src: url('/fonts/Sora-Variable.ttf') format('truetype');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ═══════════════════════════════════════
    NIQS DESIGN TOKENS — Tailwind v4 Theme
 ═══════════════════════════════════════ */
 /* Values are the official palette, NIQS Brand Guideline 2026 pages 19-20.
@@ -122,6 +148,12 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
+  /* Headings carried the body face unless a class put the heading face on them,
+     so anything written as a plain h1..h6 quietly came out in Sora — the
+     "Our new website goes live in" countdown was an h1 doing exactly that,
+     sitting in body type among a page of Bricolage headings. Base layer, so
+     any component rule that wants something else still wins. */
+  h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
   img { max-width: 100%; height: auto; display: block; }
   a { text-decoration: none; color: inherit; }
   ul, ol { list-style: none; margin: 0; padding: 0; }

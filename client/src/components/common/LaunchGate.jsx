@@ -192,8 +192,13 @@ export default function LaunchGate() {
             Official launch
           </div>
 
+          {/* Heading face, like every other heading on the site. This one was
+              pinned to the body face inline, which is why it alone came out in
+              Sora. The countdown digits above stay in Sora on purpose — they
+              are set with tabular-nums so the numbers do not jump as they
+              tick, and that is a property of this face here. */}
           <h1 style={{
-            fontFamily: "'Sora', sans-serif",
+            fontFamily: "var(--font-heading)",
             fontSize: 'clamp(1.6rem, 5vw, 2.6rem)', fontWeight: 800,
             lineHeight: 1.15, color: '#fff', margin: '0 0 .9rem', letterSpacing: '-.02em',
           }}>

@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- The brand faces are self-hosted from /fonts as variable fonts, so there
+         is no Google Fonts stylesheet to fetch and no third-party connection to
+         warm. Preload both: they are the two files every page needs before it
+         can paint text, and discovering them via the CSS costs a round trip. -->
+    <link rel="preload" href="/fonts/BricolageGrotesque-Variable.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/Sora-Variable.ttf" as="font" type="font/ttf" crossorigin />
     <!-- Public pages currently pull their imagery from Unsplash (see the note in
          docs/UX_AND_PERFORMANCE_PLAN.md — these are placeholders awaiting real NIQS
          photography). Until they are replaced, warm the connection: the homepage
          alone makes 6 requests to this host, and without a hint the first one pays
          a full DNS + TCP + TLS round trip before a single byte of image arrives. -->
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Sora:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <title>NIQS — Nigerian Institute of Quantity Surveyors</title>
 
     <!-- Favicon / browser tab & taskbar icon.
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="/NIQS-LOGO-SQUARE.png" />
 
     <!-- Browser chrome colour (tab bar on mobile) -->
-    <meta name="theme-color" content="#0B1F4B" />
+    <meta name="theme-color" content="#000066" />
 
     <!-- SEO -->
     <meta name="description" content="The Nigerian Institute of Quantity Surveyors — Nigeria's professional construction cost managers since 1969. Committed to sustainable national development." />
@@ -64,7 +64,7 @@
     <style>
       #niqs-splash {
         position: fixed; inset: 0; z-index: 9999;
-        background: #0B1F4B;
+        background: #000066;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         gap: 22px; transition: opacity .45s ease;
       }
@@ -76,8 +76,8 @@
       }
       .niqs-splash-ring {
         position: absolute; inset: 0; border-radius: 50%;
-        border: 3px solid rgba(201,151,74,.18);
-        border-top-color: #C9974A;
+        border: 3px solid rgba(217,182,80,.18);
+        border-top-color: #D9B650;
         animation: niqs-spin 1s linear infinite;
       }
       .niqs-splash-name {
@@ -86,14 +86,14 @@
         letter-spacing: .22em; text-transform: uppercase; text-align: center;
         line-height: 1.7; padding: 0 24px;
       }
-      .niqs-splash-name em { font-style: normal; color: #C9974A; }
+      .niqs-splash-name em { font-style: normal; color: #D9B650; }
       .niqs-splash-bar {
         width: 140px; height: 2px; border-radius: 2px; overflow: hidden;
         background: rgba(255,255,255,.12); position: relative;
       }
       .niqs-splash-bar::after {
         content: ''; position: absolute; top: 0; left: -40%; width: 40%; height: 100%;
-        background: #C9974A; animation: niqs-slide 1.1s ease-in-out infinite;
+        background: #D9B650; animation: niqs-slide 1.1s ease-in-out infinite;
       }
       @keyframes niqs-spin { to { transform: rotate(360deg); } }
       @keyframes niqs-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
