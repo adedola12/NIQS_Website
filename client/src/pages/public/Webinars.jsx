@@ -4,7 +4,7 @@ import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
 
 const SCOPE_LABEL = { national: 'National', chapter: 'Chapter', yqsf: 'YQSF', waqsn: 'WAQSN' };
-const SCOPE_COLOR = { national: '#0B1F4B', chapter: '#1a5276', yqsf: '#117a65', waqsn: '#6d3a9c' };
+const SCOPE_COLOR = { national: '#000066', chapter: '#1a5276', yqsf: '#117a65', waqsn: '#6d3a9c' };
 
 const PLACEHOLDER_WEBINARS = [
   {
@@ -172,21 +172,21 @@ export default function Webinars() {
 }
 
 function WebinarCard({ w, fmt, fmtTime }) {
-  const scopeColor = SCOPE_COLOR[w.scope] || '#0B1F4B';
+  const scopeColor = SCOPE_COLOR[w.scope] || '#000066';
   return (
     <div style={{
       background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 14,
       display: 'flex', gap: 0, overflow: 'hidden',
       transition: 'box-shadow .2s, transform .2s',
     }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 30px rgba(11,31,75,.10)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 102,.10)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.transform = ''; }}>
 
       {/* Thumbnail */}
       <div style={{ width: 180, flexShrink: 0, overflow: 'hidden', position: 'relative' }}>
         <img src={w.thumbnailUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=70'} alt={w.title}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(11,31,75,.45)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 102,.45)' }} />
         {/* Date overlay */}
         {w.date && (
           <div style={{ position: 'absolute', bottom: 10, left: 10, color: '#fff', textAlign: 'left' }}>

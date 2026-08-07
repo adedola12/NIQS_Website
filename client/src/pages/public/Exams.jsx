@@ -8,7 +8,7 @@ const EXAM_CARDS = [
   {
     id: 'tpc',
     tag: 'Corporate Membership',
-    tagBg: '#0B1F4B',
+    tagBg: '#000066',
     title: 'TPC — Technician Professional Competence',
     desc: 'Entry-level professional examination for associates progressing toward corporate membership. Covers core QS theory and practice.',
     heroBg: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=700&q=80&fit=crop',
@@ -18,7 +18,7 @@ const EXAM_CARDS = [
   {
     id: 'gde',
     tag: 'Foundation Level',
-    tagBg: '#C9974A',
+    tagBg: '#D9B650',
     title: 'GDE — Graduate Development Examination',
     desc: 'For graduates of accredited degree programmes. Tests applied knowledge in construction economics and procurement.',
     // The graduation photo that sat here started 404ing sometime before
@@ -86,7 +86,7 @@ function ExamCard({ card }) {
             transform: hov ? 'scale(1.06)' : 'scale(1)', transition: 'transform .45s ease' }}
         />
         <div style={{ position: 'absolute', inset: 0,
-          background: 'linear-gradient(160deg, rgba(11,31,75,.52) 0%, rgba(11,31,75,.85) 100%)' }} />
+          background: 'linear-gradient(160deg, rgba(0, 0, 102,.52) 0%, rgba(0, 0, 102,.85) 100%)' }} />
         {/* Tag */}
         <span style={{
           position: 'absolute', top: 12, left: 14,

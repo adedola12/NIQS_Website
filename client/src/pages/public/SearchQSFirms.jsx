@@ -30,7 +30,7 @@ function FirmCard({ firm }) {
       transition: 'box-shadow .2s, transform .2s',
       position: 'relative',
     }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 32px rgba(11,31,75,.10)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 102,.10)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.transform = ''; }}
     >
       {/* Logo / Initials banner */}

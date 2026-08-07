@@ -519,7 +519,7 @@ function SavedDrawer({ events, currentId, onLoad, onDelete, onClose }) {
                 </p>
                 <p style={{ fontSize: 10, color: '#5A6485', margin: 0 }}>
                   {(f.category || ev.type)} · {fmtDate(f.dateStart || ev.date)} ·{' '}
-                  <span style={{ fontWeight: 700, color: ev.scope === 'national' ? '#C9974A' : '#059669' }}>
+                  <span style={{ fontWeight: 700, color: ev.scope === 'national' ? '#D9B650' : '#059669' }}>
                     {ev.scope === 'national' ? 'National' : (ev.chapter?.name || 'Chapter')}
                   </span>
                 </p>

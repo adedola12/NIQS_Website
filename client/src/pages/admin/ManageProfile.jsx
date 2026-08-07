@@ -7,7 +7,7 @@ import AdminHeader from '../../components/admin/AdminHeader';
 import { getAdminLabel } from '../../utils/roleHelpers';
 
 const ROLE_COLORS = {
-  main_admin:     '#C9974A',
+  main_admin:     '#D9B650',
   national_admin: '#2563EB',
   state_admin:    '#059669',
   waqsn_admin:    '#7c3aed',
@@ -247,7 +247,7 @@ export default function ManageProfile() {
             {/* Edit form */}
             {editMode && (
               <div>
-                <h3 style={{ fontSize: 14, fontWeight: 600, color: '#0B1F4B', marginBottom: 16 }}>
+                <h3 style={{ fontSize: 14, fontWeight: 600, color: '#000066', marginBottom: 16 }}>
                   Edit Details
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
@@ -291,7 +291,7 @@ export default function ManageProfile() {
                       padding: '9px 20px',
                       borderRadius: 8,
                       border: 'none',
-                      background: '#0B1F4B',
+                      background: '#000066',
                       color: '#fff',
                       fontSize: 13,
                       fontWeight: 600,
@@ -400,7 +400,7 @@ export default function ManageProfile() {
                   padding: '9px 20px',
                   borderRadius: 8,
                   border: 'none',
-                  background: '#C9974A',
+                  background: '#D9B650',
                   color: '#fff',
                   fontSize: 13,
                   fontWeight: 600,

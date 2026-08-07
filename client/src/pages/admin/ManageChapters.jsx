@@ -167,7 +167,7 @@ export default function ManageChapters() {
       {/* ── ADD / EDIT MODAL ── */}
       {showModal && (
         <ModalOverlay onClose={() => setShowModal(false)}>
-          <h3 style={{ margin: '0 0 6px', color: '#0B1F4B' }}>{editing ? 'Edit Chapter' : 'Add Chapter'}</h3>
+          <h3 style={{ margin: '0 0 6px', color: '#000066' }}>{editing ? 'Edit Chapter' : 'Add Chapter'}</h3>
           <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 20 }}>
             {editing ? `Editing: ${editing.name}` : 'Create a new NIQS state chapter'}
           </p>
@@ -260,7 +260,7 @@ export default function ManageChapters() {
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20, paddingTop: 16, borderTop: '1px solid #f3f4f6' }}>
               <button type="button" onClick={() => setShowModal(false)} style={{ ...btnStyle, background: '#e5e7eb', color: '#374151' }}>Cancel</button>
-              <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#C9974A', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
+              <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#D9B650', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
                 {submitting ? 'Saving…' : editing ? 'Save Changes' : 'Create Chapter'}
               </button>
             </div>
@@ -294,7 +294,7 @@ function ModalOverlay({ children, onClose }) {
 
 function SectionLabel({ children }) {
   return (
-    <h4 style={{ margin: '18px 0 10px', fontSize: 11, fontWeight: 700, color: '#0B1F4B', textTransform: 'uppercase', letterSpacing: '.08em', borderBottom: '1px solid #f3f4f6', paddingBottom: 6 }}>
+    <h4 style={{ margin: '18px 0 10px', fontSize: 11, fontWeight: 700, color: '#000066', textTransform: 'uppercase', letterSpacing: '.08em', borderBottom: '1px solid #f3f4f6', paddingBottom: 6 }}>
       {children}
     </h4>
   );
@@ -313,4 +313,4 @@ function FormField({ label, required, children }) {
 
 const inputStyle  = { width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, color: '#111827', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
 const btnStyle    = { padding: '10px 22px', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
-const addBtnStyle = { padding: '10px 20px', background: '#C9974A', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
+const addBtnStyle = { padding: '10px 20px', background: '#D9B650', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };

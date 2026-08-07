@@ -117,8 +117,8 @@ function BuiltByBadge() {
     <div style={{
       position: 'fixed', bottom: '1rem', left: '1rem', zIndex: 9999,
       display: 'flex', alignItems: 'center', gap: '0.45rem',
-      background: 'rgba(11,31,75,0.88)', backdropFilter: 'blur(8px)',
-      border: '1px solid rgba(201,151,74,0.35)',
+      background: 'rgba(0, 0, 102,0.88)', backdropFilter: 'blur(8px)',
+      border: '1px solid rgba(217, 182, 80,0.35)',
       borderRadius: 999, padding: '5px 13px 5px 10px',
       boxShadow: '0 2px 12px rgba(0,0,0,.18)',
       pointerEvents: 'none', userSelect: 'none',

@@ -8,7 +8,7 @@ export default function AdminHeader({ title, breadcrumbs = [] }) {
   const isMobile = useIsMobile();
 
   const roleBadgeColor =
-    role === 'main_admin' ? '#C9974A' : role === 'national_admin' ? '#2563EB' : '#059669';
+    role === 'main_admin' ? '#D9B650' : role === 'national_admin' ? '#2563EB' : '#059669';
 
   return (
     <header
@@ -31,21 +31,21 @@ export default function AdminHeader({ title, breadcrumbs = [] }) {
             {breadcrumbs.map((crumb, i) => (
               <span key={i}>
                 <span style={{ margin: '0 6px' }}>/</span>
-                <span style={{ color: i === breadcrumbs.length - 1 ? '#0B1F4B' : '#9ca3af' }}>
+                <span style={{ color: i === breadcrumbs.length - 1 ? '#000066' : '#9ca3af' }}>
                   {crumb}
                 </span>
               </span>
             ))}
           </nav>
         )}
-        <h1 style={{ margin: 0, fontSize: isMobile ? 17 : 22, fontWeight: 700, color: '#0B1F4B' }}>
+        <h1 style={{ margin: 0, fontSize: isMobile ? 17 : 22, fontWeight: 700, color: '#000066' }}>
           {title}
         </h1>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{ textAlign: 'right', display: isMobile ? 'none' : 'block' }}>
-          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0B1F4B' }}>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#000066' }}>
             {admin?.firstName} {admin?.lastName}
           </p>
           <span
@@ -69,8 +69,8 @@ export default function AdminHeader({ title, breadcrumbs = [] }) {
             width: 38,
             height: 38,
             borderRadius: '50%',
-            background: '#0B1F4B',
-            color: '#C9974A',
+            background: '#000066',
+            color: '#D9B650',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

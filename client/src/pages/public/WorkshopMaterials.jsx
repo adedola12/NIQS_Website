@@ -5,7 +5,7 @@ import API from '../../api/axios';
 
 const TYPE_ICON  = { slides: '📊', template: '📋', reading: '📖', video: '🎬', other: '📁' };
 const TYPE_LABEL = { slides: 'Slides', template: 'Template', reading: 'Reading', video: 'Video', other: 'Other' };
-const TYPE_COLOR = { slides: '#0B1F4B', template: '#C9974A', reading: '#1a5276', video: '#dc2626', other: '#6b7280' };
+const TYPE_COLOR = { slides: '#000066', template: '#D9B650', reading: '#1a5276', video: '#dc2626', other: '#6b7280' };
 const SCOPE_LABEL = { national: 'National', chapter: 'Chapter', yqsf: 'YQSF', waqsn: 'WAQSN' };
 
 const PLACEHOLDERS = [
@@ -174,20 +174,20 @@ function MaterialCard({ m, fmtDate, isPlaceholder }) {
   return (
     <div style={{ background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 14, overflow: 'hidden',
       transition: 'box-shadow .2s, transform .2s' }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 30px rgba(11,31,75,.10)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 102,.10)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.transform = ''; }}>
 
       {/* Thumbnail */}
       <div style={{ height: 120, overflow: 'hidden', position: 'relative' }}>
         <img src={m.thumbnailUrl || 'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=500&q=70'} alt={m.title}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(11,31,75,.5)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 102,.5)' }} />
         <span style={{ position: 'absolute', top: 10, left: 10, fontSize: '1.4rem' }}>{TYPE_ICON[m.type] || '📁'}</span>
         <span style={{ position: 'absolute', top: 10, right: 10, fontSize: '.58rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', padding: '2px 8px', borderRadius: 10, background: tColor, color: '#fff' }}>
           {TYPE_LABEL[m.type] || m.type}
         </span>
         {isPlaceholder && (
-          <span style={{ position: 'absolute', bottom: 8, right: 10, fontSize: '.56rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', padding: '2px 7px', borderRadius: 4, background: 'rgba(201,151,74,.2)', color: '#C9974A', border: '1px solid rgba(201,151,74,.4)' }}>
+          <span style={{ position: 'absolute', bottom: 8, right: 10, fontSize: '.56rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', padding: '2px 7px', borderRadius: 4, background: 'rgba(217, 182, 80,.2)', color: '#D9B650', border: '1px solid rgba(217, 182, 80,.4)' }}>
             Sample
           </span>
         )}
@@ -196,7 +196,7 @@ function MaterialCard({ m, fmtDate, isPlaceholder }) {
       {/* Body */}
       <div style={{ padding: '1.1rem 1.2rem' }}>
         <div style={{ display: 'flex', gap: '.4rem', marginBottom: '.5rem', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '.58rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', padding: '2px 8px', borderRadius: 10, background: '#0B1F4B', color: '#fff' }}>
+          <span style={{ fontSize: '.58rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', padding: '2px 8px', borderRadius: 10, background: '#000066', color: '#fff' }}>
             {SCOPE_LABEL[m.scope] || m.scope}
           </span>
           {m.workshopDate && (

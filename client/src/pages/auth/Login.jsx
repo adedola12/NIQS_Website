@@ -199,7 +199,7 @@ const Login = () => {
         .login-tab.active {
           background: var(--white);
           color: var(--navy);
-          box-shadow: 0 1px 4px rgba(11, 31, 75, 0.1);
+          box-shadow: 0 1px 4px rgba(0, 0, 102, 0.1);
         }
         .login-heading {
           font-family: 'Bricolage Grotesque', sans-serif;

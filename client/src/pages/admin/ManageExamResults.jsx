@@ -110,7 +110,7 @@ export default function ManageExamResults() {
     {
       key: 'examType', label: 'Exam Type',
       render: val => (
-        <strong style={{ color: '#0B1F4B', fontSize: 13 }}>{val}</strong>
+        <strong style={{ color: '#000066', fontSize: 13 }}>{val}</strong>
       ),
     },
     { key: 'sitting', label: 'Sitting', render: val => val || '—' },
@@ -125,7 +125,7 @@ export default function ManageExamResults() {
     {
       key: 'resultFileUrl', label: 'PDF',
       render: val => val
-        ? <a href={val} target="_blank" rel="noopener noreferrer" style={{ color: '#C9974A', fontSize: 12, fontWeight: 600 }}>View ↗</a>
+        ? <a href={val} target="_blank" rel="noopener noreferrer" style={{ color: '#D9B650', fontSize: 12, fontWeight: 600 }}>View ↗</a>
         : <span style={{ color: '#9ca3af', fontSize: 12 }}>—</span>,
     },
   ];
@@ -159,7 +159,7 @@ export default function ManageExamResults() {
       {/* ── Add / Edit Modal ── */}
       {showModal && (
         <ModalOverlay onClose={() => setShowModal(false)}>
-          <h3 style={{ margin: '0 0 20px', color: '#0B1F4B' }}>
+          <h3 style={{ margin: '0 0 20px', color: '#000066' }}>
             {editing ? 'Edit Result Entry' : 'Add Result Entry'}
           </h3>
           <form onSubmit={handleSubmit}>
@@ -229,7 +229,7 @@ export default function ManageExamResults() {
               <button type="button" onClick={() => setShowModal(false)}
                 style={{ ...btn, background: '#e5e7eb', color: '#374151' }}>Cancel</button>
               <button type="submit" disabled={submitting}
-                style={{ ...btn, background: '#C9974A', color: '#fff', opacity: submitting ? .6 : 1 }}>
+                style={{ ...btn, background: '#D9B650', color: '#fff', opacity: submitting ? .6 : 1 }}>
                 {submitting ? 'Saving…' : editing ? 'Update' : 'Add Entry'}
               </button>
             </div>
@@ -278,4 +278,4 @@ function FormField({ label, required, children }) {
 
 const inp    = { width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, color: '#111827', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
 const btn    = { padding: '10px 22px', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
-const addBtn = { padding: '10px 20px', background: '#C9974A', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
+const addBtn = { padding: '10px 20px', background: '#D9B650', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };

@@ -7,7 +7,7 @@ import { useMemberCopy } from '../../hooks/useMembershipStats';
 
 const tierColors = {
   platinum: '#6b7280',
-  gold:     '#C9974A',
+  gold:     '#D9B650',
   silver:   '#9ca3af',
   bronze:   '#b45309',
   associate:'#2563EB',
@@ -226,7 +226,7 @@ export default function Partnership() {
                   style={{ opacity: isPlaceholder ? 0.75 : 1, position: 'relative' }}
                 >
                   {isPlaceholder && (
-                    <span style={{ position: 'absolute', top: 10, right: 12, fontSize: '.55rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', background: 'rgba(201,151,74,.15)', color: 'var(--color-gold)', padding: '3px 8px', borderRadius: 4, zIndex: 1 }}>
+                    <span style={{ position: 'absolute', top: 10, right: 12, fontSize: '.55rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', background: 'rgba(217, 182, 80,.15)', color: 'var(--color-gold)', padding: '3px 8px', borderRadius: 4, zIndex: 1 }}>
                       Sample
                     </span>
                   )}
@@ -291,7 +291,7 @@ export default function Partnership() {
                       transition: 'box-shadow .25s, transform .25s',
                       position: 'relative',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(201,151,74,.18)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(217, 182, 80,.18)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)'; e.currentTarget.style.transform = ''; }}
                   >
                     {/* Gold top accent bar */}

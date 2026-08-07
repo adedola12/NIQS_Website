@@ -98,7 +98,7 @@ export default function ManageMembers() {
       key: 'status',
       label: 'Status',
       render: (val) => {
-        const colors = { active: '#059669', inactive: '#6b7280', suspended: '#dc2626', pending: '#C9974A' };
+        const colors = { active: '#059669', inactive: '#6b7280', suspended: '#dc2626', pending: '#D9B650' };
         return (
           <span style={{ color: colors[val] || '#6b7280', fontWeight: 600, fontSize: 13, textTransform: 'capitalize' }}>
             {val || '--'}
@@ -171,7 +171,7 @@ export default function ManageMembers() {
       {/* Edit Modal */}
       {showModal && editing && (
         <ModalOverlay onClose={() => setShowModal(false)}>
-          <h3 style={{ margin: '0 0 6px', color: '#0B1F4B' }}>Edit Member</h3>
+          <h3 style={{ margin: '0 0 6px', color: '#000066' }}>Edit Member</h3>
           <p style={{ margin: '0 0 20px', fontSize: 13, color: '#6b7280' }}>
             {editing.firstName} {editing.lastName} ({editing.email})
           </p>
@@ -213,7 +213,7 @@ export default function ManageMembers() {
               <button type="button" onClick={() => setShowModal(false)} style={{ ...btnStyle, background: '#e5e7eb', color: '#374151' }}>
                 Cancel
               </button>
-              <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#C9974A', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
+              <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#D9B650', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
                 {submitting ? 'Saving...' : 'Update'}
               </button>
             </div>
@@ -224,7 +224,7 @@ export default function ManageMembers() {
       {/* View Detail Modal */}
       {viewDetail && (
         <ModalOverlay onClose={() => setViewDetail(null)}>
-          <h3 style={{ margin: '0 0 16px', color: '#0B1F4B' }}>Member Details</h3>
+          <h3 style={{ margin: '0 0 16px', color: '#000066' }}>Member Details</h3>
           <div style={{ fontSize: 14, color: '#374151', lineHeight: 1.8 }}>
             <p><strong>Name:</strong> {viewDetail.firstName} {viewDetail.lastName}</p>
             <p><strong>Email:</strong> {viewDetail.email}</p>

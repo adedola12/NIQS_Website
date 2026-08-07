@@ -63,11 +63,11 @@ export default function ManageQSConnect() {
       key: 'coverImage', label: 'Cover',
       render: (val, row) => val
         ? <img src={val} alt={row.title} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }} />
-        : <div style={{ width: 48, height: 48, borderRadius: 6, background: '#0B1F4B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>📰</div>,
+        : <div style={{ width: 48, height: 48, borderRadius: 6, background: '#000066', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>📰</div>,
     },
-    { key: 'title', label: 'Title', render: v => <strong style={{ color: '#0B1F4B', fontSize: 13 }}>{v}</strong> },
+    { key: 'title', label: 'Title', render: v => <strong style={{ color: '#000066', fontSize: 13 }}>{v}</strong> },
     { key: 'issueDate', label: 'Issue Date' },
-    { key: 'isFeatured', label: 'Featured', render: v => <span style={{ color: v ? '#C9974A' : '#9ca3af', fontWeight: 700, fontSize: 12 }}>{v ? '⭐ Yes' : 'No'}</span> },
+    { key: 'isFeatured', label: 'Featured', render: v => <span style={{ color: v ? '#D9B650' : '#9ca3af', fontWeight: 700, fontSize: 12 }}>{v ? '⭐ Yes' : 'No'}</span> },
     { key: 'fileUrl', label: 'PDF', render: v => v ? <a href={v} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontSize: 12 }}>View ↗</a> : <span style={{ color: '#9ca3af', fontSize: 12 }}>—</span> },
     { key: 'isPublished', label: 'Status', render: v => <span style={{ color: v !== false ? '#059669' : '#dc2626', fontWeight: 600, fontSize: 12 }}>{v !== false ? 'Published' : 'Draft'}</span> },
   ];
@@ -143,7 +143,7 @@ function Modal({ children, onClose, title }) {
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 20 }}>
       <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 12, padding: '24px 28px', width: '100%', maxWidth: 580, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-        <h3 style={{ margin: '0 0 20px', color: '#0B1F4B' }}>{title}</h3>
+        <h3 style={{ margin: '0 0 20px', color: '#000066' }}>{title}</h3>
         {children}
       </div>
     </div>
@@ -161,7 +161,7 @@ function Btns({ onCancel, submitting, editing }) {
   return (
     <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
       <button type="button" onClick={onCancel} style={{ ...btn, background: '#e5e7eb', color: '#374151' }}>Cancel</button>
-      <button type="submit" disabled={submitting} style={{ ...btn, background: '#C9974A', color: '#fff', opacity: submitting ? .6 : 1 }}>
+      <button type="submit" disabled={submitting} style={{ ...btn, background: '#D9B650', color: '#fff', opacity: submitting ? .6 : 1 }}>
         {submitting ? 'Saving…' : editing ? 'Update' : 'Add'}
       </button>
     </div>
@@ -169,4 +169,4 @@ function Btns({ onCancel, submitting, editing }) {
 }
 const inp    = { width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, color: '#111827', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
 const btn    = { padding: '10px 22px', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
-const addBtn = { padding: '10px 20px', background: '#C9974A', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
+const addBtn = { padding: '10px 20px', background: '#D9B650', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };

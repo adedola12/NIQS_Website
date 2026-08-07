@@ -163,7 +163,7 @@ export default function About() {
             <div style={{ padding: '2rem 0', color: 'var(--color-txt-3)', fontSize: '.85rem' }}>Loading partners…</div>
           ) : noPartnersYet ? (
             <div style={{
-              background: 'linear-gradient(135deg, #0B1F4B 0%, #12306e 100%)',
+              background: 'linear-gradient(135deg, #000066 0%, #12306e 100%)',
               borderRadius: 16, padding: '3rem 2.5rem', textAlign: 'center',
             }}>
               <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.4rem', color: '#fff', marginBottom: '.6rem', letterSpacing: '-.02em' }}>

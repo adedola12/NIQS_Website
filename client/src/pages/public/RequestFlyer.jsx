@@ -69,7 +69,7 @@ export default function RequestFlyer() {
                   border: '1px solid #e7eaf2',
                   borderRadius: 16,
                   padding: '1.8rem 1.6rem',
-                  boxShadow: '0 6px 24px rgba(11,31,75,0.05)',
+                  boxShadow: '0 6px 24px rgba(0, 0, 102,0.05)',
                 }}
               >
                 <div

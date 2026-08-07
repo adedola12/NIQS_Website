@@ -4,8 +4,8 @@ import API from '../../api/axios';
 import AdminHeader from '../../components/admin/AdminHeader';
 
 const ALL_TIERS = [
-  { value: 'platinum',  label: 'Platinum',  color: '#C9974A' },
-  { value: 'gold',      label: 'Gold',      color: '#D9AB60' },
+  { value: 'platinum',  label: 'Platinum',  color: '#D9B650' },
+  { value: 'gold',      label: 'Gold',      color: '#E5C56A' },
   { value: 'silver',    label: 'Silver',    color: '#9CA3AF' },
   { value: 'bronze',    label: 'Bronze',    color: '#B07556' },
   { value: 'associate', label: 'Associate', color: '#6B7280' },

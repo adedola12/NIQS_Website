@@ -30,7 +30,7 @@ export default function AdminLayout() {
               width: 40,
               height: 40,
               border: '4px solid #e5e7eb',
-              borderTopColor: '#C9974A',
+              borderTopColor: '#D9B650',
               borderRadius: '50%',
               animation: 'spin 0.8s linear infinite',
               margin: '0 auto 12px',

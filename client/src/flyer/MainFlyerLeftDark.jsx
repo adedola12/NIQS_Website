@@ -761,9 +761,9 @@ const MainFlyerLeftDark = forwardRef(function MainFlyerLeftDark(
   // Theme-aware ink/surface tokens — cascade to every descendant via CSS vars.
   // Dark values equal the original hardcoded colours, so the dark theme is unchanged.
   const themeVars = light ? {
-    '--fl-ink': '#0B1F4B', '--fl-ink-dim': 'rgba(11,31,75,0.62)', '--fl-ink-faint': 'rgba(11,31,75,0.5)',
-    '--fl-surface': 'rgba(11,31,75,0.06)', '--fl-surface-border': 'rgba(11,31,75,0.14)', '--fl-silhouette': 'rgba(11,31,75,0.2)',
-    '--fl-bar-bg': '#0B1F4B', '--fl-bar-text': '#FFFFFF', '--fl-bar-dim': 'rgba(255,255,255,0.55)',
+    '--fl-ink': '#000066', '--fl-ink-dim': 'rgba(0, 0, 102,0.62)', '--fl-ink-faint': 'rgba(0, 0, 102,0.5)',
+    '--fl-surface': 'rgba(0, 0, 102,0.06)', '--fl-surface-border': 'rgba(0, 0, 102,0.14)', '--fl-silhouette': 'rgba(0, 0, 102,0.2)',
+    '--fl-bar-bg': '#000066', '--fl-bar-text': '#FFFFFF', '--fl-bar-dim': 'rgba(255,255,255,0.55)',
   } : {
     '--fl-ink': '#FFFFFF', '--fl-ink-dim': 'rgba(255,255,255,0.62)', '--fl-ink-faint': 'rgba(255,255,255,0.5)',
     '--fl-surface': 'rgba(255,255,255,0.08)', '--fl-surface-border': 'rgba(255,255,255,0.12)', '--fl-silhouette': 'rgba(255,255,255,0.18)',

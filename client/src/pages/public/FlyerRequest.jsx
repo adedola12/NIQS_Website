@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { getLinkContext, submitFlyerRequest, uploadFlyerRequestImage } from '../../api/flyerRequestApi';
 import { CATEGORIES, getCategoryConfig, hasItinerary } from '../../flyer/categories.js';
 
-const NAVY = '#0B1F4B';
-const GOLD = '#C9974A';
+const NAVY = '#000066';
+const GOLD = '#D9B650';
 const FD = "'Bricolage Grotesque', sans-serif";
 const FB = "'Sora', sans-serif";
 
@@ -128,7 +128,7 @@ export default function FlyerRequest() {
   if (done) {
     return (
       <div style={{ background: '#ECEEF5', minHeight: '70vh', padding: '40px 16px', fontFamily: FB }}>
-        <div style={{ maxWidth: 560, margin: '0 auto', background: '#fff', borderRadius: 16, padding: '40px 28px', textAlign: 'center', boxShadow: '0 10px 40px rgba(11,31,75,0.14)' }}>
+        <div style={{ maxWidth: 560, margin: '0 auto', background: '#fff', borderRadius: 16, padding: '40px 28px', textAlign: 'center', boxShadow: '0 10px 40px rgba(0, 0, 102,0.14)' }}>
           <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#DCFCE7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 14px' }}>✓</div>
           <h2 style={{ fontFamily: FD, fontSize: 24, color: NAVY, margin: '0 0 8px' }}>Request received!</h2>
           <p style={{ fontSize: 14.5, color: '#5A6485', margin: '0 0 6px', lineHeight: 1.55 }}>
@@ -145,7 +145,7 @@ export default function FlyerRequest() {
 
   return (
     <div style={{ background: '#ECEEF5', minHeight: '70vh', padding: '40px 16px', fontFamily: FB }}>
-      <div style={{ maxWidth: 620, margin: '0 auto', background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 10px 40px rgba(11,31,75,0.14)' }}>
+      <div style={{ maxWidth: 620, margin: '0 auto', background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 10px 40px rgba(0, 0, 102,0.14)' }}>
 
         {/* Header */}
         <div style={{ background: NAVY, color: '#fff', padding: '24px 28px' }}>

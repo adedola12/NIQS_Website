@@ -130,9 +130,9 @@ export default function FileUpload({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         style={{
-          border: `2px dashed ${dragging ? '#0B1F4B' : '#d1d5db'}`,
+          border: `2px dashed ${dragging ? '#000066' : '#d1d5db'}`,
           borderRadius: 10, padding: '1.4rem 1rem',
-          background: dragging ? 'rgba(11,31,75,.04)' : '#f9fafb',
+          background: dragging ? 'rgba(0, 0, 102,.04)' : '#f9fafb',
           textAlign: 'center', cursor: uploading ? 'not-allowed' : 'pointer',
           transition: 'border-color .2s, background .2s',
         }}
@@ -167,7 +167,7 @@ export default function FileUpload({
             <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 500, maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {fileName} {sizeInfo && `(${sizeInfo})`}
             </span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: done ? '#059669' : '#0B1F4B' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: done ? '#059669' : '#000066' }}>
               {progress}%
             </span>
           </div>
@@ -177,7 +177,7 @@ export default function FileUpload({
               width: `${progress}%`,
               background: done
                 ? 'linear-gradient(90deg, #059669, #10b981)'
-                : 'linear-gradient(90deg, #0B1F4B, #C9974A)',
+                : 'linear-gradient(90deg, #000066, #D9B650)',
             }} />
           </div>
           {/* Storage badge + actions */}

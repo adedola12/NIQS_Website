@@ -4,8 +4,8 @@ import toast from 'react-hot-toast';
 import AdminHeader from '../../components/admin/AdminHeader';
 import { listFlyerRequests, setFlyerRequestStatus, deleteFlyerRequest } from '../../api/flyerRequestApi';
 
-const NAVY = '#0B1F4B';
-const GOLD = '#C9974A';
+const NAVY = '#000066';
+const GOLD = '#D9B650';
 
 const TABS = [
   { value: 'active', label: 'To do' },        // pending + in_progress

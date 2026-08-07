@@ -30,7 +30,7 @@ function Initials({ name }) {
     <div style={{
       width: '100%', aspectRatio: '4 / 4.6', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center', gap: 6,
-      background: 'linear-gradient(160deg, #0B1F4B 0%, #12306e 100%)',
+      background: 'linear-gradient(160deg, #000066 0%, #12306e 100%)',
     }}>
       <span style={{
         fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '2.6rem',
@@ -119,7 +119,7 @@ export default function LeaderCard({ member, linkTo }) {
               position: 'absolute', left: '50%', bottom: 'calc(100% + 10px)',
               transform: 'translateX(-50%)', zIndex: 60, pointerEvents: 'none',
               background: '#fff', borderRadius: 12, padding: 6,
-              boxShadow: '0 18px 50px rgba(11,31,75,.35)',
+              boxShadow: '0 18px 50px rgba(0, 0, 102,.35)',
               border: '1px solid var(--color-bdr-gold)',
             }}
           >

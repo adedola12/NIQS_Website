@@ -129,8 +129,8 @@ export default function ManageMessages() {
                 padding: '8px 16px',
                 borderRadius: 8,
                 border: '1px solid',
-                borderColor: filter === f ? '#0B1F4B' : '#e5e7eb',
-                background: filter === f ? '#0B1F4B' : '#fff',
+                borderColor: filter === f ? '#000066' : '#e5e7eb',
+                background: filter === f ? '#000066' : '#fff',
                 color: filter === f ? '#fff' : '#6b7280',
                 fontSize: 13,
                 fontWeight: 500,
@@ -196,7 +196,7 @@ export default function ManageMessages() {
                         : msg.isRead
                         ? '#fff'
                         : '#fffbeb',
-                    borderLeft: msg.isRead ? '3px solid transparent' : '3px solid #C9974A',
+                    borderLeft: msg.isRead ? '3px solid transparent' : '3px solid #D9B650',
                     transition: 'background 0.15s',
                   }}
                 >
@@ -243,7 +243,7 @@ export default function ManageMessages() {
                             width: 8,
                             height: 8,
                             borderRadius: '50%',
-                            background: '#C9974A',
+                            background: '#D9B650',
                             display: 'inline-block',
                           }}
                         />

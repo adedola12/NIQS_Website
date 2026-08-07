@@ -100,7 +100,7 @@ export default function President() {
                         position: 'absolute', left: '50%', bottom: 'calc(100% + 10px)',
                         transform: 'translateX(-50%)', zIndex: 60, pointerEvents: 'none',
                         background: '#fff', borderRadius: 12, padding: 6,
-                        boxShadow: '0 18px 50px rgba(11,31,75,.35)',
+                        boxShadow: '0 18px 50px rgba(0, 0, 102,.35)',
                         border: '1px solid var(--borderg)',
                       }}
                     >

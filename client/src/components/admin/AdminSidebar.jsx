@@ -27,7 +27,7 @@ export default function AdminSidebar() {
           top: 12,
           left: 12,
           zIndex: 1100,
-          background: '#0B1F4B',
+          background: '#000066',
           color: '#fff',
           border: 'none',
           borderRadius: 8,
@@ -59,7 +59,7 @@ export default function AdminSidebar() {
         style={{
           width: 260,
           height: '100vh',
-          background: '#0B1F4B',
+          background: '#000066',
           color: '#fff',
           display: 'flex',
           flexDirection: 'column',
@@ -107,7 +107,7 @@ export default function AdminSidebar() {
                 transition: 'all 0.15s',
                 flexShrink: 0,
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,151,74,0.2)'; e.currentTarget.style.color = '#C9974A'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(217, 182, 80,0.2)'; e.currentTarget.style.color = '#D9B650'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
             >
               <MdHome size={18} />
@@ -129,12 +129,12 @@ export default function AdminSidebar() {
                   alignItems: 'center',
                   gap: 12,
                   padding: '11px 20px',
-                  color: isActive ? '#C9974A' : 'rgba(255,255,255,0.75)',
+                  color: isActive ? '#D9B650' : 'rgba(255,255,255,0.75)',
                   textDecoration: 'none',
                   fontSize: 14,
                   fontWeight: isActive ? 600 : 400,
-                  borderLeft: isActive ? '3px solid #C9974A' : '3px solid transparent',
-                  background: isActive ? 'rgba(201,151,74,0.08)' : 'transparent',
+                  borderLeft: isActive ? '3px solid #D9B650' : '3px solid transparent',
+                  background: isActive ? 'rgba(217, 182, 80,0.08)' : 'transparent',
                   transition: 'all 0.15s ease',
                 })}
               >
@@ -167,7 +167,7 @@ export default function AdminSidebar() {
                 fontWeight: 600,
                 borderRadius: 4,
                 background: role === 'main_admin'
-                  ? '#C9974A'
+                  ? '#D9B650'
                   : role === 'national_admin'
                   ? '#2563EB'
                   : '#059669',
@@ -191,8 +191,8 @@ export default function AdminSidebar() {
               width: '100%',
               padding: '9px 12px',
               marginBottom: 8,
-              background: isActive ? 'rgba(201,151,74,0.15)' : 'rgba(255,255,255,0.06)',
-              color: isActive ? '#C9974A' : 'rgba(255,255,255,0.8)',
+              background: isActive ? 'rgba(217, 182, 80,0.15)' : 'rgba(255,255,255,0.06)',
+              color: isActive ? '#D9B650' : 'rgba(255,255,255,0.8)',
               border: 'none',
               borderRadius: 6,
               cursor: 'pointer',

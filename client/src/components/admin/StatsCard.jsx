@@ -1,4 +1,4 @@
-export default function StatsCard({ icon: Icon, value, label, color = '#0B1F4B' }) {
+export default function StatsCard({ icon: Icon, value, label, color = '#000066' }) {
   return (
     <div
       style={{
@@ -35,7 +35,7 @@ export default function StatsCard({ icon: Icon, value, label, color = '#0B1F4B' 
             margin: 0,
             fontSize: 28,
             fontWeight: 700,
-            color: '#0B1F4B',
+            color: '#000066',
             lineHeight: 1.1,
           }}
         >

@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { recordAttendance } from '../../api/registrationApi';
 
-const NAVY = '#0B1F4B';
-const GOLD = '#C9974A';
+const NAVY = '#000066';
+const GOLD = '#D9B650';
 const FD = "'Bricolage Grotesque', sans-serif";
 const FB = "'Sora', sans-serif";
 
@@ -59,7 +59,7 @@ export default function EventAttend() {
 
   return (
     <div style={{ background: '#ECEEF5', minHeight: '70vh', padding: '48px 16px', fontFamily: FB }}>
-      <div style={{ maxWidth: 480, margin: '0 auto', background: '#fff', borderRadius: 16, boxShadow: '0 10px 40px rgba(11,31,75,0.14)', padding: '36px 30px', textAlign: 'center' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', background: '#fff', borderRadius: 16, boxShadow: '0 10px 40px rgba(0, 0, 102,0.14)', padding: '36px 30px', textAlign: 'center' }}>
         <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#F6F7FB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, color, margin: '0 auto 16px' }}>
           {data.loading ? '⏳' : icon}
         </div>

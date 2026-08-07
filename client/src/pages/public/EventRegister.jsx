@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getPublicEvent, registerForEvent } from '../../api/registrationApi';
 
-const NAVY = '#0B1F4B';
-const GOLD = '#C9974A';
+const NAVY = '#000066';
+const GOLD = '#D9B650';
 const PORTAL_URL = 'https://portal.niqsng.org/';
 const FD = "'Bricolage Grotesque', sans-serif";
 const FB = "'Sora', sans-serif";
@@ -61,7 +61,7 @@ export default function EventRegister() {
 
   return (
     <div style={{ background: '#ECEEF5', minHeight: '70vh', padding: '40px 16px', fontFamily: FB }}>
-      <div style={{ maxWidth: 560, margin: '0 auto', background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 10px 40px rgba(11,31,75,0.14)' }}>
+      <div style={{ maxWidth: 560, margin: '0 auto', background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 10px 40px rgba(0, 0, 102,0.14)' }}>
 
         {/* Event header */}
         <div style={{ background: NAVY, color: '#fff', padding: '24px 28px' }}>

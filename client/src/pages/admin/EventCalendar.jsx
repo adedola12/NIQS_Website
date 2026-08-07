@@ -82,14 +82,14 @@ export default function EventCalendar() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <button onClick={() => goMonth(-1)} style={navBtn}>‹</button>
-            <h2 style={{ margin: 0, fontSize: 18, color: '#0B1F4B', minWidth: 190, textAlign: 'center' }}>
+            <h2 style={{ margin: 0, fontSize: 18, color: '#000066', minWidth: 190, textAlign: 'center' }}>
               {MONTHS[month]} {year}
             </h2>
             <button onClick={() => goMonth(1)} style={navBtn}>›</button>
             <button onClick={goToday} style={{ ...navBtn, width: 'auto', padding: '0 14px', fontSize: 13 }}>Today</button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: '#4b5563' }}>
-            <Legend color="#C9974A" label="National (HQ-reserved)" />
+            <Legend color="#D9B650" label="National (HQ-reserved)" />
             <Legend color="#059669" label="Chapter" />
             <span style={{ color: '#9ca3af' }}>{loading ? 'Loading…' : 'Click a day to book'}</span>
           </div>
@@ -120,16 +120,16 @@ export default function EventCalendar() {
                 style={{
                   minHeight: isMobile ? 58 : 104, borderRadius: 8, padding: isMobile ? 4 : 7, cursor: 'pointer',
                   background: inMonth ? '#fff' : '#f9fafb',
-                  border: isToday ? '2px solid #0B1F4B' : '1px solid #e5e7eb',
+                  border: isToday ? '2px solid #000066' : '1px solid #e5e7eb',
                   opacity: inMonth ? 1 : 0.55,
                   position: 'relative', overflow: 'hidden',
                   transition: 'box-shadow .15s',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 4px 14px rgba(11,31,75,0.12)')}
+                onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 4px 14px rgba(0, 0, 102,0.12)')}
                 onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: isMobile ? 11 : 12.5, fontWeight: isToday ? 800 : 600, color: isToday ? '#0B1F4B' : '#374151' }}>
+                  <span style={{ fontSize: isMobile ? 11 : 12.5, fontWeight: isToday ? 800 : 600, color: isToday ? '#000066' : '#374151' }}>
                     {d.getUTCDate()}
                   </span>
                   {lockedForMe && <span style={{ fontSize: 11 }} title="Reserved by HQ">🔒</span>}
@@ -139,7 +139,7 @@ export default function EventCalendar() {
                     <div key={ev._id + key} style={{
                       fontSize: isMobile ? 8.5 : 10, fontWeight: 600, lineHeight: 1.2,
                       padding: '2px 5px', borderRadius: 4,
-                      background: ev.scope === 'national' ? 'rgba(201,151,74,0.16)' : 'rgba(5,150,105,0.14)',
+                      background: ev.scope === 'national' ? 'rgba(217, 182, 80,0.16)' : 'rgba(5,150,105,0.14)',
                       color: ev.scope === 'national' ? '#92600F' : '#04603A',
                       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                     }} title={`${ev.title}${ev.chapter?.name ? ' — ' + ev.chapter.name : ''}`}>
@@ -170,5 +170,5 @@ function Legend({ color, label }) {
 
 const navBtn = {
   width: 34, height: 34, borderRadius: 8, border: '1px solid #e5e7eb', background: '#fff',
-  cursor: 'pointer', fontSize: 18, color: '#0B1F4B', display: 'flex', alignItems: 'center', justifyContent: 'center',
+  cursor: 'pointer', fontSize: 18, color: '#000066', display: 'flex', alignItems: 'center', justifyContent: 'center',
 };

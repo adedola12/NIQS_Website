@@ -5,7 +5,7 @@ import PageHero from '../../components/common/PageHero';
 
 const tierColors = {
   platinum: '#6b7280',
-  gold:     '#C9974A',
+  gold:     '#D9B650',
   silver:   '#9ca3af',
   bronze:   '#b45309',
   associate:'#2563EB',

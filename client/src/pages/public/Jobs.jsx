@@ -6,8 +6,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useMemberCopy } from '../../hooks/useMembershipStats';
 
 const TYPE_COLORS = {
-  'Full-time':       { bg: '#fff7ed', color: '#C9974A', border: '#f5d49b' },
-  'full-time':       { bg: '#fff7ed', color: '#C9974A', border: '#f5d49b' },
+  'Full-time':       { bg: '#fff7ed', color: '#D9B650', border: '#f5d49b' },
+  'full-time':       { bg: '#fff7ed', color: '#D9B650', border: '#f5d49b' },
   'Contract':        { bg: '#eff6ff', color: '#2563EB', border: '#bfdbfe' },
   'contract':        { bg: '#eff6ff', color: '#2563EB', border: '#bfdbfe' },
   'Graduate Trainee':{ bg: '#f0fdf4', color: '#16a34a', border: '#bbf7d0' },
@@ -104,7 +104,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
             style={{ width: 52, height: 52, borderRadius: 10, objectFit: 'cover', border: '1px solid #e5e7eb', flexShrink: 0 }}
           />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#0B1F4B', lineHeight: 1.3 }}>{job.title}</h2>
+            <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#000066', lineHeight: 1.3 }}>{job.title}</h2>
             <p style={{ margin: '3px 0 6px', fontSize: '.82rem', color: '#6b7280' }}>{job.company}</p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
               <TypeBadge type={job.type} />
@@ -158,7 +158,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
 
           {/* Description */}
           <section style={{ marginBottom: 22 }}>
-            <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: '#0B1F4B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+            <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: '#000066', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.05em' }}>
               About the Role
             </h3>
             <div style={{ fontSize: '.84rem', color: '#374151', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>
@@ -169,7 +169,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
           {/* Requirements */}
           {job.requirements && (
             <section style={{ marginBottom: 22 }}>
-              <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: '#0B1F4B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+              <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: '#000066', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.05em' }}>
                 Requirements
               </h3>
               <div style={{ fontSize: '.84rem', color: '#374151', lineHeight: 1.85, whiteSpace: 'pre-wrap' }}>
@@ -181,7 +181,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
           {/* Google Map */}
           {job.location && (
             <section style={{ marginBottom: 22 }}>
-              <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: '#0B1F4B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+              <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: '#000066', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.05em' }}>
                 📍 Location
               </h3>
               <MapEmbed location={job.location} />
@@ -198,7 +198,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
           }}>
             {isLoggedIn ? (
               <>
-                <h3 style={{ margin: '0 0 6px', fontSize: '.9rem', fontWeight: 700, color: '#0B1F4B' }}>
+                <h3 style={{ margin: '0 0 6px', fontSize: '.9rem', fontWeight: 700, color: '#000066' }}>
                   Ready to Apply?
                 </h3>
                 <p style={{ margin: '0 0 14px', fontSize: '.8rem', color: '#374151', lineHeight: 1.6 }}>
@@ -214,7 +214,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
                         display: 'inline-flex', alignItems: 'center', gap: 6,
                         padding: '10px 22px', borderRadius: 8, fontWeight: 700,
                         fontSize: '.85rem', textDecoration: 'none',
-                        background: '#0B1F4B', color: '#fff',
+                        background: '#000066', color: '#fff',
                         border: 'none', cursor: 'pointer',
                       }}
                     >
@@ -227,7 +227,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
                         display: 'inline-flex', alignItems: 'center', gap: 6,
                         padding: '10px 22px', borderRadius: 8, fontWeight: 700,
                         fontSize: '.85rem', textDecoration: 'none',
-                        background: '#0B1F4B', color: '#fff',
+                        background: '#000066', color: '#fff',
                       }}
                     >
                       📤 Submit CV via Portal
@@ -249,7 +249,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
               </>
             ) : (
               <>
-                <h3 style={{ margin: '0 0 6px', fontSize: '.9rem', fontWeight: 700, color: '#C9974A' }}>
+                <h3 style={{ margin: '0 0 6px', fontSize: '.9rem', fontWeight: 700, color: '#D9B650' }}>
                   🔒 Members Only
                 </h3>
                 <p style={{ margin: '0 0 14px', fontSize: '.8rem', color: '#374151', lineHeight: 1.6 }}>
@@ -261,7 +261,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                     padding: '10px 22px', borderRadius: 8, fontWeight: 700,
                     fontSize: '.85rem', textDecoration: 'none',
-                    background: '#C9974A', color: '#fff',
+                    background: '#D9B650', color: '#fff',
                   }}
                 >
                   Sign In to Apply
@@ -369,8 +369,8 @@ export default function Jobs() {
                   style={{
                     padding: '7px 14px', borderRadius: 20, fontSize: '.75rem', fontWeight: 600,
                     border: '1px solid',
-                    borderColor: typeFilter === t ? '#0B1F4B' : '#e5e7eb',
-                    background: typeFilter === t ? '#0B1F4B' : '#fff',
+                    borderColor: typeFilter === t ? '#000066' : '#e5e7eb',
+                    background: typeFilter === t ? '#000066' : '#fff',
                     color: typeFilter === t ? '#fff' : '#6b7280',
                     cursor: 'pointer', transition: 'all .15s',
                   }}
@@ -433,7 +433,7 @@ export default function Jobs() {
                     )}
                   </div>
                   {/* View details cue */}
-                  <div style={{ fontSize: '.72rem', color: '#C9974A', fontWeight: 600, flexShrink: 0, paddingLeft: 4 }}>
+                  <div style={{ fontSize: '.72rem', color: '#D9B650', fontWeight: 600, flexShrink: 0, paddingLeft: 4 }}>
                     View →
                   </div>
                 </div>

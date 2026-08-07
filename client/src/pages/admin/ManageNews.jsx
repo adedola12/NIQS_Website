@@ -198,7 +198,7 @@ export default function ManageNews() {
       {/* Form Modal */}
       {showModal && (
         <ModalOverlay onClose={() => setShowModal(false)}>
-          <h3 style={{ margin: '0 0 20px', color: '#0B1F4B' }}>
+          <h3 style={{ margin: '0 0 20px', color: '#000066' }}>
             {editing ? 'Edit News' : 'Add News'}
           </h3>
           <form onSubmit={handleSubmit}>
@@ -293,7 +293,7 @@ export default function ManageNews() {
               <button type="button" onClick={() => setShowModal(false)} style={{ ...btnStyle, background: '#e5e7eb', color: '#374151' }}>
                 Cancel
               </button>
-              <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#C9974A', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
+              <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#D9B650', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
                 {submitting ? 'Saving...' : editing ? 'Update' : 'Create'}
               </button>
             </div>
@@ -349,4 +349,4 @@ function FormField({ label, required, children }) {
 
 const inputStyle = { width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, color: '#111827', outline: 'none', boxSizing: 'border-box' };
 const btnStyle = { padding: '10px 22px', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
-const addBtnStyle = { padding: '10px 20px', background: '#C9974A', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
+const addBtnStyle = { padding: '10px 20px', background: '#D9B650', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };

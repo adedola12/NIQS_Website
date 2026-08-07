@@ -190,7 +190,7 @@ const PortalLayout = () => {
           font-family: 'Bricolage Grotesque', sans-serif;
           font-size: 1.15rem;
           font-weight: 800;
-          color: #C9974A;
+          color: #D9B650;
           line-height: 1;
         }
         .portal-brand-sub {
@@ -215,7 +215,7 @@ const PortalLayout = () => {
           transition: background 0.15s;
         }
         .portal-home-link:hover {
-          background: rgba(201,151,74,0.25);
+          background: rgba(217, 182, 80,0.25);
         }
 
         /* --- Sidebar --- */

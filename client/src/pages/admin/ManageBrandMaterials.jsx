@@ -112,7 +112,7 @@ export default function ManageBrandMaterials() {
       label: 'Preview',
       render: (val, row) => (
         row.previewType === 'gradient'
-          ? <div style={{ width: 56, height: 36, borderRadius: 6, background: 'linear-gradient(135deg,#0B1F4B 50%,#C9974A 100%)' }} />
+          ? <div style={{ width: 56, height: 36, borderRadius: 6, background: 'linear-gradient(135deg,#000066 50%,#D9B650 100%)' }} />
           : val
             ? <img src={val} alt="" style={{ width: 56, height: 36, objectFit: 'cover', borderRadius: 6 }} />
             : <div style={{ width: 56, height: 36, borderRadius: 6, background: '#f3f4f6' }} />
@@ -162,7 +162,7 @@ export default function ManageBrandMaterials() {
       {/* ── ADD / EDIT MODAL ── */}
       {showModal && (
         <ModalOverlay onClose={() => setShowModal(false)}>
-          <h3 style={{ margin: '0 0 20px', color: '#0B1F4B' }}>
+          <h3 style={{ margin: '0 0 20px', color: '#000066' }}>
             {editing ? 'Edit Brand Material' : 'Add Brand Material'}
           </h3>
           <form onSubmit={handleSubmit}>
@@ -201,7 +201,7 @@ export default function ManageBrandMaterials() {
 
             {form.previewType === 'image_contained' && (
               <FormField label="Preview Background (CSS color/gradient)">
-                <input value={form.previewBackground} onChange={e => f('previewBackground', e.target.value)} style={inputStyle} placeholder="e.g. #0B1F4B or var(--navy)" />
+                <input value={form.previewBackground} onChange={e => f('previewBackground', e.target.value)} style={inputStyle} placeholder="e.g. #000066 or var(--navy)" />
               </FormField>
             )}
 
@@ -213,7 +213,7 @@ export default function ManageBrandMaterials() {
 
             {form.previewType === 'gradient' && (
               <FormField label="Gradient Background (CSS background value)">
-                <input value={form.previewBackground} onChange={e => f('previewBackground', e.target.value)} style={inputStyle} placeholder="e.g. linear-gradient(135deg,#0B1F4B 50%,#C9974A 100%)" />
+                <input value={form.previewBackground} onChange={e => f('previewBackground', e.target.value)} style={inputStyle} placeholder="e.g. linear-gradient(135deg,#000066 50%,#D9B650 100%)" />
               </FormField>
             )}
 
@@ -226,7 +226,7 @@ export default function ManageBrandMaterials() {
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
               <button type="button" onClick={() => setShowModal(false)} style={{ ...btnStyle, background: '#e5e7eb', color: '#374151' }}>Cancel</button>
-              <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#C9974A', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
+              <button type="submit" disabled={submitting} style={{ ...btnStyle, background: '#D9B650', color: '#fff', opacity: submitting ? 0.6 : 1 }}>
                 {submitting ? 'Saving...' : editing ? 'Update' : 'Create'}
               </button>
             </div>
@@ -274,4 +274,4 @@ function FormField({ label, required, children }) {
 
 const inputStyle = { width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, color: '#111827', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
 const btnStyle = { padding: '10px 22px', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
-const addBtnStyle = { padding: '10px 20px', background: '#C9974A', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };
+const addBtnStyle = { padding: '10px 20px', background: '#D9B650', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer' };

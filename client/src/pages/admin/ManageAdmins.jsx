@@ -14,7 +14,7 @@ const ROLES = [
   { value: 'state_admin',    label: 'State Chapter Admin', color: '#059669', bg: '#ecfdf5' },
   { value: 'waqsn_admin',    label: 'WAQSN Admin',         color: '#7c3aed', bg: '#f5f3ff' },
   { value: 'yqsf_admin',     label: 'YQSF Admin',         color: '#0891b2', bg: '#ecfeff' },
-  { value: 'main_admin',     label: 'Main Admin',          color: '#C9974A', bg: '#fffbeb' },
+  { value: 'main_admin',     label: 'Main Admin',          color: '#D9B650', bg: '#fffbeb' },
 ];
 const roleInfo = (val) => ROLES.find(r => r.value === val) || { label: val, color: '#6b7280', bg: '#f9fafb' };
 
@@ -169,7 +169,7 @@ export default function ManageAdmins() {
             />
           </div>
           {isMain && (
-            <button onClick={openAdd} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#0B1F4B', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
+            <button onClick={openAdd} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#000066', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
               <MdPersonAdd size={18} /> Add New Admin
             </button>
           )}
@@ -334,7 +334,7 @@ export default function ManageAdmins() {
             )}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
               <Btn onClick={() => setShowModal(false)} style={{ background: '#e5e7eb', color: '#374151' }}>Cancel</Btn>
-              <Btn type="submit" disabled={submitting} style={{ background: '#0B1F4B', color: '#fff', opacity: submitting ? .6 : 1 }}>
+              <Btn type="submit" disabled={submitting} style={{ background: '#000066', color: '#fff', opacity: submitting ? .6 : 1 }}>
                 {submitting ? 'Saving…' : editing ? 'Update' : 'Create Admin'}
               </Btn>
             </div>
@@ -347,7 +347,7 @@ export default function ManageAdmins() {
         <Modal onClose={() => setRoleTarget(null)} title="Change Admin Role">
           <div style={{ marginBottom: 16 }}>
             <p style={{ margin: '0 0 4px', fontSize: 13, color: '#6b7280' }}>Changing role for:</p>
-            <p style={{ margin: 0, fontWeight: 700, color: '#0B1F4B', fontSize: 15 }}>
+            <p style={{ margin: 0, fontWeight: 700, color: '#000066', fontSize: 15 }}>
               {roleTarget.firstName} {roleTarget.lastName} — {roleTarget.email}
             </p>
           </div>
@@ -370,7 +370,7 @@ export default function ManageAdmins() {
           )}
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
             <Btn onClick={() => setRoleTarget(null)} style={{ background: '#e5e7eb', color: '#374151' }}>Cancel</Btn>
-            <Btn onClick={applyRoleChange} style={{ background: '#0B1F4B', color: '#fff' }}>Apply Role Change</Btn>
+            <Btn onClick={applyRoleChange} style={{ background: '#000066', color: '#fff' }}>Apply Role Change</Btn>
           </div>
         </Modal>
       )}
@@ -398,7 +398,7 @@ function Modal({ children, onClose, title }) {
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 20 }}>
       <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 14, padding: '24px 28px', width: '100%', maxWidth: 520, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,.2)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h3 style={{ margin: 0, color: '#0B1F4B', fontSize: 17 }}>{title}</h3>
+          <h3 style={{ margin: 0, color: '#000066', fontSize: 17 }}>{title}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#9ca3af', lineHeight: 1 }}>×</button>
         </div>
         {children}

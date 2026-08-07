@@ -74,7 +74,7 @@ function UserChip() {
   const fullName = `${firstName} ${lastName}`.trim() || "Account";
   const portalPath = isAdminUser ? "/admin" : "/portal";
 
-  const bgColor = isAdminUser ? "#C9974A" : "#0B1F4B";
+  const bgColor = isAdminUser ? "#D9B650" : "#000066";
 
   const handleLogout = async () => {
     setOpen(false);
@@ -100,7 +100,7 @@ function UserChip() {
           fontWeight: 600,
           transition: "border-color 0.2s",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#C9974A")}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#D9B650")}
         onMouseLeave={(e) =>
           (e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)")
         }

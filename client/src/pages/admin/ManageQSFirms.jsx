@@ -108,7 +108,7 @@ export default function ManageQSFirms() {
             <img src={row.logo} alt={val} style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'contain', border: '1px solid #e5e7eb', background: '#f9fafb' }} />
           ) : (
             <div style={{
-              width: 36, height: 36, borderRadius: 6, background: '#0B1F4B',
+              width: 36, height: 36, borderRadius: 6, background: '#000066',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 11, fontWeight: 800, color: '#fff',
             }}>
@@ -124,7 +124,7 @@ export default function ManageQSFirms() {
     },
     { key: 'state', label: 'State',
       render: val => (
-        <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: '#0B1F4B', color: '#fff' }}>
+        <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: '#000066', color: '#fff' }}>
           {val}
         </span>
       ),
@@ -158,7 +158,7 @@ export default function ManageQSFirms() {
           <button
             onClick={openAdd}
             style={{
-              padding: '10px 20px', background: '#C9974A', color: '#fff',
+              padding: '10px 20px', background: '#D9B650', color: '#fff',
               border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer',
             }}
           >
@@ -179,7 +179,7 @@ export default function ManageQSFirms() {
       {/* Add / Edit Modal */}
       {showModal && (
         <ModalOverlay onClose={() => setShowModal(false)}>
-          <h3 style={{ margin: '0 0 20px', color: '#0B1F4B' }}>
+          <h3 style={{ margin: '0 0 20px', color: '#000066' }}>
             {editing ? 'Edit QS Firm' : 'Add QS Firm'}
           </h3>
           <form onSubmit={handleSubmit}>
@@ -259,7 +259,7 @@ export default function ManageQSFirms() {
               <button type="button" onClick={() => setShowModal(false)}
                 style={{ ...btn, background: '#e5e7eb', color: '#374151' }}>Cancel</button>
               <button type="submit" disabled={submitting}
-                style={{ ...btn, background: '#C9974A', color: '#fff', opacity: submitting ? .6 : 1 }}>
+                style={{ ...btn, background: '#D9B650', color: '#fff', opacity: submitting ? .6 : 1 }}>
                 {submitting ? 'Saving…' : editing ? 'Update' : 'Add Firm'}
               </button>
             </div>

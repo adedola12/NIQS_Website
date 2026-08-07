@@ -166,7 +166,7 @@ export default function ManagePresident() {
 
           {/* ── ACTIONS ── */}
           <div style={{ display: 'flex', gap: 12, marginTop: 24, paddingTop: 20, borderTop: '1px solid #f3f4f6' }}>
-            <button type="submit" disabled={saving} style={{ padding: '12px 28px', background: '#C9974A', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer', opacity: saving ? 0.6 : 1 }}>
+            <button type="submit" disabled={saving} style={{ padding: '12px 28px', background: '#D9B650', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer', opacity: saving ? 0.6 : 1 }}>
               {saving ? 'Saving...' : 'Save President Profile'}
             </button>
             <a href="/president" target="_blank" rel="noreferrer" style={{ padding: '12px 20px', background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
@@ -181,7 +181,7 @@ export default function ManagePresident() {
 
 function SectionTitle({ children }) {
   return (
-    <h4 style={{ margin: '20px 0 12px', fontSize: 13, fontWeight: 700, color: '#0B1F4B', textTransform: 'uppercase', letterSpacing: '.06em', borderBottom: '1px solid #f3f4f6', paddingBottom: 8 }}>
+    <h4 style={{ margin: '20px 0 12px', fontSize: 13, fontWeight: 700, color: '#000066', textTransform: 'uppercase', letterSpacing: '.06em', borderBottom: '1px solid #f3f4f6', paddingBottom: 8 }}>
       {children}
     </h4>
   );

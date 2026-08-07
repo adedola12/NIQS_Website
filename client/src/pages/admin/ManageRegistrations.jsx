@@ -137,13 +137,13 @@ export default function ManageRegistrations() {
           {data && (
             <>
               <span style={{ fontSize: 13, color: '#6b7280' }}>
-                <strong style={{ color: '#0B1F4B' }}>{regs.length}</strong> registered ·{' '}
+                <strong style={{ color: '#000066' }}>{regs.length}</strong> registered ·{' '}
                 <strong style={{ color: '#166534' }}>{attendedCount}</strong> attended
               </span>
               <button
                 onClick={exportCsv}
                 disabled={!regs.length}
-                style={{ marginLeft: 'auto', padding: '9px 16px', background: '#0B1F4B', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 13.5, cursor: regs.length ? 'pointer' : 'default', opacity: regs.length ? 1 : 0.5 }}
+                style={{ marginLeft: 'auto', padding: '9px 16px', background: '#000066', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: 13.5, cursor: regs.length ? 'pointer' : 'default', opacity: regs.length ? 1 : 0.5 }}
               >
                 ⬇ Export CSV
               </button>

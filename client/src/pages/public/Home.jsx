@@ -268,12 +268,12 @@ export default function Home() {
                 className={`reveal d${i + 1}`}
                 style={{
                   background: i === 1
-                    ? 'linear-gradient(145deg, var(--color-navy), var(--color-navy-3, #1a3280))'
+                    ? 'linear-gradient(145deg, var(--color-navy), var(--color-navy-3, #2828BE))'
                     : '#fff',
                   borderRadius: 18,
                   padding: '2.2rem 2rem',
                   border: i === 1 ? 'none' : '1px solid var(--color-bdr)',
-                  boxShadow: i === 1 ? '0 12px 40px rgba(11,31,75,.22)' : '0 2px 12px rgba(11,31,75,.06)',
+                  boxShadow: i === 1 ? '0 12px 40px rgba(0, 0, 102,.22)' : '0 2px 12px rgba(0, 0, 102,.06)',
                   position: 'relative',
                   overflow: 'hidden',
                 }}
@@ -283,7 +283,7 @@ export default function Home() {
                   <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px)', backgroundSize: '44px 44px' }} />
                 )}
                 {/* gold accent line on top */}
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--color-gold), var(--color-gold-2, #D9AB60))', borderRadius: '18px 18px 0 0' }} />
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--color-gold), var(--color-gold-2, #E5C56A))', borderRadius: '18px 18px 0 0' }} />
                 <div style={{ fontSize: '2.4rem', marginBottom: '1.2rem', position: 'relative' }}>{p.icon}</div>
                 <div style={{ fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--color-gold)', marginBottom: '.5rem', position: 'relative' }}>{p.label}</div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.35rem', color: i === 1 ? '#fff' : 'var(--color-navy)', marginBottom: '1rem', letterSpacing: '-.025em', lineHeight: 1.2, position: 'relative' }}>{p.title}</div>
@@ -423,7 +423,7 @@ export default function Home() {
             </div>
           ) : (
             <div style={{
-              background: 'linear-gradient(135deg, #0B1F4B 0%, #12306e 100%)',
+              background: 'linear-gradient(135deg, #000066 0%, #12306e 100%)',
               borderRadius: 16, padding: '3rem 2.5rem', textAlign: 'center',
             }}>
               <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.5rem', color: '#fff', marginBottom: '.6rem', letterSpacing: '-.02em' }}>

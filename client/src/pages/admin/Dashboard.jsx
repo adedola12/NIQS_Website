@@ -38,7 +38,7 @@ export default function Dashboard() {
     { label: 'Add News', icon: MdArticle, path: '/admin/news', color: '#2563EB' },
     { label: 'Add Event', icon: MdEvent, path: '/admin/events', color: '#059669' },
     { label: 'View Members', icon: MdPeople, path: '/admin/members', color: '#7c3aed' },
-    { label: 'Messages', icon: MdMail, path: '/admin/messages', color: '#C9974A' },
+    { label: 'Messages', icon: MdMail, path: '/admin/messages', color: '#D9B650' },
   ];
 
   return (
@@ -77,14 +77,14 @@ export default function Dashboard() {
             icon={MdMail}
             value={loading ? '...' : stats?.unreadMessages ?? 0}
             label="Unread Messages"
-            color="#C9974A"
+            color="#D9B650"
           />
           {canManageAdmins(role) && (
             <StatsCard
               icon={MdAdminPanelSettings}
               value={loading ? '...' : stats?.totalAdmins ?? 0}
               label="Admins"
-              color="#0B1F4B"
+              color="#000066"
             />
           )}
         </div>
@@ -96,12 +96,12 @@ export default function Dashboard() {
           <div
             style={{
               display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
-              background: '#fffdf8', border: '1px solid #f0d8a8', borderLeft: '4px solid #C9974A',
+              background: '#fffdf8', border: '1px solid #f0d8a8', borderLeft: '4px solid #D9B650',
               borderRadius: 10, padding: '14px 18px', marginBottom: 28,
             }}
           >
             <div style={{ flex: '1 1 320px' }}>
-              <div style={{ fontWeight: 600, fontSize: 15, color: '#0B1F4B' }}>
+              <div style={{ fontWeight: 600, fontSize: 15, color: '#000066' }}>
                 {stats.portraitsOutstanding} officer{stats.portraitsOutstanding === 1 ? '' : 's'} without a photograph
               </div>
               <div style={{ fontSize: 13, color: '#6b7280', marginTop: 3 }}>
@@ -115,7 +115,7 @@ export default function Dashboard() {
               rel="noopener noreferrer"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px',
-                background: '#0B1F4B', color: '#fff', borderRadius: 8, textDecoration: 'none',
+                background: '#000066', color: '#fff', borderRadius: 8, textDecoration: 'none',
                 fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap',
               }}
             >
@@ -127,7 +127,7 @@ export default function Dashboard() {
 
         {/* Quick actions */}
         <div style={{ marginBottom: 28 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0B1F4B', marginBottom: 12 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#000066', marginBottom: 12 }}>
             Quick Actions
           </h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
@@ -175,7 +175,7 @@ export default function Dashboard() {
                 borderBottom: '1px solid #e5e7eb',
                 fontWeight: 600,
                 fontSize: 15,
-                color: '#0B1F4B',
+                color: '#000066',
               }}
             >
               Recent News
@@ -223,7 +223,7 @@ export default function Dashboard() {
                 borderBottom: '1px solid #e5e7eb',
                 fontWeight: 600,
                 fontSize: 15,
-                color: '#0B1F4B',
+                color: '#000066',
               }}
             >
               Upcoming Events
@@ -256,7 +256,7 @@ export default function Dashboard() {
                     <span
                       style={{
                         fontSize: 12,
-                        color: '#C9974A',
+                        color: '#D9B650',
                         fontWeight: 600,
                         whiteSpace: 'nowrap',
                       }}
