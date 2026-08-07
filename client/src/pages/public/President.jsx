@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
 
 export default function President() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     API.get('/president')
@@ -58,62 +57,42 @@ export default function President() {
         <div className="ct">
           <div className="tc2">
 
-            {/* ── LEFT — portrait + name card ── */}
+            {/* ── LEFT — portrait + name card ──
+                The portrait was capped at 320x400 inside a column half the
+                content width, so it sat small against a right-hand column
+                carrying two paragraphs, a pull quote and two buttons. It now
+                fills its column up to 440px on a 4:5 ratio, and the name plate
+                below shares that width so the two stack as one block rather
+                than a small picture with a wider caption under it.
+
+                The hover pop-up that used to raise the uncropped portrait over
+                this one is gone, for the reason it went from the NEC cards. */}
             <div className="rl" style={{ textAlign: 'center' }}>
               <motion.div
-                style={{ position: 'relative', display: 'inline-block' }}
-                onHoverStart={() => setHovered(true)}
-                onHoverEnd={() => setHovered(false)}
+                style={{ position: 'relative', width: '100%', maxWidth: 440, margin: '0 auto' }}
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.45, ease: 'easeOut' }}
                 whileHover={{ y: -5 }}
               >
-                <motion.img
+                <img
                   src={data.photo}
                   alt="NIQS President"
-                  animate={{ scale: hovered ? 1.04 : 1 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
                   style={{
                     borderRadius: 16,
                     width: '100%',
-                    maxWidth: 320,
-                    height: 400,
+                    aspectRatio: '4 / 5',
+                    height: 'auto',
                     objectFit: 'cover',
-                    objectPosition: 'center 25%',
+                    objectPosition: 'center 20%',
                     boxShadow: 'var(--sh2)',
                     border: '3px solid var(--borderg)',
                     display: 'block',
                   }}
                 />
-
-                {/* Full uncropped portrait pops up on hover — same as NEC cards */}
-                <AnimatePresence>
-                  {hovered && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.86, y: 14 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9, y: 8 }}
-                      transition={{ duration: 0.22, ease: 'easeOut' }}
-                      style={{
-                        position: 'absolute', left: '50%', bottom: 'calc(100% + 10px)',
-                        transform: 'translateX(-50%)', zIndex: 60, pointerEvents: 'none',
-                        background: '#fff', borderRadius: 12, padding: 6,
-                        boxShadow: '0 18px 50px rgba(0, 0, 102,.35)',
-                        border: '1px solid var(--borderg)',
-                      }}
-                    >
-                      <img
-                        src={data.photo}
-                        alt={data.name}
-                        style={{ display: 'block', maxWidth: 280, maxHeight: 340, width: 'auto', height: 'auto', objectFit: 'contain', borderRadius: 8 }}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </motion.div>
-              <div style={{ marginTop: '1.2rem' }}>
+              <div style={{ marginTop: '1.2rem', width: '100%', maxWidth: 440, marginLeft: 'auto', marginRight: 'auto' }}>
                 <h3 style={{
                   fontFamily: "'Bricolage Grotesque', sans-serif",
                   fontSize: '1.3rem',
