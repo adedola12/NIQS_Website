@@ -40,7 +40,9 @@ const Footer = () => {
               <li><Link to="/exams">Examinations</Link></li>
               <li><Link to="/research">CPD &amp; Webinars</Link></li>
               <li><Link to="/research">QS Journal</Link></li>
-              <li><Link to="/brand">Brand Materials</Link></li>
+              {/* /brand does not exist — the route is /brand-materials. This
+                  link had been landing on the 404 page. */}
+              <li><Link to="/brand-materials">Brand Materials</Link></li>
             </ul>
           </div>
 
@@ -57,6 +59,15 @@ const Footer = () => {
         </div>
 
         <div className="fbot">
+          {/* Legal links belong here rather than in a fifth column: the grid is
+              fg4, and these are the links people look for at the very bottom of
+              a page anyway. Search engines also read the footer to decide a
+              site is a real organisation with a published policy. */}
+          <p style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.4rem 1.2rem', marginBottom: '0.9rem' }}>
+            <Link to="/privacy-policy">Privacy Policy</Link>
+            <Link to="/terms-of-use">Terms of Use</Link>
+            <Link to="/contact">Contact</Link>
+          </p>
           <p>&copy; 2025 <span className="fgold">Nigerian Institute of Quantity Surveyors</span>. All rights reserved.</p>
           <p>No. 24, NIQS Crescent, Mabushi District, Abuja, Nigeria.</p>
           <p style={{ marginTop: '0.6rem', fontSize: '0.76rem', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>

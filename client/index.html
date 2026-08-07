@@ -18,18 +18,35 @@
     <title>NIQS — Nigerian Institute of Quantity Surveyors</title>
 
     <!-- Favicon / browser tab & taskbar icon.
-         NIQS-LOGO-SQUARE.png is the crest re-centred on a square canvas — the nav
-         PNG's crest sits left of its own centre, so it looked off-axis as an icon. -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/NIQS-LOGO-SQUARE.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/NIQS-LOGO-SQUARE.png" />
-    <link rel="apple-touch-icon" href="/NIQS-LOGO-SQUARE.png" />
-    <link rel="shortcut icon" href="/NIQS-LOGO-SQUARE.png" />
+         All generated from NIQS-LOGO-SQUARE.png by scripts/build-favicons.py —
+         that file is the crest re-centred on a square canvas, because the nav
+         PNG's crest sits left of its own centre and looked off-axis as an icon.
+
+         The four links used to point at the 512px PNG directly. Two things were
+         missing and both were visible from outside: /favicon.ico returned 404 on
+         the live domain (browsers and Google's favicon fetcher request that path
+         whether or not a <link> asks them to), and Google only shows a favicon
+         beside a search result when it is square and a multiple of 48px — which
+         512 is not, but 192 is. -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Browser chrome colour (tab bar on mobile) -->
     <meta name="theme-color" content="#000066" />
 
     <!-- SEO -->
     <meta name="description" content="The Nigerian Institute of Quantity Surveyors — Nigeria's professional construction cost managers since 1969. Committed to sustainable national development." />
+
+    <!-- No <link rel="canonical"> here, on purpose.
+         This one file is served for every route, so a canonical written into it
+         would tell a search engine that /about, /membership and all 37 chapter
+         pages are duplicates of the homepage — which is how a site gets its
+         subpages dropped from the index. It is inserted per route instead, from
+         useCanonical.js. Host canonicalisation (www., niqsng.org, http) is done
+         properly, at the HTTP level, by the 301s in public/.htaccess. -->
 
     <!-- Open Graph — link preview on WhatsApp, Twitter, LinkedIn etc. -->
     <meta property="og:type" content="website" />
@@ -46,18 +63,58 @@
          PNG composites against whatever colour the client picks) and lays the crest
          out inside the centre square, so scrapers that crop to a square — WhatsApp's
          small card especially — keep the crest centred instead of clipping it. -->
-    <meta property="og:image" content="https://niqs-website.vercel.app/og-image.jpg" />
+    <meta property="og:image" content="https://niqs.org.ng/og-image.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Nigerian Institute of Quantity Surveyors — established 1969" />
-    <meta property="og:url" content="https://niqs-website.vercel.app" />
+    <!-- These pointed at niqs-website.vercel.app until 2026-08-07. The site is
+         not served from Vercel — the domain resolves to the Apache host — so
+         every link shared on WhatsApp or LinkedIn was previewing an image from,
+         and advertising the address of, a deployment nobody was meant to see.
+
+         og:url stays fixed at the homepage rather than tracking the route, and
+         that is a real limitation rather than an oversight: link scrapers do not
+         execute JavaScript, so they read this file exactly as it leaves the
+         server. Sharing a deep link therefore previews as the Institute rather
+         than as that page. Fixing it properly means pre-rendering the public
+         routes — see docs/SEO_AND_ANALYTICS.md. -->
+    <meta property="og:url" content="https://niqs.org.ng/" />
+    <meta property="og:locale" content="en_NG" />
 
     <!-- Twitter card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="NIQS — Nigerian Institute of Quantity Surveyors" />
     <meta name="twitter:description" content="Nigeria's professional construction cost managers since 1969." />
-    <meta name="twitter:image" content="https://niqs-website.vercel.app/og-image.jpg" />
+    <meta name="twitter:image" content="https://niqs.org.ng/og-image.jpg" />
+
+    <!-- Structured data. This is what lets Google show the crest, the official
+         site and the Institute's profile in a knowledge panel beside the search
+         results, rather than a bare blue link. Kept to facts that are stable and
+         verifiable — no membership figure, for the reason given above the
+         og:description. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://niqs.org.ng/#organization",
+      "name": "Nigerian Institute of Quantity Surveyors",
+      "alternateName": "NIQS",
+      "url": "https://niqs.org.ng/",
+      "logo": "https://niqs.org.ng/NIQS-LOGO-SQUARE.png",
+      "image": "https://niqs.org.ng/og-image.jpg",
+      "description": "The professional body for quantity surveyors in Nigeria, established in 1969. Construction cost managers serving members across all 37 state chapters.",
+      "foundingDate": "1969",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "QS Olusegun Ajalekoko House, No. 24, NIQS Crescent, Mabushi District",
+        "addressLocality": "Abuja",
+        "addressCountry": "NG"
+      },
+      "email": "info@niqs.org.ng",
+      "areaServed": { "@type": "Country", "name": "Nigeria" }
+    }
+    </script>
   </head>
   <body>
     <!-- NIQS branded preloader — visible until React mounts (removed in main.jsx) -->

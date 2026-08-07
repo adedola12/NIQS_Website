@@ -47,6 +47,8 @@ const load = {
   PartnerDetail:    () => import('../pages/public/PartnerDetail'),
   FlyerRequest:     () => import('../pages/public/FlyerRequest'),
   RequestFlyer:     () => import('../pages/public/RequestFlyer'),
+  PrivacyPolicy:    () => import('../pages/public/PrivacyPolicy'),
+  TermsOfUse:       () => import('../pages/public/TermsOfUse'),
 
   /* ── Auth ── */
   Login:            () => import('../pages/auth/Login'),
@@ -128,6 +130,8 @@ const byPath = {
   '/partnership': load.Partnership,
   '/request-flyer': load.RequestFlyer,
   '/flyer-request': load.FlyerRequest,
+  '/privacy-policy': load.PrivacyPolicy,
+  '/terms-of-use': load.TermsOfUse,
   '/login': load.Login,
   '/forgot-password': load.ForgotPassword,
 };

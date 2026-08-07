@@ -1,0 +1,31 @@
+# Crawl rules for niqs.org.ng
+#
+# Vite copies everything in client/public/ into the build, and the .htaccess
+# rewrite passes through anything that exists on disk — so this file is served
+# as itself rather than being handed index.html like a client-side route.
+#
+# Nothing here is a security control. Disallow asks well-behaved crawlers not to
+# fetch a URL; it does not stop anyone. The token routes below are excluded
+# because there is no reason for them to appear in a search index, not because
+# robots.txt is protecting them.
+
+User-agent: *
+Allow: /
+
+# Staff and member areas. Nothing public, and every one of them is a sign-in
+# wall a crawler would only ever index as a login form.
+Disallow: /admin
+Disallow: /portal
+Disallow: /login
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# Routes where the URL itself is the credential — a flyer-request link and an
+# event attendance link both work for whoever holds them.
+Disallow: /flyer-request/
+Disallow: /events/attend/
+
+# The launch-gate bypass. Indexing this would publish the way round the curtain.
+Disallow: /*?preview
+
+Sitemap: https://niqs.org.ng/sitemap.xml
