@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 /* Derive a chapter page link from a chapter-chairman title, e.g.
    "Nasarawa State Chapter Chairman" / "Lagos Chapter Chairman" / "FCT Chapter
@@ -46,10 +45,16 @@ function Initials({ name }) {
 /**
  * Leadership card used on Council, NPC, chapter and body pages.
  * Portrait keeps a 4:4.6 ratio anchored near the face (studio portraits have
- * the head in the upper third); hovering pops up the full uncropped image.
+ * the head in the upper third).
+ *
+ * Hovering used to pop the full uncropped portrait up above the card, so a
+ * viewer could see what the 4:4.6 crop had trimmed. It was read as a fault
+ * rather than a feature — a second face appearing over the card above it,
+ * overlapping the neighbour — so it is gone. The portraits are all normalised
+ * to the same canvas and eye line now, which is what the pop-up was
+ * compensating for. The quiet scale on hover stays, in CSS.
  */
 export default function LeaderCard({ member, linkTo }) {
-  const [hovered, setHovered] = useState(false);
   const m = member;
   const href = linkTo || chapterLinkFromTitle(m.title);
 
@@ -61,8 +66,6 @@ export default function LeaderCard({ member, linkTo }) {
     <motion.div
       className="lcard"
       style={{ position: 'relative' }}
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
       initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -71,13 +74,10 @@ export default function LeaderCard({ member, linkTo }) {
     >
       <div className="lcard-img-wrap" style={{ position: 'relative' }}>
         {m.image ? (
-          <motion.img
-            className="lcard-img"
-            src={m.image}
-            alt={m.name}
-            animate={{ scale: hovered ? 1.05 : 1 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-          />
+          /* Plain img: the hover scale is the .lcard:hover .lcard-img rule.
+             It was a motion.img before, whose inline transform silently beat
+             that rule — two zooms declared, one ever running. */
+          <img className="lcard-img" src={m.image} alt={m.name} />
         ) : (
           <Initials name={m.name} />
         )}
@@ -106,34 +106,6 @@ export default function LeaderCard({ member, linkTo }) {
           </div>
         )}
       </div>
-
-      {/* Full uncropped portrait pops above the card on hover */}
-      <AnimatePresence>
-        {hovered && m.image && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.86, y: 14 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 8 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
-            style={{
-              position: 'absolute', left: '50%', bottom: 'calc(100% + 10px)',
-              transform: 'translateX(-50%)', zIndex: 60, pointerEvents: 'none',
-              background: '#fff', borderRadius: 12, padding: 6,
-              boxShadow: '0 18px 50px rgba(0, 0, 102,.35)',
-              border: '1px solid var(--color-bdr-gold)',
-            }}
-          >
-            <img
-              src={m.image}
-              alt={m.name}
-              style={{
-                display: 'block', maxWidth: 260, maxHeight: 320,
-                width: 'auto', height: 'auto', objectFit: 'contain', borderRadius: 8,
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }

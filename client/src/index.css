@@ -704,7 +704,6 @@
   .lcard-img { width: 100%; aspect-ratio: 4 / 4.6; height: auto; object-fit: cover; object-position: center 25%; display: block; transition: .35s; }
   .lcard:hover .lcard-img { transform: scale(1.04); }
   .lcard-img-wrap { overflow: hidden; }
-  .lcard { overflow: visible; }
   .lcard .lcard-img-wrap { border-radius: 14px 14px 0 0; }
   .lcard-body { padding: 1.4rem; }
   .lcard-name { font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: var(--color-navy); margin-bottom: .2rem; letter-spacing: -.02em; }
