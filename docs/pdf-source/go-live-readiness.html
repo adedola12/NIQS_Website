@@ -132,8 +132,8 @@
     </div>
   </div>
   <div class="cover-foot">
-    <b>Current staging:</b> niqs-website.vercel.app &nbsp;·&nbsp; <b>Client:</b> Vercel &nbsp;·&nbsp;
-    <b>API:</b> Render &nbsp;·&nbsp; <b>Database:</b> MongoDB Atlas
+    <b>Client:</b> Vercel &nbsp;·&nbsp; <b>API:</b> AWS (Paris) &nbsp;·&nbsp;
+    <b>Database:</b> MongoDB Atlas (Paris) &nbsp;·&nbsp; <b>Awaiting:</b> the official domain
   </div>
 </div>
 
@@ -199,7 +199,7 @@
   <table class="tbl">
     <tr><th style="width:26%">Layer</th><th style="width:24%">Where it runs</th><th>Notes</th></tr>
     <tr><td><b>Web client</b> (what visitors see)</td><td>Vercel — <code>niqs-website.vercel.app</code></td><td>Fast global CDN. Needs the official domain.</td></tr>
-    <tr><td><b>API server</b> (data &amp; admin)</td><td>Render — <b>free plan</b></td><td>Free plan sleeps when idle → slow first load. Upgrade needed (§3).</td></tr>
+    <tr><td><b>API server</b> (data &amp; admin)</td><td><b>AWS — Paris</b></td><td>Moved off Render 31 July. Always on, no cold starts (§3).</td></tr>
     <tr><td><b>Database</b></td><td>MongoDB Atlas</td><td>Confirm tier &amp; backups (§3.3).</td></tr>
     <tr><td><b>Media / uploads</b></td><td>Cloudinary / Cloudflare R2</td><td>Confirm credentials set in production (§3.4).</td></tr>
     <tr><td><b>Auto-deploy</b></td><td>Push to <code>main</code></td><td>One push ships both client &amp; server automatically.</td></tr>
@@ -216,7 +216,7 @@
     <tr><th style="width:22%">Area</th><th style="width:15%">Status</th><th>What's needed</th><th style="width:13%">Owner</th></tr>
     <tr><td><b>Application build</b></td><td><span class="rag g">Ready</span></td><td>Public site + admin panel + portal shell complete.</td><td><span class="own adlm">ADLM</span></td></tr>
     <tr><td><b>Content &amp; imagery</b></td><td><span class="rag r">Action needed</span></td><td>Replace placeholder text &amp; ~120 stock images with real NIQS material.</td><td><span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span></td></tr>
-    <tr><td><b>Hosting &amp; speed</b></td><td><span class="rag a">In progress</span></td><td>Upgrade Render off the free plan to remove slow cold-starts.</td><td><span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span></td></tr>
+    <tr><td><b>Hosting &amp; speed</b></td><td><span class="rag g">Ready</span></td><td>Moved to AWS on 31 July — cold starts gone, releases drop no requests.</td><td><span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span></td></tr>
     <tr><td><b>Media storage</b></td><td><span class="rag a">In progress</span></td><td>Confirm Cloudinary/R2 keys in production so uploads persist.</td><td><span class="own adlm">ADLM</span></td></tr>
     <tr><td><b>Domain &amp; SSL</b></td><td><span class="rag r">Action needed</span></td><td>Choose official domain; point DNS; auto-SSL.</td><td><span class="own niqs">NIQS</span> <span class="own adlm">ADLM</span></td></tr>
     <tr><td><b>Email (SMTP)</b></td><td><span class="rag r">Action needed</span></td><td>Provide mailbox credentials — confirmations &amp; resets are dormant.</td><td><span class="own niqs">NIQS</span></td></tr>
@@ -231,75 +231,77 @@
 <!-- ===================== 3. HOSTING ===================== -->
 <section class="pb">
   <h1 class="sec"><span class="n">3</span> Hosting &amp; Performance</h1>
+  <p class="lead"><b>Revised 7 August 2026.</b> The hosting questions this section raised in June are settled. The API no
+  longer runs on Render, the cold-start problem is gone, and the stack is in production.</p>
 
-  <h2 class="sub"><span class="n">3.1</span> API server (Render) — <span class="rag a">upgrade off the free plan</span></h2>
-  <div class="box warn"><div class="bt">This is the main cause of slowness today</div>
-    On Render's <b>free plan</b>, the server <b>goes to sleep after ~15 minutes of inactivity</b>. The next visitor then
-    waits <b>30–60&nbsp;seconds</b> while it wakes up — pages, images and admin actions all stall on that first request.
-    The free plan also has limited memory/CPU and <b>no persistent disk</b>.</div>
-  <p><b>Recommended:</b> upgrade the Render service to a paid <b>always-on</b> plan (Starter tier). This removes cold-starts
-     entirely — the single biggest, cheapest speed win. Also set <code>NODE_ENV=production</code> and choose a region
-     close to Nigeria/your database.</p>
-
-  <h2 class="sub"><span class="n">3.2</span> Web client (Vercel)</h2>
-  <p>Already served from a fast global CDN — no speed concern. Actions: attach the official domain (§4) and confirm the
-     Vercel plan is appropriate for an organisation (the free Hobby tier is for non-commercial use; confirm whether Pro is required).</p>
-
-  <h2 class="sub"><span class="n">3.3</span> Database (MongoDB Atlas)</h2>
-  <ul>
-    <li>Confirm the cluster tier. The free <code>M0</code> tier has limited performance and <b>no automated backups</b> — a small paid tier is recommended for a production institute site.</li>
-    <li>Lock <b>Network Access</b> to Render's egress addresses (or secure it properly) and keep a strong database user/password.</li>
-    <li>Pick a region close to the API server to minimise latency.</li>
-  </ul>
-
-  <h2 class="sub"><span class="n">3.4</span> Media storage — <span class="rag a">confirm cloud keys in production</span></h2>
-  <div class="box"><div class="bt">Why this matters</div>
-    Uploaded images/files (news photos, flyers, journals, brand assets) stream to <b>Cloudinary</b> (&lt;10&nbsp;MB) or
-    <b>Cloudflare R2</b> (≥10&nbsp;MB). If those credentials are <b>not set in production</b>, the system falls back to the
-    server's local disk — which Render <b>wipes on every redeploy</b>, so uploaded media would silently disappear.
-    <b>Action:</b> verify the Cloudinary/R2 keys are present in the Render production environment.</div>
-
-  <h2 class="sub"><span class="n">3.5</span> Production environment variables</h2>
-  <p>Set these on the Render service before launch (values to be supplied by NIQS / ADLM):</p>
-  <pre><span class="c"># Core</span>
-NODE_ENV=production
-MONGO_URI=…                 <span class="c"># Atlas connection string</span>
-JWT_SECRET=…  JWT_REFRESH_SECRET=…   <span class="c"># strong, unique — not the sample values</span>
-CLIENT_URL=https://&lt;official-domain&gt;     <span class="c"># also fixes CORS</span>
-PUBLIC_URL=https://&lt;official-domain&gt;     <span class="c"># used in email links</span>
-
-<span class="c"># Media (so uploads persist + load fast)</span>
-CLOUDINARY_CLOUD_NAME=…  CLOUDINARY_API_KEY=…  CLOUDINARY_API_SECRET=…
-R2_ACCOUNT_ID=…  R2_ACCESS_KEY_ID=…  R2_SECRET_ACCESS_KEY=…  R2_BUCKET_NAME=…  R2_PUBLIC_URL=…
-
-<span class="c"># Email (§6) and Portal (§8) — add when ready</span>
-SMTP_HOST=…  SMTP_PORT=…  SMTP_USER=…  SMTP_PASS=…  SMTP_FROM=…
-PORTAL_API_URL=…  PORTAL_API_KEY=…</pre>
-
-  <h2 class="sub"><span class="n">3.6</span> Indicative monthly cost</h2>
-  <table class="tbl tbl-sm">
-    <tr><th>Service</th><th>For</th><th>Indicative cost*</th></tr>
-    <tr><td>Render — Starter (always-on API)</td><td>Removes cold-starts</td><td>~$7 / month</td></tr>
-    <tr><td>MongoDB Atlas — small paid tier</td><td>Performance + backups</td><td>~$9–25 / month</td></tr>
-    <tr><td>Cloudinary / Cloudflare R2</td><td>Media hosting + CDN</td><td>Free tier likely sufficient initially</td></tr>
-    <tr><td>Vercel</td><td>Web hosting</td><td>Free, or ~$20/mo if Pro required</td></tr>
-    <tr><td>Domain (.org.ng)</td><td>Official address</td><td>~$10–20 / year</td></tr>
+  <h2 class="sub">3.1 Where everything runs now</h2>
+  <table class="tbl">
+    <tr><th style="width:24%">Layer</th><th style="width:30%">Where it runs</th><th>State</th></tr>
+    <tr><td><b>Web client</b></td><td>Vercel &mdash; global CDN</td><td>Rebuilds and publishes itself on every change. Awaiting the official domain (&sect;4).</td></tr>
+    <tr><td><b>API server</b></td><td><b>AWS, Paris</b></td><td>Moved off Render on 31 July after Render suspended the service. <b>No cold starts.</b> Answers in 0.4&ndash;1.1 seconds.</td></tr>
+    <tr><td><b>Database</b></td><td>MongoDB Atlas, <b>Paris</b></td><td>Same city as the API, so queries do not cross continents.</td></tr>
+    <tr><td><b>Media</b></td><td>Cloudinary + Amazon S3/CloudFront</td><td>Images under 10&nbsp;MB to Cloudinary; PDFs and large files to S3 behind the CDN. Both live.</td></tr>
   </table>
-  <p class="small muted">*Indicative only — confirm current vendor pricing. Overall a modest monthly running cost for a national institute website.</p>
+
+  <div class="box"><div class="bt">The June concern is resolved</div>
+    Render's free plan slept after 15 minutes and made the next visitor wait up to a minute. That is gone: the API is
+    always on, and a full release was measured putting <b>163 consecutive requests</b> through a rolling deployment with
+    <b>none dropped</b> &mdash; the site does not blink when it is updated.</div>
+
+  <h2 class="sub">3.2 Speed</h2>
+  <p>Initial page weight fell from about <b>463&nbsp;KB to 98&nbsp;KB &mdash; 4.7&times; lighter</b>. All 27 public pages were
+  re-checked on 6 August: every one loads, with no broken images.</p>
+
+  <h2 class="sub">3.3 Credentials and configuration</h2>
+  <p>Production settings are held in <b>AWS Secrets Manager</b>, not typed into a dashboard &mdash; the database string, the
+  signing key, the media keys and the Institute's statistics key. Nothing sensitive sits in the code. The June list of
+  environment variables no longer applies; two of the entries on it were never used by the software at all.</p>
+
+  <h2 class="sub">3.4 What it actually costs</h2>
+  <p>Measured from the AWS bill on 7 August rather than estimated: the stack runs at about
+  <b>$2.27 per day &mdash; roughly $68 per month</b>, plus MongoDB Atlas and the domain.</p>
+  <table class="tbl tbl-sm">
+    <tr><th style="width:52%">Line</th><th>Approx. per month</th></tr>
+    <tr><td>Load balancer</td><td>~$19</td></tr>
+    <tr><td>Network (NAT gateway, fixed IP address)</td><td>~$34</td></tr>
+    <tr><td>API container</td><td>~$11</td></tr>
+    <tr><td>Storage, monitoring, secrets</td><td>~$4</td></tr>
+  </table>
+  <div class="box"><div class="bt">Worth a decision &mdash; this is about double the June estimate</div>
+    June put the figure at $33&ndash;37. The gap is <b>not</b> the API: the load balancer and container are almost exactly as
+    forecast. It is the network charges &mdash; a NAT gateway and a fixed public address &mdash; which the estimate did not
+    include. They are reducible with a configuration change that does not affect the site, and ADLM will bring a costed
+    option. Flagged here rather than absorbed quietly, because a national institute should know what its infrastructure
+    costs and why the first number moved.</div>
 </section>
 
 <!-- ===================== 4. DOMAIN ===================== -->
 <section class="pb">
   <h1 class="sec"><span class="n">4</span> Domain, DNS &amp; SSL</h1>
-  <p>The site currently lives on <code>niqs-website.vercel.app</code>. For launch it needs the official NIQS address.</p>
-  <ul class="chk">
-    <li><b>Decide the official domain</b> — e.g. <code>niqs.org.ng</code> vs <code>niqsng.org</code>. (This also affects email, social-preview links and the portal integration, so confirm one canonical domain.)</li>
-    <li>Provide access to the <b>domain registrar / DNS</b> so records can be pointed to Vercel.</li>
-    <li>Point DNS (A / CNAME) to Vercel — <b>SSL (https) is provisioned automatically</b>.</li>
-    <li>Add the domain to the server's allowed origins (<code>CLIENT_URL</code>) so the site can talk to the API.</li>
-    <li>Update the social-preview tags (<code>og:url</code>, <code>og:image</code>) — currently they point to the vercel.app address.</li>
-    <li>Align the email sending domain (SPF / DKIM) with §6.</li>
-  </ul>
+  <p class="lead"><b>Revised 7 August 2026. This is the one section still blocking launch.</b></p>
+
+  <h2 class="sub">4.1 What is already done</h2>
+  <table class="tbl tbl-sm">
+    <tr><td style="width:34%"><b>Canonical domain chosen</b></td><td><code>niqs.org.ng</code> &mdash; it is what the Institute's own email addresses use. <code>niqsng.org</code> should redirect to it rather than serve a duplicate site, which would otherwise split the Institute's search ranking between two addresses.</td></tr>
+    <tr><td><b>API access for the domain</b></td><td><b>Done 6 August.</b> The server now accepts requests from <code>niqs.org.ng</code> and <code>niqsng.org</code>. Until that change, every page would have loaded <b>blank</b> on the real domain.</td></tr>
+    <tr><td><b>SSL (https)</b></td><td>Issued automatically once the domain is verified. Nothing to buy, nothing to renew.</td></tr>
+  </table>
+
+  <h2 class="sub">4.2 What remains</h2>
+  <p>The domain, the Institute's <b>email</b>, the <b>member portal</b> and the <b>statistics API</b> all run from a
+  single cPanel account on the present host. Two records inside that account need to change &mdash; and one mail record
+  needs protecting first. <b>ADLM cannot begin until the cPanel login is provided (&sect;15).</b></p>
+  <div class="box"><div class="bt">Why the order matters</div>
+    The mail record for <code>niqs.org.ng</code> currently names the same address the website uses. Repoint the website
+    first and mail to <code>info@</code> and <code>secretary@</code> &mdash; both printed on the site's own contact page
+    &mdash; <b>stops arriving.</b> The fix is small and goes first: point mail at <code>mail.niqs.org.ng</code>, which
+    already exists, wait, and test. Nameservers do not move, so the portal and the statistics API are untouched
+    throughout.</div>
+
+  <h2 class="sub">4.3 At cut-over</h2>
+  <p>The social-preview tags (the card shown when the site is shared on WhatsApp or LinkedIn) still point at the
+  temporary address and will be repointed to <code>niqs.org.ng</code> in the same release. The holding page now covering
+  the site retires itself automatically at launch.</p>
 </section>
 
 <!-- ===================== 5. CONTENT ===================== -->
@@ -342,19 +344,31 @@ PORTAL_API_URL=…  PORTAL_API_KEY=…</pre>
 
 <!-- ===================== 6. EMAIL ===================== -->
 <section class="pb">
-  <h1 class="sec"><span class="n">6</span> Email / SMTP Activation <span class="rag r" style="font-size:7pt">Action needed</span></h1>
-  <p>Outgoing email is fully coded but <b>dormant until credentials are provided</b>. Without it: event-registration
-     confirmations don't send, members can't receive their CPD "I attended" links, and admin password-reset links are
-     only written to the server log instead of emailed.</p>
-  <table class="tbl tbl-sm">
-    <tr><th style="width:26%">Item</th><th style="width:24%">Variable</th><th>Example</th></tr>
-    <tr><td>SMTP host</td><td><code>SMTP_HOST</code></td><td><code>smtp.zoho.com</code> / host relay</td></tr>
-    <tr><td>Port</td><td><code>SMTP_PORT</code></td><td><code>587</code> (TLS) or <code>465</code> (SSL)</td></tr>
-    <tr><td>Username</td><td><code>SMTP_USER</code></td><td><code>events@niqs.org.ng</code></td></tr>
-    <tr><td>Password</td><td><code>SMTP_PASS</code></td><td>app-specific password preferred</td></tr>
-    <tr><td>From address</td><td><code>SMTP_FROM</code></td><td><code>NIQS Events &lt;events@niqs.org.ng&gt;</code></td></tr>
+  <h1 class="sec"><span class="n">6</span> Email / SMTP Activation <span class="rag r">Action needed</span></h1>
+  <p class="lead"><b>Revised 7 August 2026.</b> Still the position reported in June: outgoing email is fully built and
+  <b>dormant, awaiting a mailbox</b>. Nothing about it needs development.</p>
+
+  <p>Until it is switched on: <b>event-registration confirmations do not send</b>, members cannot receive their CPD
+  &ldquo;I attended&rdquo; links, and admin password-reset links are written to the server log instead of being emailed.
+  The contact form still records enquiries &mdash; they are simply read in the admin panel rather than arriving in an
+  inbox.</p>
+
+  <div class="box"><div class="bt">The cPanel login in &sect;15 closes this too</div>
+    The Institute's mail already runs on that same cPanel account, so the sending mailbox can be created there in the
+    same sitting &mdash; no new supplier, no extra cost, and the sender is already aligned with the domain, which is what
+    keeps the mail out of spam folders. <b>One credential closes both &sect;4 and &sect;6.</b></div>
+
+  <table class="tbl">
+    <tr><th style="width:26%">Item</th><th style="width:22%">Setting</th><th>Suggested</th></tr>
+    <tr><td>Mail server</td><td><code>SMTP_HOST</code></td><td><code>mail.niqs.org.ng</code> &mdash; the Institute's existing server</td></tr>
+    <tr><td>Port</td><td><code>SMTP_PORT</code></td><td>587 (TLS), or 465</td></tr>
+    <tr><td>Mailbox</td><td><code>SMTP_USER</code></td><td>a dedicated address, e.g. <code>noreply@niqs.org.ng</code> or <code>events@niqs.org.ng</code></td></tr>
+    <tr><td>Password</td><td><code>SMTP_PASS</code></td><td>created with the mailbox</td></tr>
+    <tr><td>Shown as sender</td><td><code>SMTP_FROM</code></td><td><code>NIQS &lt;noreply@niqs.org.ng&gt;</code></td></tr>
   </table>
-  <div class="box small">Also confirm the domain's <b>SPF / DKIM / DMARC</b> records permit this sender, so mail is not flagged as spam.</div>
+  <p class="small muted">A dedicated mailbox rather than a person's account: it survives staff changes, and a personal
+  password should never sit in a server configuration. ADLM loads these into AWS Secrets Manager and enables them
+  &mdash; about ten minutes once the mailbox exists.</p>
 </section>
 
 <!-- ===================== 7. PAYMENTS ===================== -->
@@ -436,7 +450,7 @@ PORTAL_API_URL=…  PORTAL_API_KEY=…</pre>
   <h1 class="sec"><span class="n">13</span> Onboarding &amp; Handover to NIQS</h1>
   <ul class="chk">
     <li><b>Admin training session</b> — walk the Secretariat through managing content (news, events, leadership, chapters, journals, etc.) via the admin panel.</li>
-    <li><b>Secure credential handover</b> — admin logins, plus access to hosting (Vercel, Render), the database and media accounts as agreed.</li>
+    <li><b>Secure credential handover</b> — admin logins, plus access to hosting (Vercel, AWS), the database and media accounts as agreed.</li>
     <li>Provide a short <b>"how to update each section"</b> guide alongside this document and the portal API document.</li>
     <li>Agree <b>ownership of ongoing content updates</b> and a <b>support / maintenance arrangement</b> (point of contact, response times, update cadence).</li>
   </ul>
@@ -448,7 +462,7 @@ PORTAL_API_URL=…  PORTAL_API_KEY=…</pre>
   <p>Recommended order of cut-over:</p>
   <table class="tbl tbl-sm">
     <tr><th style="width:8%">Step</th><th>Action</th></tr>
-    <tr><td><b>1</b></td><td>Approve hosting budget; upgrade Render (always-on) and the Atlas tier.</td></tr>
+    <tr><td><b>1</b></td><td>Provide the cPanel login for <code>niqs.org.ng</code> (§15). Hosting is already in production.</td></tr>
     <tr><td><b>2</b></td><td>Set all production environment variables (database, secrets, <code>NODE_ENV</code>, CORS/domain, media, email).</td></tr>
     <tr><td><b>3</b></td><td>Configure the official domain + DNS + SSL; update CORS and social tags.</td></tr>
     <tr><td><b>4</b></td><td>Populate real content and images; confirm demo/sample data is replaced.</td></tr>
@@ -458,7 +472,7 @@ PORTAL_API_URL=…  PORTAL_API_KEY=…</pre>
     <tr><td><b>8</b></td><td>Announce launch and monitor closely for the first days.</td></tr>
   </table>
   <div class="box navy"><div class="bt">Rollback safety</div>
-    Both Vercel and Render keep previous deployments — if anything goes wrong, we can roll back to the last good
+    Both Vercel and AWS keep previous releases — if anything goes wrong, we can roll back to the last good
     version almost instantly. Keep DNS TTL low during cut-over for a fast switch.</div>
 </section>
 
