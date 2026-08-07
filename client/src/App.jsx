@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import LaunchGate from './components/common/LaunchGate';
+import CookieNotice from './components/common/CookieNotice';
 import { useEffect, Suspense } from 'react';
 
 /* ── Global scroll-reveal observer ── */
@@ -65,6 +66,14 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Prefetches a route's chunk when a link is hovered or focused.
 import useRoutePrefetch from './hooks/useRoutePrefetch';
+
+// Counts a pageview on each navigation — a single-page app produces no page
+// loads for an analytics provider to notice on its own.
+import useAnalytics from './hooks/useAnalytics';
+
+// Per-route <title> and rel="canonical". index.html is served for every route,
+// so neither can be written there without claiming it of all of them.
+import useCanonical from './hooks/useCanonical';
 
 /**
  * Home is the one page imported eagerly. It is the most common entry point, and
@@ -137,6 +146,10 @@ function BuiltByBadge() {
 export default function App() {
   useScrollReveal();
   useRoutePrefetch();
+  useCanonical();
+  // After useCanonical, so the pageview it sends carries the page's own title
+  // rather than the previous route's.
+  useAnalytics();
   return (
     <AuthProvider>
       {/* Holding page until launch. Sits above everything, lets the admin panel
@@ -144,6 +157,10 @@ export default function App() {
           Delete this line to take the cover down early. */}
       <LaunchGate />
       <BuiltByBadge />
+      {/* Renders nothing at all unless the active analytics provider sets
+          cookies — see CookieNotice. Below LaunchGate in z-order on purpose:
+          asking about cookies over the top of a countdown is noise. */}
+      <CookieNotice />
       <Toaster
         position="top-right"
         toastOptions={{
@@ -193,6 +210,8 @@ export default function App() {
           <Route path="/contact" element={<PublicPage element={<Pages.Contact />} />} />
           <Route path="/partnership" element={<PublicPage element={<Pages.Partnership />} />} />
           <Route path="/partnership/:id" element={<PublicPage element={<Pages.PartnerDetail />} />} />
+          <Route path="/privacy-policy" element={<PublicPage element={<Pages.PrivacyPolicy />} />} />
+          <Route path="/terms-of-use" element={<PublicPage element={<Pages.TermsOfUse />} />} />
 
           {/* ══════ AUTH ROUTES ══════ */}
           <Route path="/login" element={<Pages.Login />} />

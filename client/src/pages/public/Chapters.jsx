@@ -4,37 +4,9 @@ import PageHero from '../../components/common/PageHero';
 import ChapterMap from '../../components/chapters/ChapterMap';
 import API from '../../api/axios';
 
-/* All 37 chapters with geopolitical zones — used as fallback */
-const ALL_STATES = [
-  ['Abia',        'South East'],   ['Adamawa',    'North East'],
-  ['Akwa Ibom',   'South South'],  ['Anambra',    'South East'],
-  ['Bauchi',      'North East'],   ['Bayelsa',    'South South'],
-  ['Benue',       'North Central'],['Borno',      'North East'],
-  ['Cross River', 'South South'],  ['Delta',      'South South'],
-  ['Ebonyi',      'South East'],   ['Edo',        'South South'],
-  ['Ekiti',       'South West'],   ['Enugu',      'South East'],
-  ['FCT',         'North Central'],['Gombe',      'North East'],
-  ['Imo',         'South East'],   ['Jigawa',     'North West'],
-  ['Kaduna',      'North West'],   ['Kano',       'North West'],
-  ['Katsina',     'North West'],   ['Kebbi',      'North West'],
-  ['Kogi',        'North Central'],['Kwara',      'North Central'],
-  ['Lagos',       'South West'],   ['Nasarawa',   'North Central'],
-  ['Niger',       'North Central'],['Ogun',       'South West'],
-  ['Ondo',        'South West'],   ['Osun',       'South West'],
-  ['Oyo',         'South West'],   ['Plateau',    'North Central'],
-  ['Rivers',      'South South'],  ['Sokoto',     'North West'],
-  ['Taraba',      'North East'],   ['Yobe',       'North East'],
-  ['Zamfara',     'North West'],
-];
-
-const FALLBACK = ALL_STATES.map(([state, zone], i) => ({
-  _id:   String(i + 1),
-  name:  `${state} Chapter`,
-  slug:  state.toLowerCase().replace(/\s+/g, '-'),
-  state,
-  zone,
-  memberCount: 0,
-}));
+/* All 37 chapters with geopolitical zones — used as fallback. Shared with the
+   build-time sitemap generator, which is why it lives in data/ and not here. */
+import { CHAPTERS as FALLBACK } from '../../data/chapters';
 
 export default function Chapters() {
   const [chapters, setChapters]   = useState(FALLBACK);

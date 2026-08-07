@@ -16,6 +16,34 @@
   RewriteEngine On
   RewriteBase /
 
+  # ── Canonical host ────────────────────────────────────────────────────────
+  # On 2026-08-07 all four of https://niqs.org.ng, http://niqs.org.ng,
+  # https://www.niqs.org.ng and https://niqsng.org returned 200 with byte-for-byte
+  # identical content. To a search engine that is four websites carrying the same
+  # pages: the ranking signals a single site would accumulate get split between
+  # them, and which one it shows is its choice rather than the Institute's.
+  #
+  # niqs.org.ng is canonical — it is the Institute's email domain and the one the
+  # DNS runbook leads with. Everything else redirects to it, permanently, keeping
+  # the path so a deep link survives the hop. The <link rel="canonical"> in
+  # index.html says the same thing; this makes it true at the HTTP level, which
+  # is the version crawlers trust.
+  #
+  # These must stay ABOVE the single-page-app rewrite below. Once that rule hands
+  # a URL to index.html the request is done and no redirect will fire.
+
+  # Non-HTTPS → HTTPS on the canonical host. The second condition matters on any
+  # host that terminates TLS at a proxy and speaks plain HTTP to Apache: there
+  # %{HTTPS} is never "on", and without the guard this rule is a redirect loop
+  # that takes the whole site down. Both must fail before it fires.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://niqs.org.ng%{REQUEST_URI} [L,R=301]
+
+  # Already HTTPS, but on www. or on the niqsng.org alias.
+  RewriteCond %{HTTP_HOST} !^niqs\.org\.ng$ [NC]
+  RewriteRule ^ https://niqs.org.ng%{REQUEST_URI} [L,R=301]
+
   # Anything that exists on disk — assets, images, PDFs — is served as itself.
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
@@ -38,6 +66,12 @@
   </FilesMatch>
   <FilesMatch "^index\.html$">
     Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  # Both are rewritten on every deploy — the sitemap by the build, robots.txt by
+  # hand. A year-long cache on either means Search Console keeps reading a stale
+  # copy long after the site has moved on.
+  <FilesMatch "^(robots\.txt|sitemap\.xml)$">
+    Header set Cache-Control "public, max-age=3600"
   </FilesMatch>
 </IfModule>
 
