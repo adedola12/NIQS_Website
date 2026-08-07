@@ -21,7 +21,7 @@ const DEFAULTS = { cpdEvents: '40', totalAwards: '10+' };
 export default function YQSF() {
   const [cpdEvents,    setCpdEvents]    = useState(DEFAULTS.cpdEvents);
   const [totalAwards,  setTotalAwards]  = useState(DEFAULTS.totalAwards);
-  const [under35,      setUnder35]      = useState('');
+  const [under40,      setUnder40]      = useState('');
   const [liveYoung,    setLiveYoung]    = useState(null);
   const [council, setCouncil] = useState([]);
   const chapterCount = useChapterCount();
@@ -35,7 +35,7 @@ export default function YQSF() {
       .then(res => {
         if (res.data?.yqsfCpdEvents)   setCpdEvents(res.data.yqsfCpdEvents);
         if (res.data?.yqsfTotalAwards) setTotalAwards(res.data.yqsfTotalAwards);
-        if (res.data?.yqsfUnder35Count) setUnder35(res.data.yqsfUnder35Count);
+        if (res.data?.yqsfUnder40Count) setUnder40(res.data.yqsfUnder40Count);
       })
       .catch(() => {});
 
@@ -67,20 +67,18 @@ export default function YQSF() {
   }, []);
 
   /* Young members. The register aggregates at under 40 and YQSF eligibility is
-     under 35, so this tile used to be a dash rather than publish a number under
-     a bracket the data does not support.
+     under 40 — which is the bracket the register already publishes, so this is a
+     true count of the forum's population rather than a stand-in for it.
 
-     The secretariat's call (2026-08-06) is to show the under-40 aggregate
-     meanwhile — so the tile is labelled from the figure's own age_limit rather
-     than from a hardcoded 35, and reads "Registered QS Under 40" while that is
-     what the number is. When NIQS exposes the count at 35 the server prefers it
-     and this relabels itself, with no change here.
+     The tile is still labelled from the figure's own age_limit rather than from
+     a hardcoded number, so if the register is ever re-aggregated the count and
+     the caption move together with no change here.
 
      A figure the secretariat has typed into site settings still wins: that one
-     is the forum's own count, not an aggregate standing in for it. */
-  const young = liveYoung && !under35
+     is the forum's own roll, not an aggregate that happens to share its bracket. */
+  const young = liveYoung && !under40
     ? { n: liveYoung.count.toLocaleString(), l: `Registered QS Under ${liveYoung.age_limit}` }
-    : { n: under35 || '—', l: 'Registered QS Under 35' };
+    : { n: under40 || '—', l: 'Registered QS Under 40' };
 
   const stats = [
     young,

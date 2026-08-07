@@ -29,6 +29,11 @@ const GRADE_FOLD_SHARE = 0.005; // 0.5%
 // the website must not draw a map or a directory from it.
 const CHAPTER_PUBLISH_SHARE = 0.5;
 
+// YQSF eligibility. Named once because two things depend on it: which upstream
+// bracket is chosen for the young-members figure, and whether that figure is
+// reported as describing the forum or a different population.
+const YQSF_AGE_LIMIT = 40;
+
 const slugify = (s) =>
   String(s || '')
     .toLowerCase()
@@ -179,26 +184,27 @@ function normaliseUnder40(under40, total, warnings) {
  * The young-members figure the YQSF page renders, whatever bracket the register
  * happens to publish it at.
  *
- * YQSF eligibility is under 35 and the live endpoint only aggregates at under
- * 40, which is why this figure used to be a dash. The secretariat's decision of
- * 2026-08-06 is to publish the under-40 aggregate meanwhile — correct, just
- * broader than the forum's own bracket — so the number must always travel with
- * the age limit it actually describes, and the page must caption itself from
- * that rather than from a hardcoded 35.
+ * YQSF eligibility is under 40, which is the bracket the register already
+ * publishes — so this normally resolves to an exact match and the tile is a true
+ * count of the forum's population, not a stand-in for it.
  *
- * The consequence is the point: when NIQS exposes `under_35` (or re-aggregates
- * `under_40` at 35), this starts returning it and the tile relabels itself. No
- * website change, no deploy — which is what "so the portal can adjust later"
- * has to mean if it is to be true without a developer in the loop.
+ * The figure still travels with the age limit it actually describes, and the
+ * page still captions itself from that rather than from a hardcoded number. That
+ * is what keeps this honest if the register ever moves: re-aggregate upstream and
+ * the count changes, the tile relabels itself, and no website change or deploy is
+ * involved.
  *
- * Narrower brackets win, because a bracket closer to 35 is closer to what the
- * forum is.
+ * The bracket matching eligibility wins — NOT the narrowest available. If NIQS
+ * later adds `under_35`, preferring it would quietly shrink the published figure
+ * and understate the forum, which is the same class of error as labelling an
+ * under-40 count "under 35".
  */
 function normaliseYoungMembers(d, total) {
   const candidates = [d.under_35, d.under_40, d.young_members]
     .filter(u => u && typeof u.count === 'number')
     .map(u => ({ ...u, age_limit: u.age_limit ?? (u === d.under_35 ? 35 : 40) }))
-    .sort((a, b) => a.age_limit - b.age_limit);
+    // Exact match on eligibility first; failing that, the closest bracket to it.
+    .sort((a, b) => Math.abs(a.age_limit - YQSF_AGE_LIMIT) - Math.abs(b.age_limit - YQSF_AGE_LIMIT));
 
   const u = candidates[0];
   if (!u) return null;
@@ -209,9 +215,9 @@ function normaliseYoungMembers(d, total) {
     age_limit: u.age_limit,
     known_dob: knownDob,
     dob_coverage: knownDob && total ? knownDob / total : null,
-    // True once the register publishes the forum's own bracket. Until then the
-    // page is showing a wider population and should not imply otherwise.
-    matches_yqsf_eligibility: u.age_limit === 35,
+    // True when the register's bracket is the forum's own. False means the page
+    // is showing a different population and should not imply otherwise.
+    matches_yqsf_eligibility: u.age_limit === YQSF_AGE_LIMIT,
   };
 }
 
@@ -275,7 +281,7 @@ exports.getMembershipStats = async (req, res) => {
   if (youngMembers && !youngMembers.matches_yqsf_eligibility) {
     warnings.push(
       `young-members figure is an under-${youngMembers.age_limit} aggregate; YQSF ` +
-      'eligibility is under 35, so it covers a wider population than the forum',
+      `eligibility is under ${YQSF_AGE_LIMIT}, so it describes a different population`,
     );
   }
   if (!femaleMembers) {

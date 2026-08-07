@@ -132,14 +132,14 @@ plainly omitted them rather than describing ten unregistered officers. A
 checklist has been prepared. Nothing is wrong on screen; these are asking whether
 each name should carry QS, Mr or Ms.
 
-**6. Two figures the register must expose.** Confirmed against the Institute's own
+**6. One figure the register must expose.** Confirmed against the Institute's own
 v1 API reference on 6 August, in the document and in the live response alike.
 
-*YQSF under-35.* The API aggregates at under **40**; forum eligibility is under
-**35**, and an under-40 count cannot be narrowed to one. The page now publishes
-the under-40 figure captioned as such — true, just broader than the forum.
-Exposing the same aggregate at 35 is the whole remaining job: the site prefers
-the narrowest bracket offered and relabels itself, with no release.
+*YQSF is settled.* Forum eligibility is under **40**, which is exactly the bracket
+the register publishes, so that tile now shows a true count of the forum's
+population rather than a wider aggregate standing in for it. Nothing is
+outstanding here. (An earlier note in this document recorded eligibility as under
+35; that was wrong, and the site no longer asks NIQS for a 35 aggregate.)
 
 *WAQSN female QS.* Section A carries five figures and none distinguishes gender.
 This one cannot be derived at all. The site reads a gender breakdown the moment
