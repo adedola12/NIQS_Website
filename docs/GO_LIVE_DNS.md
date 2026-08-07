@@ -41,9 +41,27 @@ The zone is therefore edited in cPanel, not at the registrar:
 | WHM (reseller) | `https://niqs.org.ng:2087` — confirmed live |
 | Where the records are | cPanel → **Domains → Zone Editor** → Manage, for `niqs.org.ng` |
 
-Ask the secretariat, or whoever originally set the hosting up, for the cPanel login.
-If the account's Zone Editor is hidden — some resellers disable it — then the records
-have to be changed by the reseller, through WHM.
+### ⛔ Blocked on: the cPanel login
+
+**Nothing below can start until someone supplies the cPanel credentials for
+niqs.org.ng.** This is the single open dependency for go-live — every other item on
+the 6 August status report is either closed or is content the site does not wait on.
+
+To request, from the secretariat or whoever originally set the hosting up:
+
+| Needed | Notes |
+|---|---|
+| cPanel **username and password** for `niqs.org.ng` | the login at `https://niqs.org.ng:2083` |
+| Whether **Zone Editor** is visible on that account | some resellers hide it |
+| If it is hidden: **WHM access**, or a named contact at the reseller | `https://niqs.org.ng:2087` |
+
+Send them through a password manager or a credential vault — not over WhatsApp or
+email, and not pasted into a chat transcript. The same login controls the Institute's
+mail, so it is worth handling properly.
+
+If the reseller must make the changes instead, they can be sent Step 1 and Step 3 of
+this document verbatim; they are written to be followed without any context from the
+rest of the project.
 
 **The registrar is not involved.** Nameservers stay where they are; only records
 inside the zone change.
@@ -144,6 +162,26 @@ either way**, and they will: `api`, `portal` and `mail` are separate records tha
 change never touches.
 
 ---
+
+## While we wait — the holding page
+
+The site now opens on a countdown to **midday, Friday 14 August 2026**, on frosted
+glass over the Institute's navy. It is in `client/src/components/common/LaunchGate.jsx`.
+
+- **To get past it:** triple-click the logo lockup at the top left, within about a
+  second. That browser then stays unlocked, and the cover retires itself for
+  everyone once the date passes.
+- **Also let through:** the admin panel and sign-in — the secretariat is loading
+  news, jobs and firms during exactly this week, and gating those would stop the
+  work the countdown exists to make room for. And any URL with `?preview` on it, so
+  a page can be sent for review without teaching anyone the click.
+- **To move the date:** change `LAUNCH_AT`, one line. **To take the cover down
+  early:** delete `<LaunchGate />` from `App.jsx`.
+
+**It is a curtain, not a lock.** It runs in the browser, so the pages behind it are
+still served and anyone who thinks to look can read them. That is a fair trade for a
+launch a week away and content that is meant to be public — but nothing should go
+behind it that would matter if it were read early.
 
 ## What this buys
 

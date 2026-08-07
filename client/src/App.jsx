@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import LaunchGate from './components/common/LaunchGate';
 import { useEffect, Suspense } from 'react';
 
 /* ── Global scroll-reveal observer ── */
@@ -138,6 +139,10 @@ export default function App() {
   useRoutePrefetch();
   return (
     <AuthProvider>
+      {/* Holding page until launch. Sits above everything, lets the admin panel
+          and sign-in through, and retires itself on the date — see LaunchGate.
+          Delete this line to take the cover down early. */}
+      <LaunchGate />
       <BuiltByBadge />
       <Toaster
         position="top-right"
