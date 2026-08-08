@@ -12,11 +12,16 @@
  * Both carry the same theme, CPD award and registration form, so they read as one
  * programme.
  *
- * No faculty are listed. The announcement names none, and the Flyer Studio's
- * default design ships with the previous training's four speakers — carrying
- * those over would put four people's names on a programme they may have nothing
- * to do with. The speakers section is switched off instead; turn it on in the
- * studio once the Secretariat confirms the line-up.
+ * Faculty are the four who taught the May 2026 training, carried over on the
+ * Secretariat's instruction. Read from that event's own record rather than from
+ * the Flyer Studio defaults, so anything attached to them there — photographs
+ * included — comes with them. None currently carries a photograph; the flyer
+ * renders name cards, which is how the May flyer already publishes.
+ *
+ * Their subjects line up with this theme rather than merely being available:
+ * highways, MEP and project management are three of the four topics and the three
+ * the theme names, so they are ordered to match the theme's own wording, with the
+ * digital-measurement session last.
  *
  * Idempotent: matches on title, so re-running updates rather than duplicates.
  *
@@ -82,13 +87,25 @@ const flyerBase = {
   accent: 'glow',
   selectedSpeakerIndex: 0,
   schedule: '',
-  speakers: [],
+  /* Ordered to echo the theme — "Highways, MEP & Project Management" — rather
+     than left in the May running order, so a reader scanning the flyer meets the
+     subjects in the sequence the title just promised them. */
+  speakers: [
+    { id: '1', name: 'QS Muftau Akinpelu', credentials: '', photo: null, role: 'Faculty',
+      topic: 'Highway infrastructure cost management' },
+    { id: '2', name: 'QS Prof Ganiyu Amuda-Yusuf', credentials: '', photo: null, role: 'Faculty',
+      topic: 'Mechanical, electrical & plumbing services' },
+    { id: '3', name: 'QS Prof Kulomri Adogbo', credentials: '', photo: null, role: 'Faculty',
+      topic: 'Project management & resource controls' },
+    { id: '4', name: 'QS Dr Aminu M. Bashir', credentials: '', photo: null, role: 'Faculty',
+      topic: 'Digital measurement workflows & BIM' },
+  ],
   sections: {
     cpdSeal: true,
     subtitle: true,
     themedEyebrow: true,
-    speakers: false,          // no faculty announced — see the note above
-    presentersEyebrow: false,
+    speakers: true,
+    presentersEyebrow: true,
     metaBlock: true,
     metaDate: true,
     metaVenue: true,
