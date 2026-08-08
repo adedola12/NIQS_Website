@@ -1003,6 +1003,56 @@ const CHAPTERS = [
       ['olajide-gboyega-adeoye', 'QS Olajide Gboyega Adeoye, FNIQS', 'Ex-Officio II', 9],
     ],
   },
+  {
+    key: 'lagos',
+    chapterName: 'Lagos Chapter',
+    state: 'Lagos',
+    stateLabel: 'Lagos State',
+    chairperson: 'QS Rilwan Balogun, FNIQS',
+    secretary: 'QS Azeez Ayodabo, MNIQS',
+    about:
+      'The Lagos State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Lagos State in the '
+      + 'South West geopolitical zone, the largest concentration of the profession '
+      + 'in the country. A fourteen-member executive committee leads the chapter '
+      + 'across administration, finance, research and development and public '
+      + 'relations, with five co-opted members, working with the National '
+      + 'Secretariat to deliver continuing professional development, uphold '
+      + 'professional standards in construction cost management, and represent the '
+      + 'profession before government and industry in the state.',
+    heroPortrait: 'rilwan-balogun',
+    /* Fourteen portraits, thirteen clean. The pack mixes three name/role
+       separators and abbreviates two offices ("Gen. Sec.", "Ass Gen Sec"), both
+       spelled out here to match every other chapter on the site. One surname
+       arrived with an underscore inside it (Adewumi_Samuel).
+
+       The co-opted members needed renumbering. The pack states I and II, gives
+       "Co-opted Member III" to two different people, and leaves a fifth
+       unnumbered. Exco is keyed (scope, chapter, title), so publishing that
+       verbatim would have had one record overwrite the other and a member vanish
+       silently. Renumbered I-V with the stated numbers kept in place:
+       QS Blessing Momodu moves III -> IV and QS Sanmi Ademuyiwa takes V.
+       CONFIRM WITH THE CHAPTER - those two are assumptions.
+
+       QS Adewumi Samuel's source is cropped too tightly for the matte to find
+       shoulders; it publishes with the backdrop fade and is worth re-shooting. */
+    roster: [
+      ['rilwan-balogun', 'QS Rilwan Balogun, FNIQS', 'Chairman', 1],
+      ['femi-falusi', 'QS Femi Falusi, FNIQS', 'Deputy Chairman', 2],
+      ['azeez-ayodabo', 'QS Azeez Ayodabo, MNIQS', 'General Secretary', 3],
+      ['oluwatosin-ogunsemore', 'QS Oluwatosin Ogunsemore, MNIQS', 'Assistant General Secretary', 4],
+      ['saheed-dosunmu', 'QS Saheed Dosunmu, FNIQS', 'Treasurer', 5],
+      ['fathia-yusuf', 'QS Fathia Yusuf, MNIQS', 'Financial Secretary', 6],
+      ['fausat-ajibade', 'QS Fausat Ajibade, FNIQS', 'Research & Development Secretary', 7],
+      ['john-agbezin', 'QS John Agbezin, MNIQS', 'Public Relations Secretary', 8],
+      ['oluwatobiloba-akinpelu', 'QS Oluwatobiloba Akinpelu, MNIQS', 'Ex-Officio I', 9],
+      ['seun-omoboyewa', 'QS Seun Omoboyewa, MNIQS', 'Co-opted Member I', 10],
+      ['adewale-samson-adedotun', 'QS Adewale Samson Adedotun, MNIQS', 'Co-opted Member II', 11],
+      ['adewumi-samuel', 'QS Adewumi Samuel, MNIQS', 'Co-opted Member III', 12],
+      ['blessing-momodu', 'QS Blessing Momodu, MNIQS', 'Co-opted Member IV', 13],
+      ['sanmi-ademuyiwa', 'QS Sanmi Ademuyiwa, MNIQS', 'Co-opted Member V', 14],
+    ],
+  },
 ];
 
 (async () => {
