@@ -127,8 +127,8 @@
     <div class="meta-grid">
       <div class="meta-cell"><div class="k">Prepared by</div><div class="v">ADLM Studio</div></div>
       <div class="meta-cell"><div class="k">For</div><div class="v">NIQS Secretariat</div></div>
-      <div class="meta-cell"><div class="k">Version</div><div class="v">1.0</div></div>
-      <div class="meta-cell"><div class="k">Date</div><div class="v">20 Jun 2026</div></div>
+      <div class="meta-cell"><div class="k">Version</div><div class="v">1.2</div></div>
+      <div class="meta-cell"><div class="k">Date</div><div class="v">9 Aug 2026</div></div>
     </div>
   </div>
   <div class="cover-foot">
@@ -143,7 +143,7 @@
   <table class="tbl">
     <tr><th style="width:22%">Field</th><th>Detail</th></tr>
     <tr><td><b>Document</b></td><td>NIQS Website — Go-Live &amp; Onboarding Plan</td></tr>
-    <tr><td><b>Status</b></td><td><b>v1.1 — 7 August 2026.</b> Go-live approved by the President on 6 August. Sections 1–14 describe the position at v1.0 (20 June) and are retained for reference; the box below and Section 15 supersede them.</td></tr>
+    <tr><td><b>Status</b></td><td><b>v1.2 — 9 August 2026.</b> Go-live approved by the President on 6 August. Sections 3, 4 and 10 are current as at this version; the remainder of Sections 1–14 describe the position at v1.0 (20 June) and are retained for reference; the box below and Section 15 supersede them.</td></tr>
     <tr><td><b>Prepared by</b></td><td>ADLM Studio (website vendor)</td></tr>
     <tr><td><b>Purpose</b></td><td>List every task, decision and credential required to launch the website properly — and to hand it over to NIQS to run.</td></tr>
     <tr><td><b>Related</b></td><td>Membership Portal — API Integration Requirements (companion document)</td></tr>
@@ -158,7 +158,7 @@
   </div>
 
   <div class="box">
-    <div class="bt">Status update — 7 August 2026 (supersedes Sections 1–14)</div>
+    <div class="bt">Status update — 9 August 2026 (supersedes Sections 1–14)</div>
     <p style="margin:0 0 7pt"><b>The website is built, deployed and carrying live data.</b> Most of what v1.0 listed as
     outstanding is closed:</p>
     <table class="tbl tbl-sm" style="margin:0 0 8pt">
@@ -168,6 +168,7 @@
       <tr><td>Chapters partly published</td><td><b>23 of 37</b> chapters carry a full executive roster; 344 officers, 316 portraits</td></tr>
       <tr><td>Leadership pages</td><td>National Executive Council, Board of Trustees, National Body Chairmen, Past Presidents, WAQSN and YQSF all published</td></tr>
       <tr><td>Contact details</td><td>Corrected to <b>QS Olusegun Ajalekoko House, No. 24 NIQS Crescent</b>, per the Secretariat</td></tr>
+      <tr><td>No analytics, no search listing, no published policies</td><td><b>All closed 7&ndash;9 August.</b> Visits are measured, the site can be indexed, and the <b>Privacy Policy</b> and <b>Terms of Use</b> are published &mdash; written to the Nigeria Data Protection Act 2023 (&sect;10)</td></tr>
     </table>
     <p style="margin:0"><b>One item now blocks launch:</b> the cPanel login for <code>niqs.org.ng</code>, so the domain can
     be pointed at the live site. Everything else outstanding is content the Secretariat loads directly, and the site does
@@ -223,7 +224,7 @@
     <tr><td><b>Payments</b></td><td><span class="rag r">Action needed</span></td><td>Choose gateway or route via portal; currently placeholder.</td><td><span class="own niqs">NIQS</span></td></tr>
     <tr><td><b>Member portal</b></td><td><span class="rag a">In progress</span></td><td>Awaiting portal API (separate document); env-gated &amp; safe meanwhile.</td><td><span class="own portal">Portal team</span></td></tr>
     <tr><td><b>Security &amp; accounts</b></td><td><span class="rag a">In progress</span></td><td>Remove test seeds, set strong secrets, create real admins.</td><td><span class="own adlm">ADLM</span> <span class="own niqs">NIQS</span></td></tr>
-    <tr><td><b>SEO, analytics, legal</b></td><td><span class="rag a">In progress</span></td><td>Analytics, sitemap, privacy/terms, OG tags on real domain.</td><td><span class="own adlm">ADLM</span> <span class="own niqs">NIQS</span></td></tr>
+    <tr><td><b>SEO, analytics, legal</b></td><td><span class="rag g">Ready</span></td><td><b>Built 7–9 August.</b> Analytics, cookie notice, sitemap, privacy &amp; terms, social tags and favicon all shipped. Awaiting Search Console verification, which needs the Institute's Google account (§10.2).</td><td><span class="own adlm">ADLM</span> <span class="own niqs">NIQS</span></td></tr>
     <tr><td><b>Backups &amp; monitoring</b></td><td><span class="rag a">In progress</span></td><td>Database backups + uptime/error monitoring.</td><td><span class="own adlm">ADLM</span></td></tr>
   </table>
 </section>
@@ -299,9 +300,10 @@
     throughout.</div>
 
   <h2 class="sub">4.3 At cut-over</h2>
-  <p>The social-preview tags (the card shown when the site is shared on WhatsApp or LinkedIn) still point at the
-  temporary address and will be repointed to <code>niqs.org.ng</code> in the same release. The holding page now covering
-  the site retires itself automatically at launch.</p>
+  <p>The social-preview tags — the card shown when the site is shared on WhatsApp or LinkedIn — <b>have since been
+  repointed</b> to <code>niqs.org.ng</code>, along with the redirects that collapse <code>www.</code>,
+  <code>niqsng.org</code> and the insecure <code>http://</code> address onto the canonical one (&sect;10.1). The holding
+  page now covering the site retires itself automatically at launch.</p>
 </section>
 
 <!-- ===================== 5. CONTENT ===================== -->
@@ -411,15 +413,101 @@
 </section>
 
 <!-- ===================== 10. SEO/LEGAL ===================== -->
-<section>
+<section class="pb">
   <h1 class="sec"><span class="n">10</span> SEO, Analytics &amp; Legal</h1>
-  <ul class="chk">
-    <li>Add <b>web analytics</b> (Google Analytics 4 or Plausible) — none is installed yet, so visits aren't measured.</li>
-    <li>Add <b>robots.txt</b> and a <b>sitemap.xml</b>; submit the site to <b>Google Search Console</b> for indexing.</li>
-    <li>Update social-preview tags (<code>og:url</code>, <code>og:image</code>) to the official domain; confirm the favicon.</li>
-    <li>Publish a <b>Privacy Policy</b> and <b>Terms of Use</b> — important given member data, contact/flyer forms and (future) payments; align with Nigeria's <b>NDPR</b> data-protection rules.</li>
-    <li>Add a brief <b>cookie notice</b> if analytics is enabled.</li>
-  </ul>
+  <p class="lead"><b>Revised 9 August 2026.</b> All five items this section listed in June are built and in the current
+  release. What remains is two settings and one verification inside the Institute's own Google account, and three
+  confirmations from the Secretariat on the legal wording.</p>
+
+  <h2 class="sub">10.1 What is already done</h2>
+  <table class="tbl tbl-sm">
+    <tr><td style="width:30%"><b>Web analytics</b></td>
+        <td><b>Google Analytics 4</b>, property <i>NIQS Website</i>, under an account registered in the Institute's own
+        name. That last point is not a formality: Analytics cannot move data between properties, so a property created
+        under the vendor's account would tie the Institute's traffic history to ADLM permanently. As set up, access can
+        be handed over without losing a day of history.</td></tr>
+    <tr><td><b>Cookie notice</b></td>
+        <td>Accept and Reject carry equal weight — a notice offering only "OK" is not consent under Nigerian law.
+        <b>Nothing is requested from Google until a visitor accepts</b>: not the tracking code, not a preliminary ping.
+        Decline or ignore it and no contact with Google is ever made.</td></tr>
+    <tr><td><b>Whose visits are counted</b></td>
+        <td>The admin panel and the member area are excluded, so the figures describe the <b>public</b> rather than the
+        Secretariat's own working day. Links that carry a private token — a flyer request, an event attendance link —
+        are excluded too, since the address in those is itself the credential.</td></tr>
+    <tr><td><b>robots.txt and sitemap.xml</b></td>
+        <td>Both returned <i>not found</i> on the live domain. The sitemap now lists <b>66 addresses</b> including all
+        37 chapter pages, and is rebuilt automatically with every release so it cannot drift out of step with the site.</td></tr>
+    <tr><td><b>Social-preview tags</b></td>
+        <td>Corrected to <code>niqs.org.ng</code>. They had been pointing at the temporary Vercel address, so every link
+        shared on WhatsApp or LinkedIn was previewing an image from — and quietly advertising the address of — a staging
+        deployment.</td></tr>
+    <tr><td><b>Favicon</b></td>
+        <td>The small crest shown in a browser tab and beside a Google result. <code>/favicon.ico</code> was returning
+        <i>not found</i>, and Google only displays an icon in search results when it is square <b>and</b> a multiple of
+        48&nbsp;pixels, which the one linked was not. The full set has been regenerated from the crest.</td></tr>
+    <tr><td><b>One address, not four</b></td>
+        <td><code>niqs.org.ng</code>, <code>www.niqs.org.ng</code>, <code>niqsng.org</code> and the insecure
+        <code>http://</code> version all served identical pages. To a search engine that is four websites splitting
+        between them whatever standing one would have earned. Three now redirect permanently to the fourth.</td></tr>
+    <tr><td><b>Privacy Policy &amp; Terms of Use</b></td>
+        <td>Published at <code>/privacy-policy</code> and <code>/terms-of-use</code>, linked from the footer of every
+        page.</td></tr>
+  </table>
+
+  <div class="box"><div class="bt">On the two legal documents</div>
+    They are written against the <b>Nigeria Data Protection Act 2023</b> and the NDPR, and against what this website
+    actually does — every service provider named is one the software genuinely uses, and every category of information
+    is one the system genuinely stores. A policy describing a generic website would be a published statement the
+    Institute could not stand behind.
+    <div style="margin-top:6pt">Three points are worth the Committee's attention. <b>The membership portal is carved
+    out</b> — it is operated by another provider and holds the register itself, so the policy says so plainly and
+    directs questions about membership records to the Secretariat. <b>Storage outside Nigeria is disclosed</b>: the
+    database and application run in France and the hosting, image storage and analytics in the United States, which
+    sections 41–43 of the Act require to be stated. And <b>payments are described as not taken on this website</b>,
+    which is true today — that clause must be revisited before a gateway is connected (§7).</div></div>
+
+  <h2 class="sub">10.2 What remains</h2>
+  <table class="tbl">
+    <tr><th style="width:30%">Item</th><th>Detail</th><th style="width:13%">Owner</th></tr>
+    <tr><td><b>Google Search Console</b><br><span class="small muted">verify &amp; submit the sitemap</span></td>
+        <td>Requires a sign-in to the Institute's Google account, which ADLM does not hold and should not.
+        Verification is either a DNS record — the same cPanel login of §15 unlocks it — or a small file ADLM places in
+        the site if that login is still outstanding.</td>
+        <td><span class="own niqs">NIQS</span></td></tr>
+    <tr><td><b>Two Analytics settings</b></td>
+        <td>Raise <b>data retention from 2 months to 14</b>; the default quietly discards detail after two months,
+        leaving nothing to compare next year's launch anniversary against. And leave <b>Google Signals off</b> —
+        switching it on enables advertising features and would make the published privacy policy untrue.</td>
+        <td><span class="own niqs">NIQS</span></td></tr>
+    <tr><td><b>Three confirmations on the legal text</b></td>
+        <td>Set out below. None blocks launch; all three should be settled before the documents are treated as final.</td>
+        <td><span class="own niqs">NIQS</span></td></tr>
+    <tr><td><b>Social profile addresses</b><br><span class="small muted">optional, but the cheapest win here</span></td>
+        <td>The Institute's X, Facebook, LinkedIn and Instagram addresses, plus the Secretariat's public telephone
+        number. These feed the structured data Google reads to connect the website to the Institute's other profiles
+        and show a summary panel beside search results.</td>
+        <td><span class="own niqs">NIQS</span></td></tr>
+  </table>
+
+  <table class="tbl tbl-sm">
+    <tr><th style="width:30%">Confirmation needed</th><th>Why it is being asked</th></tr>
+    <tr><td><b>Retention periods</b></td>
+        <td>The policy states 24 months for enquiries, 6 years for event and CPD records, 24 months for flyer requests.
+        These are defensible defaults chosen by ADLM, not a records policy the Institute has adopted.</td></tr>
+    <tr><td><b>The Data Protection Officer's address</b></td>
+        <td>Requests currently route to <code>info@niqs.org.ng</code> care of the Secretariat. No <code>dpo@</code>
+        address was invented, because an address in a published policy that bounces is worse than none. If the
+        Institute appoints an officer, that address replaces it.</td></tr>
+    <tr><td><b>A solicitor's reading</b></td>
+        <td>Particularly clause 3 of the Terms — that this website is not the membership register, and professional
+        standing should be confirmed with the Secretariat — and clause 11, on limitation of liability.</td></tr>
+  </table>
+
+  <div class="box warn"><div class="bt">Do not submit to Google before 14 August</div>
+    The countdown page currently covering the site is drawn in the visitor's own browser, and Google's crawler runs the
+    same code a visitor does. Submitting the site now would have it record sixty-six pages of <i>"Our new website goes
+    live in…"</i> and show that in search results for as long as it takes to re-crawl. The cover retires itself
+    automatically at launch; verification and submission should follow it, not precede it.</div>
 </section>
 
 <!-- ===================== 11. BACKUPS ===================== -->
@@ -442,6 +530,10 @@
     <li>Check for broken links and that all images load from cloud storage (not the temporary local path).</li>
     <li>Confirm <b>email delivery</b> once SMTP is set (§6), and the <b>payment flow</b> once the gateway is chosen (§7).</li>
     <li>Run a performance/Lighthouse pass after the hosting upgrade.</li>
+    <li><b>After the first upload to the live domain</b> (&sect;10): confirm <code>http://niqs.org.ng/about</code> redirects
+    to the secure canonical address rather than looping, and that <code>/robots.txt</code>, <code>/sitemap.xml</code> and
+    <code>/favicon.ico</code> all load. A redirect rule that misfires takes the whole site down rather than degrading
+    quietly, so this is checked on the spot, not the next morning.</li>
   </ul>
 </section>
 
@@ -521,7 +613,9 @@
     <tr><td><b>Two register figures</b></td><td>A count of members under 35 (for YQSF — the register only aggregates at 40) and a gender breakdown (for WAQSN). Both from the portal team; the site publishes them the day they exist.</td></tr>
     <tr><td><b>Eight content sections</b></td><td>News, jobs, partners, QS firms, exam results, webinars, workshop materials and journals — all built and loaded by the Secretariat through the admin panel, no developer needed.</td></tr>
     <tr><td><b>Admin users</b></td><td>Names, emails and roles of the staff who will manage the site (§9, §13).</td></tr>
-    <tr><td><b>Legal content</b></td><td>Privacy Policy &amp; Terms text, or approval for ADLM to draft (§10).</td></tr>
+    <tr><td><b>Google Search Console</b></td><td>A sign-in to the Institute's Google account, to verify the site and submit the sitemap. ADLM does not hold it and should not. Everything else in §10 is done; this is the last step before the site can appear in search results. <b>After 14 August</b> — see the warning in §10.2.</td></tr>
+    <tr><td><b>Legal text: three confirmations</b></td><td>The Privacy Policy and Terms are <b>written and published</b>. Outstanding: the <b>retention periods</b>, the <b>Data Protection Officer's address</b>, and a <b>solicitor's reading</b> of the liability and "not the register" clauses (§10.2).</td></tr>
+    <tr><td><b>Social profiles &amp; phone</b></td><td>The Institute's X, Facebook, LinkedIn and Instagram addresses and the Secretariat's public telephone number, for the structured data Google uses to build a summary panel (§10.2). Optional, and quick.</td></tr>
     <tr><td><b>Payments decision</b></td><td>Gateway choice + merchant keys, or “route via portal” (§7).</td></tr>
   </table>
 
@@ -531,8 +625,8 @@
     that fills in as it arrives, without holding up the launch.</div>
 
   <p class="small muted" style="margin-top:16pt; text-align:center; border-top:1px solid var(--line); padding-top:9pt;">
-    End of document &nbsp;·&nbsp; NIQS Website — Go-Live &amp; Onboarding Plan v1.1 &nbsp;·&nbsp;
-    Prepared by ADLM Studio &nbsp;·&nbsp; 7 August 2026
+    End of document &nbsp;·&nbsp; NIQS Website — Go-Live &amp; Onboarding Plan v1.2 &nbsp;·&nbsp;
+    Prepared by ADLM Studio &nbsp;·&nbsp; 9 August 2026
   </p>
 </section>
 

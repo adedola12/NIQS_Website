@@ -1,6 +1,6 @@
 # Analytics, indexing and the legal pages
 
-**As at 7 August 2026.** What was built, what is still switched off, and the
+**As at 9 August 2026.** What was built, what is still switched off, and the
 steps that can only be done by someone holding the Institute's Google account.
 
 ---
@@ -12,16 +12,21 @@ previews pointing at a Vercel deployment nobody was meant to see, and no
 published privacy policy while collecting names, phone numbers and addresses
 through four different forms.
 
-All of that is now built and in the repository. **Two things remain, and neither
-is ADLM's to do:**
+All of that is now built and in the repository, and **analytics is connected** —
+`G-B12YFDYNZJ`, the *NIQS Website* property, under a Google Analytics account
+registered in the Institute's own name rather than ADLM's. That distinction was
+worth the extra ten minutes: GA4 cannot move data between properties, so a
+property created under the vendor's account would have tied the Institute's
+traffic history to ADLM permanently.
+
+**One thing remains, and it is not ADLM's to do:**
 
 | | Who | Effort |
 |---|---|---|
-| Paste a Google Analytics Measurement ID into `client/.env.production` | Whoever owns the Institute's Google account | 10 minutes |
-| Verify the site in Google Search Console and submit the sitemap | Same person | 15 minutes |
+| Verify the site in Google Search Console and submit the sitemap | Whoever holds the Institute's Google account | 15 minutes |
 
-Until the first of those is done, **no visits are being counted.** Everything
-else takes effect on the next upload to the host.
+Plus two settings inside Analytics itself (§1) and three confirmations on the
+legal wording (§6). Everything else takes effect on the next upload to the host.
 
 ---
 
@@ -36,25 +41,44 @@ first and to accept that a good share of visitors will decline. Plausible is
 cookieless — no banner, no consent, nothing to explain — and costs about $9 a
 month. The switch is one line when the Institute wants it.
 
-### Turning it on
+### How it is configured
 
-1. Go to <https://analytics.google.com> with the account that should own the
-   Institute's data — **not** a personal Gmail belonging to whoever happens to be
-   in office. Admin → Create property.
-2. Property name `NIQS`, time zone **Nigeria**, currency **NGN**.
-3. Create a **Web** data stream for `https://niqs.org.ng`.
-4. Copy the **Measurement ID**. It looks like `G-XXXXXXXXXX`.
-5. Put it in `client/.env.production`:
-
-   ```
-   VITE_GA4_ID=G-XXXXXXXXXX
-   ```
-
-6. Rebuild and upload. That is the whole change.
+Account **Nigerian Institute of Quantity Surveyors** → property **NIQS Website**
+→ web data stream for `https://niqs.org.ng`, Measurement ID **`G-B12YFDYNZJ`**,
+set in `client/.env.production`.
 
 The Measurement ID is **not a secret** — it ships inside the JavaScript bundle
-and anyone can read it by viewing source. It identifies the property; it does not
-grant access to it.
+and anyone can read it by viewing source. It names the property; it grants no
+access to it.
+
+### Two settings still to change in the Analytics interface
+
+Neither can be set from the code, and both matter:
+
+- **Admin → Data retention: raise 2 months to 14.** The default silently discards
+  user-level detail after two months, so a year from now there would be nothing
+  to compare this launch against.
+- **Admin → Data collection: leave Google Signals off.** Turning it on enables
+  advertising features and would make clause 5 of the published privacy policy
+  untrue.
+
+Also worth doing: **Admin → Account access management** → add the Secretariat, so
+the Institute's analytics do not depend on one person's Google account remaining
+available.
+
+### Verifying it actually works
+
+Before uploading anything, from the repository:
+
+```bash
+npm --prefix client run preview
+```
+
+Open `http://localhost:5173/?preview`, click **Accept** on the cookie notice, and
+watch **Reports → Realtime** in Analytics. One active user in Nigeria should
+appear within about thirty seconds. Nothing is sent before you click Accept, so
+if you skip that step the report stays empty and the setup looks broken when it
+is not.
 
 ### Moving to Plausible later
 
@@ -271,7 +295,6 @@ read them.
 
 ## Checklist for the person doing the upload
 
-- [ ] `VITE_GA4_ID` filled in, or accept that nothing is being counted yet
 - [ ] `npm --prefix client run build` (regenerates the sitemap automatically)
 - [ ] Upload `client/dist/` to the host — **including the dot-file `.htaccess`**,
       which most FTP clients hide by default
