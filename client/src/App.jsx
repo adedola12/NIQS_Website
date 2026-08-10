@@ -121,27 +121,18 @@ function PublicPage({ element }) {
   return <PublicLayout>{element}</PublicLayout>;
 }
 
-/* ── Built-by credit pill (fixed, visible on every page) ── */
-function BuiltByBadge() {
-  return (
-    <div style={{
-      position: 'fixed', bottom: '1rem', left: '1rem', zIndex: 9999,
-      display: 'flex', alignItems: 'center', gap: '0.45rem',
-      background: 'rgba(0, 0, 102,0.88)', backdropFilter: 'blur(8px)',
-      border: '1px solid rgba(217, 182, 80,0.35)',
-      borderRadius: 999, padding: '5px 13px 5px 10px',
-      boxShadow: '0 2px 12px rgba(0,0,0,.18)',
-      pointerEvents: 'none', userSelect: 'none',
-    }}>
-      <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-body)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.08em' }}>
-        Built by
-      </span>
-      <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-gold)', fontFamily: 'var(--font-heading)', letterSpacing: '.06em' }}>
-        ADLM
-      </span>
-    </div>
-  );
-}
+/* The fixed "Built by ADLM" pill that used to sit here — bottom-left, on every
+   page — was removed on 10 August 2026.
+
+   The MoU grants ADLM one attribution and is specific about it: clause 10.1,
+   Annexe E11 and the Milestone 2 go-live checklist each name a **footer**
+   credit reading "Powered by ADLM Studio", styled to NIQS brand standards. A
+   second badge floating above every page was not part of that, and it floated
+   above every page — including the President's, the Board of Trustees, and
+   condolence notices, where a vendor's name hovering over a memorial is the
+   failure case nobody wants to defend at a Council meeting.
+
+   The credit now lives once, in Footer.jsx, in the words the MoU names. */
 
 export default function App() {
   useScrollReveal();
@@ -156,7 +147,6 @@ export default function App() {
           and sign-in through, and retires itself on the date — see LaunchGate.
           Delete this line to take the cover down early. */}
       <LaunchGate />
-      <BuiltByBadge />
       {/* Renders nothing at all unless the active analytics provider sets
           cookies — see CookieNotice. Below LaunchGate in z-order on purpose:
           asking about cookies over the top of a countdown is noise. */}

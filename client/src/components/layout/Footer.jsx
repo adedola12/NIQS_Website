@@ -1,6 +1,49 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ * ADLM's website, for the attribution below.
+ *
+ * Left empty deliberately: no address for ADLM Studio appears in the MoU or
+ * anywhere in this repository, and a credit pointing at a guessed domain is
+ * worse than one that does not link at all. Set it and the attribution becomes
+ * a link; leave it and it renders as plain text, which is what the MoU requires
+ * either way.
+ */
+const ADLM_URL = '';
+
+/**
+ * Attribution, per the MoU.
+ *
+ * Clause 10.1, the summary at G, Annexe E11 and the Milestone 2 go-live
+ * checklist all specify the same thing: a **footer** attribution reading
+ * "Powered by ADLM Studio", with placement and style aligned to NIQS brand
+ * standards. The checklist item is literally
+ *
+ *     ☐ Footer attribution: "Powered by ADLM Studio" present and styled.
+ *
+ * and it is a condition of NIQS issuing written Go-Live Acceptance. Until
+ * 10 August this footer read "Designed & built by ADLM" and a second, fixed
+ * badge read "Built by ADLM" — neither is the contracted string, so that box
+ * could not honestly be ticked. This is the wording the MoU names.
+ */
+function Attribution() {
+  const label = <>Powered by <b style={{ fontWeight: 800, letterSpacing: '.03em' }}>ADLM Studio</b></>;
+  const tone = { color: 'var(--color-gold)', textDecoration: 'none' };
+
+  return (
+    <p style={{
+      marginTop: '0.6rem', fontSize: '0.78rem',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem',
+    }}>
+      <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--color-gold)', flexShrink: 0 }} />
+      {ADLM_URL
+        ? <a href={ADLM_URL} target="_blank" rel="noopener noreferrer" style={tone}>{label}</a>
+        : <span style={tone}>{label}</span>}
+    </p>
+  );
+}
+
 const Footer = () => {
   return (
     <footer>
@@ -70,11 +113,7 @@ const Footer = () => {
           </p>
           <p>&copy; 2025 <span className="fgold">Nigerian Institute of Quantity Surveyors</span>. All rights reserved.</p>
           <p>No. 24, NIQS Crescent, Mabushi District, Abuja, Nigeria.</p>
-          <p style={{ marginTop: '0.6rem', fontSize: '0.76rem', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
-            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--color-gold)', flexShrink: 0 }} />
-            Designed &amp; built by{' '}
-            <span style={{ fontWeight: 800, color: 'var(--color-gold)', letterSpacing: '.04em' }}>ADLM</span>
-          </p>
+          <Attribution />
         </div>
       </div>
     </footer>

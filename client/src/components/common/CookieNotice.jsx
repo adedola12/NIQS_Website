@@ -41,7 +41,9 @@ export default function CookieNotice() {
       aria-label="Cookie notice"
       style={{
         position: 'fixed', left: '1rem', right: '1rem', bottom: '1rem',
-        // Clear of the "Built by ADLM" pill in the bottom-left corner.
+        // Right-aligned on wide screens rather than spanning the full width —
+        // a bar across the whole viewport reads as a takeover for something
+        // that should be a question.
         maxWidth: 560, marginLeft: 'auto',
         zIndex: 99998,
         background: '#fff',
