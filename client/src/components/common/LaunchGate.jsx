@@ -29,8 +29,17 @@ import { useLocation } from 'react-router-dom';
    target would already read 06 by mid-morning on the first day.
 
    Change this one line to move the date. Delete the component from App.jsx to
-   take the cover down early; it also retires itself once the date passes. */
-export const LAUNCH_AT = new Date(2026, 7, 14, 12, 0, 0); // 14 August 2026, 12:00
+   take the cover down early; it also retires itself once the date passes.
+
+   Written with an explicit +01:00 rather than `new Date(2026, 7, 14, 12, 0, 0)`,
+   which is not the same thing: that form means noon *on the visitor's own
+   device*, so the cover would lift at a different absolute moment for everyone
+   who opened it. A member in Sydney would have seen the site nine hours before
+   the Institute announced it, and one in New York would still have been looking
+   at a countdown five hours after the President had. WAT is UTC+1 year-round —
+   Nigeria keeps no daylight saving — so this is a fixed offset, and every
+   visitor now unlocks at the same instant: noon in Lagos. */
+export const LAUNCH_AT = new Date('2026-08-14T12:00:00+01:00'); // 14 August 2026, 12:00 WAT
 
 const KEY = 'niqs.launch.unlocked';
 const CLICKS_TO_UNLOCK = 3;

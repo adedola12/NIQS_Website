@@ -7,10 +7,15 @@ import tailwindcss from '@tailwindcss/vite';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-/* Launch: midday, Friday 14 August 2026. Must match LAUNCH_AT in
+/* Launch: midday WAT, Friday 14 August 2026. Must match LAUNCH_AT in
    src/components/common/LaunchGate.jsx — the cover and the link preview should
-   never disagree about whether the site is live. */
-const LAUNCH_AT = new Date(2026, 7, 14, 12, 0, 0);
+   never disagree about whether the site is live.
+
+   The explicit +01:00 matters as much here as it does there, for a different
+   reason: this one is evaluated on whatever machine runs the build. A release
+   cut from a CI runner on UTC, or by anyone working outside Nigeria, would
+   otherwise flip the preview at their local noon rather than Lagos's. */
+const LAUNCH_AT = new Date('2026-08-14T12:00:00+01:00');
 
 /**
  * Puts the launch date into the link preview until the site is live, then takes
