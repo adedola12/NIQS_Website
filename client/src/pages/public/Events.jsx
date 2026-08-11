@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 
 const TYPE_FILTERS = ['All', 'Conference', 'Examination', 'Workshop', 'Ceremony'];
+
+/**
+ * Whether an event can still be registered for.
+ *
+ * Measured against the end of its last day, not its start: a two-day workshop is
+ * still open on the morning of day two, and a same-day event should not vanish
+ * from registration at one minute past midnight. endDate wins where it exists,
+ * because `date` is only the first day.
+ */
+function isUpcoming(e) {
+  const last = new Date(e.endDate || e.date);
+  if (Number.isNaN(last.getTime())) return false;
+  last.setHours(23, 59, 59, 999);
+  return last.getTime() >= Date.now();
+}
 
 export default function Events() {
   const [events, setEvents] = useState([]);
@@ -74,7 +90,38 @@ export default function Events() {
                       )}
                     </p>
                   </div>
-                  <span className="epill">{e.type}</span>
+                  {/* The registration flow existed but nothing on the public site
+                      reached it: this page rendered no links at all, and the
+                      homepage's rows pointed at a slug the Event model does not
+                      have. /events/:id/register, the Registration record, the
+                      attendance token and the CPD credit behind it were therefore
+                      unreachable — including for the National Workshop &
+                      Induction. An event carrying its own registrationLink keeps
+                      it; everything still to come uses the site's own form. */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '.5rem' }}>
+                    <span className="epill">{e.type}</span>
+                    {isUpcoming(e) && (
+                      e.registrationLink ? (
+                        <a
+                          href={e.registrationLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn bp"
+                          style={{ fontSize: '.68rem', padding: '.35rem .9rem' }}
+                        >
+                          Register &rarr;
+                        </a>
+                      ) : (
+                        <Link
+                          to={`/events/${e._id}/register`}
+                          className="btn bp"
+                          style={{ fontSize: '.68rem', padding: '.35rem .9rem' }}
+                        >
+                          Register &rarr;
+                        </Link>
+                      )
+                    )}
+                  </div>
                 </div>
               );
             })}

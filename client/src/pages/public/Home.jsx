@@ -372,8 +372,14 @@ export default function Home() {
           </div>
           <div className="evtl">
             {events.map((e, i) => (
+              /* Was `/events/${e.slug}`. Events have no slug field — the model
+                 never had one — so this produced /events/undefined on every row,
+                 and there is no /events/:id route to catch it either. Every event
+                 on the homepage led to the 404 page. Goes to the calendar, which
+                 is the page that actually exists; the Register action lives
+                 there, per event. */
               <Link
-                to={`/events/${e.slug}`}
+                to="/events"
                 className={`erow reveal d${i + 1}`}
                 key={e._id}
                 style={{ textDecoration: 'none', color: 'inherit' }}
