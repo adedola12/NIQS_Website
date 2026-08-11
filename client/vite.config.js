@@ -1,9 +1,69 @@
+import { existsSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
+const HERE = dirname(fileURLToPath(import.meta.url));
+
+/* Launch: midday, Friday 14 August 2026. Must match LAUNCH_AT in
+   src/components/common/LaunchGate.jsx — the cover and the link preview should
+   never disagree about whether the site is live. */
+const LAUNCH_AT = new Date(2026, 7, 14, 12, 0, 0);
+
+/**
+ * Puts the launch date into the link preview until the site is live, then takes
+ * it out again by itself.
+ *
+ * The ask was for the preview to "show the countdown". It cannot, and it is
+ * worth being plain about why rather than shipping something that looks broken:
+ * WhatsApp, LinkedIn and X fetch these tags once and cache the result for days.
+ * A preview built around "3 days to go" would still say three days on the day
+ * itself, and would still say it a week after launch. So the card states the
+ * **date**, which is true whenever it is read, and which is what a reader
+ * actually needs in order to turn up.
+ *
+ * The expiry is the point of doing this in the build rather than by hand. The
+ * live site has already spent six weeks serving a stale build and this document
+ * set has already shipped a cover page dated two months late — "remember to
+ * change it back on Friday" is not a plan. After midday on the 14th this rewrite
+ * simply stops happening.
+ */
+function launchPreview() {
+  return {
+    name: 'niqs-launch-preview',
+    transformIndexHtml(html) {
+      if (Date.now() >= LAUNCH_AT.getTime()) return html;
+
+      const when = LAUNCH_AT.toLocaleDateString('en-NG', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+      });
+      const title = `Our new website goes live ${when} — NIQS`;
+      const description =
+        'The Nigerian Institute of Quantity Surveyors is putting the finishing '
+        + `touches to its new home online. Launching ${when}.`;
+
+      let out = html
+        .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${title}$2`)
+        .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${title}$2`)
+        .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${description}$2`)
+        .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${description}$2`);
+
+      /* Drop a purpose-made launch card in at public/og-launch.jpg (1200x630) and
+         it is used automatically; until it exists the standard card is kept,
+         because a missing og:image is worse than a generic one — some clients
+         fall back to whatever image they can scrape off the page. */
+      if (existsSync(resolve(HERE, 'public/og-launch.jpg'))) {
+        out = out.replace(/(og-image\.jpg)/g, 'og-launch.jpg');
+      }
+      return out;
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), launchPreview()],
   server: {
     proxy: {
       '/api': {
