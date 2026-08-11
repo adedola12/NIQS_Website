@@ -56,7 +56,7 @@ at the deployment platform would make every future correction go live by itself,
 within about a minute, with no upload step to forget.
 
 That move has now been worked out in full and written up as a runbook —
-`docs/DOMAIN_CUTOVER.md`. It also closes the 404 problem above outright: the
+`docs/GO_LIVE_DNS.md`. It also closes the 404 problem above outright: the
 deployment platform already serves every deep link correctly, which was tested
 rather than assumed, so no `.htaccess` is involved at all.
 
@@ -197,7 +197,7 @@ nor the Secretariat can close alone.
 
 1. **Approve pointing the domain at automatic deployment.** It removes the manual
    upload step and the class of problem that produced the 404 issue. The method
-   is written up in `docs/DOMAIN_CUTOVER.md`, including the mail-routing step
+   is written up in `docs/GO_LIVE_DNS.md`, including the mail-routing step
    that has to come first — see the warning above. Worth doing several days
    before the launch date rather than on it.
 2. **Set a deadline for the fourteen outstanding chapters**, and ask for

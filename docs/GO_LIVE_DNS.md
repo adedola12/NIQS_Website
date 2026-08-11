@@ -85,21 +85,68 @@ and embarrassing within hours.
 and already points at the mail server, so the MX simply needs to name it instead —
 which is exactly what `niqsng.org` already does (`MX → mail.niqsng.org`).
 
+Re-verified on 11 August: `mail.niqs.org.ng` is a **real, independent A record**, not
+a wildcard catching every name. `smtp.niqs.org.ng` does not resolve, and a wildcard
+would have answered it. So the record survives the apex move.
+
+### The SPF record has the same fault
+
+An earlier draft of this document said to leave the SPF record untouched. **That was
+wrong**, and it is the second half of the same trap. The record reads:
+
+```
+"v=spf1 ip4:50.6.229.107 +a +mx ~all"
+```
+
+`+a` authorises whatever the **apex A record** points at, and `+mx` whatever the MX
+resolves to. Both currently mean 50.6.229.107. After the cutover, `+a` would authorise
+Vercel's edge to send mail as the Institute — a broad authorisation handed to shared
+CDN infrastructure — while the record stops describing the server that actually sends.
+
+Fix it in Step 1, alongside the MX:
+
+```
+"v=spf1 ip4:50.6.229.107 ~all"
+```
+
+This is **exactly equivalent to today's record** — `+a` and `+mx` both resolve to the
+address the `ip4:` term already names, so nothing changes for current mail. It only
+differs after the apex moves, which is the entire point of doing it beforehand.
+
+DKIM (`default._domainkey`) and DMARC (`_dmarc`, currently `p=none`) are unaffected —
+neither references the apex. Leave both alone.
+
 ---
 
 ## Order of work
 
+### Step 0 — lower the TTLs (an hour before anything else)
+
+Measured on 11 August, and they are the difference between a five-minute rollback and
+a three-hour one:
+
+| Record | TTL today |
+|---|---|
+| `niqs.org.ng` A | ~53 min |
+| `www` CNAME | ~2h 38m |
+| `MX` | ~2h 38m |
+
+Set the TTL on those three to **300** (5 minutes) and change nothing else. Every wait
+in the steps below then costs minutes rather than hours, and a mistake is undone just
+as fast. Put them back to 3600 about a week after the cutover.
+
 ### Step 1 — make email independent of the website record (do this first)
 
-In the HostBurly / cPanel DNS zone editor for **niqs.org.ng**:
+In the cPanel Zone Editor for **niqs.org.ng**:
 
 - Confirm `mail.niqs.org.ng` is an **A** record → `50.6.229.107`. It already is; check it.
 - Change the **MX** record for `niqs.org.ng` from `niqs.org.ng` to **`mail.niqs.org.ng`**,
   priority `0` (or keep the existing priority).
-- Leave every SPF / DKIM / DMARC TXT record untouched.
+- Change the **SPF** TXT record to `v=spf1 ip4:50.6.229.107 ~all` — see *The SPF record
+  has the same fault* above. Leave DKIM and DMARC alone.
 
-**Then wait for the old record's TTL to expire** — usually 1–4 hours, and the zone
-editor shows it. Do not proceed until `nslookup -type=MX niqs.org.ng` returns
+**Then wait for the old record's TTL to expire** — five minutes if Step 0 was done,
+otherwise 1–4 hours. Do not proceed until `nslookup -type=MX niqs.org.ng` returns
 `mail.niqs.org.ng`. Send a test mail to `info@niqs.org.ng` and confirm it arrives.
 
 Skipping this wait is the one way this cutover causes real damage.
@@ -149,6 +196,34 @@ and MX showing `mail.niqs.org.ng`. Then send one more test email.
 the move worked — on the old host every address except the homepage returned 404,
 because Apache had no rewrite rule. Vercel handles it natively.
 
+That was measured on 11 August rather than assumed, on both hosts at once:
+
+| Path | Apache (live domain) | Vercel |
+|---|---|---|
+| `/` | 200 | 200 |
+| `/about`, `/contact`, `/chapters`, `/events`, `/waqsn` | **404** | 200 |
+| `/chapters/lagos-chapter` | — | 200 |
+
+Vercel serves those because `vercel.json` carries the single-page rewrite. No code
+change is involved in this cutover, and no `.htaccess` is involved at all.
+
+### Nothing else is in the way
+
+Two things that would have blocked or spoiled the move, both checked on 11 August:
+
+- **No CAA record** on the domain, so nothing restricts which authority may issue the
+  certificate. Vercel can issue.
+- **No AAAA record** on the apex or `www`, so there is no IPv6 address left behind to
+  quietly keep some visitors on the old host after the A record moves.
+
+### Rollback
+
+Set the apex `A` back to `50.6.229.107` and `www` back to a CNAME at `niqs.org.ng`.
+With Step 0 done that takes effect in about five minutes.
+
+Do **not** roll back the Step 1 mail changes. They are correct either way, and
+reverting them re-arms the trap.
+
 ---
 
 ## Which domain is canonical
@@ -182,6 +257,18 @@ glass over the Institute's navy. It is in `client/src/components/common/LaunchGa
 still served and anyone who thinks to look can read them. That is a fair trade for a
 launch a week away and content that is meant to be public — but nothing should go
 behind it that would matter if it were read early.
+
+## Two things not to do
+
+**Do not do this on launch day.** DNS propagation and certificate issuance both need
+slack, and neither is worth discovering at noon on Friday. Cutting over two or three
+days early costs nothing: anyone reaching the domain before Friday meets the launch
+cover described above, which is what it is for — and a cover page is a considerably
+better thing to be showing than a stale build that 404s on every link but the homepage.
+
+**Do not cancel the hosting afterwards.** The web hosting becomes redundant; the
+mailboxes on the same account do not, and neither do `api.niqsng.org` and
+`portal.niqsng.org`, which stay on that server throughout.
 
 ## What this buys
 
