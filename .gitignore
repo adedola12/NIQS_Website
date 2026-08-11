@@ -9,3 +9,6 @@ uploads/*
 
 # Claude Code worktrees (transient, must never be committed)
 .claude/worktrees/
+
+# Deployable build archive — regenerate rather than commit (44 MB)
+niqs-site-build.zip

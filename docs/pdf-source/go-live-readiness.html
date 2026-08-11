@@ -127,8 +127,8 @@
     <div class="meta-grid">
       <div class="meta-cell"><div class="k">Prepared by</div><div class="v">ADLM Studio</div></div>
       <div class="meta-cell"><div class="k">For</div><div class="v">NIQS Secretariat</div></div>
-      <div class="meta-cell"><div class="k">Version</div><div class="v">1.2</div></div>
-      <div class="meta-cell"><div class="k">Date</div><div class="v">9 Aug 2026</div></div>
+      <div class="meta-cell"><div class="k">Version</div><div class="v">1.3</div></div>
+      <div class="meta-cell"><div class="k">Date</div><div class="v">11 Aug 2026</div></div>
     </div>
   </div>
   <div class="cover-foot">
@@ -143,7 +143,7 @@
   <table class="tbl">
     <tr><th style="width:22%">Field</th><th>Detail</th></tr>
     <tr><td><b>Document</b></td><td>NIQS Website — Go-Live &amp; Onboarding Plan</td></tr>
-    <tr><td><b>Status</b></td><td><b>v1.2 — 9 August 2026.</b> Go-live approved by the President on 6 August. Sections 3, 4 and 10 are current as at this version; the remainder of Sections 1–14 describe the position at v1.0 (20 June) and are retained for reference; the box below and Section 15 supersede them.</td></tr>
+    <tr><td><b>Status</b></td><td><b>v1.3 — 11 August 2026.</b> Go-live approved by the President on 6 August. Sections 3, 4 and 10 are current as at this version; the remainder of Sections 1–14 describe the position at v1.0 (20 June) and are retained for reference; the box below and Section 15 supersede them.</td></tr>
     <tr><td><b>Prepared by</b></td><td>ADLM Studio (website vendor)</td></tr>
     <tr><td><b>Purpose</b></td><td>List every task, decision and credential required to launch the website properly — and to hand it over to NIQS to run.</td></tr>
     <tr><td><b>Related</b></td><td>Membership Portal — API Integration Requirements (companion document)</td></tr>
@@ -158,17 +158,19 @@
   </div>
 
   <div class="box">
-    <div class="bt">Status update — 9 August 2026 (supersedes Sections 1–14)</div>
+    <div class="bt">Status update — 11 August 2026 (supersedes Sections 1–14)</div>
     <p style="margin:0 0 7pt"><b>The website is built, deployed and carrying live data.</b> Most of what v1.0 listed as
     outstanding is closed:</p>
     <table class="tbl tbl-sm" style="margin:0 0 8pt">
       <tr><th style="width:34%">Since 20 June</th><th>Now</th></tr>
       <tr><td>API on Render free plan</td><td>Moved to <b>AWS (Paris)</b> on 31 July — no cold starts, co-located with the database</td></tr>
       <tr><td>Membership figures typed by hand</td><td><b>Live from the Institute’s own register</b> — 14,022 members, refreshed automatically</td></tr>
-      <tr><td>Chapters partly published</td><td><b>23 of 37</b> chapters carry a full executive roster; 344 officers, 316 portraits</td></tr>
+      <tr><td>Chapters partly published</td><td><b>28 of 37</b> chapters carry a full executive roster — Enugu, Gombe, Jigawa and Kano added 11 August</td></tr>
       <tr><td>Leadership pages</td><td>National Executive Council, Board of Trustees, National Body Chairmen, Past Presidents, WAQSN and YQSF all published</td></tr>
       <tr><td>Contact details</td><td>Corrected to <b>QS Olusegun Ajalekoko House, No. 24 NIQS Crescent</b>, per the Secretariat</td></tr>
       <tr><td>No analytics, no search listing, no published policies</td><td><b>All closed 7&ndash;9 August.</b> Visits are measured, the site can be indexed, and the <b>Privacy Policy</b> and <b>Terms of Use</b> are published &mdash; written to the Nigeria Data Protection Act 2023 (&sect;10)</td></tr>
+      <tr><td>Every event link on the homepage</td><td><b>Fixed 11 August.</b> All of them led to the 404 page, and the registration form behind them was unreachable from the public site — including for the National Workshop</td></tr>
+      <tr><td>The live domain</td><td><b>Still serving a build from before 30 July.</b> Everything above is correct on the deployment platform and absent from <code>niqs.org.ng</code>. The upload is packaged and one credential away — see Section 15</td></tr>
     </table>
     <p style="margin:0"><b>One item now blocks launch:</b> the cPanel login for <code>niqs.org.ng</code>, so the domain can
     be pointed at the live site. Everything else outstanding is content the Secretariat loads directly, and the site does
@@ -415,7 +417,7 @@
 <!-- ===================== 10. SEO/LEGAL ===================== -->
 <section class="pb">
   <h1 class="sec"><span class="n">10</span> SEO, Analytics &amp; Legal</h1>
-  <p class="lead"><b>Revised 9 August 2026.</b> All five items this section listed in June are built and in the current
+  <p class="lead"><b>Revised 11 August 2026.</b> All five items this section listed in June are built and in the current
   release. What remains is two settings and one verification inside the Institute's own Google account, and three
   confirmations from the Secretariat on the legal wording.</p>
 
@@ -586,10 +588,22 @@
       <tr><td><b>Confirmation that Zone&nbsp;Editor is enabled</b></td>
           <td>Some resellers hide it. If it is hidden we need either WHM access or a named contact at the reseller.</td></tr>
     </table>
-    <p style="margin:0"><b>Please send these through a password manager or a sealed handover — not by WhatsApp or email.</b>
+    <p style="margin:0 0 7pt"><b>Please send these through a password manager or a sealed handover — not by WhatsApp or email.</b>
     The same login controls the Institute’s mailboxes, so it deserves the same care as any other master credential.
     ADLM will use it only for the DNS change described below, and the password can be rotated immediately afterwards.</p>
+    <p style="margin:0"><b>An FTP password for the existing host would also do, and would close most of this today.</b>
+    The current site is a manual upload rather than an automatic deployment, so the finished build can be put on
+    <code>niqs.org.ng</code> the moment either credential exists — it is already packaged and waiting, and the upload
+    itself takes minutes. That would fix the 404 on every page, publish the analytics, the search files and the two legal
+    documents, and leave only the DNS decision outstanding.</p>
   </div>
+
+  <div class="box warn"><div class="bt">What this is costing, stated plainly</div>
+    The domain has been serving a build from <b>before 30 July</b> for the whole of this period. It does not carry the
+    corrected Secretariat address, any chapter published since, the fix that stops every page but the homepage returning
+    404, or anything from the last week. Every day this waits is a day the Institute's own address shows an older site
+    than the one that is finished, and a day search engines cannot index it. <b>Nothing else on this page is close to
+    this in consequence.</b></div>
 
   <h2 class="sub">What we will do with it</h2>
   <table class="tbl tbl-sm">
@@ -625,8 +639,8 @@
     that fills in as it arrives, without holding up the launch.</div>
 
   <p class="small muted" style="margin-top:16pt; text-align:center; border-top:1px solid var(--line); padding-top:9pt;">
-    End of document &nbsp;·&nbsp; NIQS Website — Go-Live &amp; Onboarding Plan v1.2 &nbsp;·&nbsp;
-    Prepared by ADLM Studio &nbsp;·&nbsp; 9 August 2026
+    End of document &nbsp;·&nbsp; NIQS Website — Go-Live &amp; Onboarding Plan v1.3 &nbsp;·&nbsp;
+    Prepared by ADLM Studio &nbsp;·&nbsp; 11 August 2026
   </p>
 </section>
 
