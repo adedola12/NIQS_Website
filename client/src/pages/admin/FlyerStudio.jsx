@@ -11,6 +11,7 @@ import ExportControls from '../../flyer/ExportControls.jsx';
 import { DEFAULT_EVENT } from '../../flyer/defaultEvent.js';
 import { getCategoryConfig } from '../../flyer/categories.js';
 import { listFlyerEvents, saveFlyerEvent, deleteFlyerEvent, checkDate } from '../../flyer/flyerApi';
+import Icon from '../../components/common/Icon';
 import {
   generateFlyerLink, listFlyerRequests, getFlyerRequest,
   setFlyerRequestStatus, requestToEvent,
@@ -215,7 +216,7 @@ export default function FlyerStudio() {
       setOverrideInfo(null);
       toast.success(force ? 'Saved — date conflict overridden' : (editingId ? 'Flyer updated' : 'Flyer saved'));
       if (res.warnings?.length) {
-        toast(`Heads up: ${res.warnings.length} other event(s) also fall on this date`, { icon: '⚠️' });
+        toast(`Heads up: ${res.warnings.length} other event(s) also fall on this date`, { icon: 'warning' });
       }
       refreshSaved();
       // If this flyer came from an intake request, close out that request.
@@ -272,7 +273,7 @@ export default function FlyerStudio() {
         <AvailabilityBanner availability={availability} canOverride={canOverride} hasDate={!!event.dateStart} />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button onClick={handleShareLink} disabled={linkLoading} style={toolBtn('#fff', '#000066', '1.5px solid #DDE3F0')}>
-            {linkLoading ? 'Generating…' : '🔗 Share intake form'}
+            {linkLoading ? 'Generating…' : <><Icon name="link" size="sm" /> Share intake form</>}
           </button>
           <button onClick={handleNew} style={toolBtn('#F0F0FF', '#000066', '1.5px solid #000066')}>
             + New event
@@ -292,7 +293,7 @@ export default function FlyerStudio() {
           padding: '8px 28px', background: '#F0F0FF', borderBottom: '1px solid #DDE3F0',
           fontSize: 12.5, color: '#000066', fontWeight: 500,
         }}>
-          ✏️ You're building from a submitted request — saving the flyer will mark that request complete.
+          <Icon name="edit" size="sm" /> You're building from a submitted request — saving the flyer will mark that request complete.
         </div>
       )}
 
@@ -354,7 +355,7 @@ export default function FlyerStudio() {
 
           {blocked && (
             <div style={{ alignSelf: 'stretch', maxWidth: 520, margin: '0 auto', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', borderRadius: 8, padding: '10px 14px', fontSize: 12.5, fontWeight: 500 }}>
-              🔒 {availability.hard?.[0] ? `${availability.hard[0].owner} — “${availability.hard[0].title}” (${availability.hard[0].when})` : 'This date is reserved.'} You can't save on this date. Pick another.
+              <Icon name="lock" size="sm" /> {availability.hard?.[0] ? `${availability.hard[0].owner} — “${availability.hard[0].title}” (${availability.hard[0].when})` : 'This date is reserved.'} You can't save on this date. Pick another.
             </div>
           )}
 
@@ -422,7 +423,7 @@ function ProjectLibrary({ assets }) {
     <div style={{ padding: '10px 28px', background: '#FAFBFF', borderBottom: '1px solid #DDE3F0' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 11, fontWeight: 800, color: '#000066', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          📎 Project library
+          <Icon name="attachment" size="sm" /> Project library
         </span>
         <span style={{ fontSize: 11.5, color: '#5A6485' }}>
           {assets.length} image{assets.length > 1 ? 's' : ''} from the requester — click to open / download. (Speaker photos already fill the cards.)
@@ -458,15 +459,15 @@ function AvailabilityBanner({ availability, canOverride, hasDate }) {
   if (availability.ok) {
     if (availability.warnings?.length) {
       const w = availability.warnings[0];
-      return <Pill bg="#FEF9C3" fg="#854D0E">⚠ Date free for you — but {w.owner} also has “{w.title}” ({w.when})</Pill>;
+      return <Pill bg="#FEF9C3" fg="#854D0E"><Icon name="warning" size="sm" /> Date free for you — but {w.owner} also has “{w.title}” ({w.when})</Pill>;
     }
-    return <Pill bg="#DCFCE7" fg="#166534">✓ Date available</Pill>;
+    return <Pill bg="#DCFCE7" fg="#166534"><Icon name="check" size="sm" /> Date available</Pill>;
   }
   const h = availability.hard?.[0];
   const msg = h ? `${h.owner} holds “${h.title}” (${h.when})` : 'Date reserved';
   return canOverride
-    ? <Pill bg="#FEF9C3" fg="#854D0E">⚠ {msg} — you can override on save</Pill>
-    : <Pill bg="#FEE2E2" fg="#991B1B">🔒 {msg} — unavailable</Pill>;
+    ? <Pill bg="#FEF9C3" fg="#854D0E"><Icon name="warning" size="sm" /> {msg} — you can override on save</Pill>
+    : <Pill bg="#FEE2E2" fg="#991B1B"><Icon name="lock" size="sm" /> {msg} — unavailable</Pill>;
 }
 
 function Pill({ bg, fg, children }) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import Icon from '../common/Icon';
 
 /* ── helper: closes dropdown when clicking outside ── */
 function useClickOutside(ref, handler) {
@@ -201,7 +202,9 @@ function UserChip() {
                 (e.currentTarget.style.background = "transparent")
               }
             >
-              {isAdminUser ? "🛡️  Admin Panel" : "👤  My Portal"}
+              {isAdminUser
+                ? <><Icon name="shield" size="sm" /> Admin Panel</>
+                : <><Icon name="user" size="sm" /> My Portal</>}
             </button>
             <button
               onClick={handleLogout}
@@ -213,7 +216,7 @@ function UserChip() {
                 (e.currentTarget.style.background = "transparent")
               }
             >
-              🚪 Sign Out
+              <Icon name="logout" size="sm" /> Sign Out
             </button>
           </div>
         </div>
@@ -341,13 +344,13 @@ const Navbar = () => {
               </Link>
               <div className="ddi-div"></div>
               <Link to="/login" className="ddi">
-                Member Portal <span className="lock">&#128274;</span>
+                Member Portal <span className="lock"><Icon name="lock" size="sm" /></span>
               </Link>
               <Link to="/login" className="ddi">
-                Induction Letter <span className="lock">&#128274;</span>
+                Induction Letter <span className="lock"><Icon name="lock" size="sm" /></span>
               </Link>
               <Link to="/login" className="ddi">
-                Upgrade Letter <span className="lock">&#128274;</span>
+                Upgrade Letter <span className="lock"><Icon name="lock" size="sm" /></span>
               </Link>
             </NavDropdown>
 
@@ -360,19 +363,19 @@ const Navbar = () => {
               </Link>
               <div className="ddi-div"></div>
               <Link to="/login" className="ddi">
-                Interview Results <span className="lock">&#128274;</span>
+                Interview Results <span className="lock"><Icon name="lock" size="sm" /></span>
               </Link>
               <Link to="/login" className="ddi">
-                TPC/GDE Results <span className="lock">&#128274;</span>
+                TPC/GDE Results <span className="lock"><Icon name="lock" size="sm" /></span>
               </Link>
               <Link to="/login" className="ddi">
-                Logbook Result <span className="lock">&#128274;</span>
+                Logbook Result <span className="lock"><Icon name="lock" size="sm" /></span>
               </Link>
             </NavDropdown>
 
             <NavDropdown label="Research &amp; Devt">
               <Link to="/login" className="ddi">
-                Workshop Certificates <span className="lock">&#128274;</span>
+                Workshop Certificates <span className="lock"><Icon name="lock" size="sm" /></span>
               </Link>
               <Link to="/workshop-materials" className="ddi">
                 Workshop Materials
@@ -503,7 +506,9 @@ const Navbar = () => {
                 navigate(admin ? "/admin" : "/portal");
               }}
             >
-              {admin ? "🛡️ Admin Panel" : "👤 My Portal"}
+              {admin
+                ? <><Icon name="shield" size="sm" /> Admin Panel</>
+                : <><Icon name="user" size="sm" /> My Portal</>}
             </button>
             <button
               className="ml-sub"
@@ -522,12 +527,12 @@ const Navbar = () => {
                 navigate("/login");
               }}
             >
-              🚪 Sign Out
+              <Icon name="logout" size="sm" /> Sign Out
             </button>
           </>
         ) : (
           <Link to="/login" className="ml-sub" onClick={closeMenu}>
-            Member Portal &#128274;
+            Member Portal <Icon name="lock" size="sm" />
           </Link>
         )}
 
@@ -539,7 +544,7 @@ const Navbar = () => {
           Published Results
         </Link>
         <Link to="/login" className="ml-sub" onClick={closeMenu}>
-          My Results &#128274;
+          My Results <Icon name="lock" size="sm" />
         </Link>
 
         <div className="ml-hd">Research &amp; Devt</div>

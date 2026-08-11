@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
 const ForgotPassword = () => {
   const [params] = useSearchParams();
@@ -54,7 +55,7 @@ const ForgotPassword = () => {
 
         {sent ? (
           <div className="fp-success">
-            <div className="fp-success-icon">&#10003;</div>
+            <div className="fp-success-icon"><Icon name="check" size="sm" /></div>
             <h3>Check Your Email</h3>
             <p>
               We've sent a password reset link to <strong>{email}</strong>.

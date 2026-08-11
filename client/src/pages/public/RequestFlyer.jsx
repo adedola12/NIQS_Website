@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
+import Icon from '../../components/common/Icon';
 
 const STEPS = [
   {
@@ -169,7 +170,7 @@ export default function RequestFlyer() {
                   lineHeight: 1.5,
                 }}
               >
-                <span style={{ color: 'var(--color-gold)', fontWeight: 800, flexShrink: 0 }}>✓</span>
+                <span style={{ color: 'var(--color-gold)', fontWeight: 800, flexShrink: 0 }}><Icon name="check" size="sm" /></span>
                 {item}
               </li>
             ))}

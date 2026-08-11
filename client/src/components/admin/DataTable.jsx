@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
-import { MdEdit, MdDelete, MdSearch, MdChevronLeft, MdChevronRight } from 'react-icons/md';
-
+import Icon from '../common/Icon';
 const PAGE_SIZE = 10;
 
 export default function DataTable({
@@ -80,7 +79,7 @@ export default function DataTable({
             border: '1px solid #e5e7eb',
           }}
         >
-          <MdSearch size={18} color="#9ca3af" />
+          <Icon name="search" size={18} color="#9ca3af" />
           <input
             type="text"
             placeholder="Search..."
@@ -193,7 +192,7 @@ export default function DataTable({
                             marginRight: 6,
                           }}
                         >
-                          <MdEdit size={16} />
+                          <Icon name="edit" size={16} />
                         </button>
                       )}
                       {onDelete && canDeleteRows && (
@@ -209,7 +208,7 @@ export default function DataTable({
                             color: '#dc2626',
                           }}
                         >
-                          <MdDelete size={16} />
+                          <Icon name="delete" size={16} />
                         </button>
                       )}
                     </td>
@@ -251,7 +250,7 @@ export default function DataTable({
                 opacity: safePage === 0 ? 0.4 : 1,
               }}
             >
-              <MdChevronLeft size={18} />
+              <Icon name="back" size={18} />
             </button>
             <span style={{ padding: '4px 10px', lineHeight: '26px' }}>
               {safePage + 1} / {totalPages}
@@ -268,7 +267,7 @@ export default function DataTable({
                 opacity: safePage >= totalPages - 1 ? 0.4 : 1,
               }}
             >
-              <MdChevronRight size={18} />
+              <Icon name="forward" size={18} />
             </button>
           </div>
         </div>

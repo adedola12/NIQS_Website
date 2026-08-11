@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { canDelete } from '../../utils/roleHelpers';
 import AdminHeader from '../../components/admin/AdminHeader';
 import DataTable from '../../components/admin/DataTable';
+import Icon from '../../components/common/Icon';
 
 const emptyForm = {
   name: '',
@@ -131,7 +132,7 @@ export default function ManageExco() {
       render: (val) => val ? (
         <img src={val} alt="" style={{ width: 36, height: 44, objectFit: 'cover', objectPosition: 'top', borderRadius: 6, border: '1px solid #e5e7eb', display: 'block' }} />
       ) : (
-        <div style={{ width: 36, height: 44, borderRadius: 6, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>👤</div>
+        <div style={{ width: 36, height: 44, borderRadius: 6, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}><Icon name="user" size="sm" /></div>
       ),
     },
     { key: 'name', label: 'Name' },

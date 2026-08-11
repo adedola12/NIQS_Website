@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
+import Icon from '../../components/common/Icon';
 
 const paymentCategories = [
   {
     title: 'Membership Dues',
-    icon: '🏛️',
+    icon: 'institution',
     description: 'Annual membership subscription for Probationers, Graduate Members (MNIQS), and Fellows (FNIQS).',
     items: [
       { label: 'Probationer Annual Dues', amount: '₦25,000' },
@@ -16,7 +17,7 @@ const paymentCategories = [
   },
   {
     title: 'Examination Fees',
-    icon: '📝',
+    icon: 'note',
     description: 'Fees for professional examinations administered by NIQS.',
     items: [
       { label: 'Test of Professional Competence (TPC)', amount: '₦75,000' },
@@ -27,7 +28,7 @@ const paymentCategories = [
   },
   {
     title: 'Event Registration',
-    icon: '🎟️',
+    icon: 'ticket',
     description: 'Registration fees for NIQS conferences, workshops, and ceremonies.',
     items: [
       { label: 'Annual Conference — Member', amount: '₦50,000' },
@@ -66,7 +67,7 @@ export default function Payment() {
                 onClick={() => { setSelectedCategory(i); setSelectedItem(''); }}
                 style={{ cursor: 'pointer' }}
               >
-                <div className="card-icon" style={{ fontSize: '2.5rem' }}>{cat.icon}</div>
+                <div className="card-icon"><Icon name={cat.icon} size="xl" /></div>
                 <h3>{cat.title}</h3>
                 <p>{cat.description}</p>
                 <div style={{ marginTop: '1rem' }}>

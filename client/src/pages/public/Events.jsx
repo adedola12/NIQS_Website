@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
+import Icon from '../../components/common/Icon';
 
 const TYPE_FILTERS = ['All', 'Conference', 'Examination', 'Workshop', 'Ceremony'];
 
@@ -82,10 +83,10 @@ export default function Events() {
                     <h4>{e.title}</h4>
                     <p>{e.description}</p>
                     <p style={{ marginTop: '.3rem', fontSize: '.72rem', color: 'var(--color-txt-3)' }}>
-                      📍 {e.location}
+                      <Icon name="location" size="sm" /> {e.location}
                       {e.endDate && (
                         <span style={{ marginLeft: '1rem' }}>
-                          📅 {d.toLocaleDateString('en-NG', { month: 'short', day: 'numeric' })} — {new Date(e.endDate).toLocaleDateString('en-NG', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          <Icon name="calendar" size="sm" /> {d.toLocaleDateString('en-NG', { month: 'short', day: 'numeric' })} — {new Date(e.endDate).toLocaleDateString('en-NG', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       )}
                     </p>

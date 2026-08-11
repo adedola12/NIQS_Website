@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
-const TYPE_ICON  = { slides: '📊', template: '📋', reading: '📖', video: '🎬', other: '📁' };
+const TYPE_ICON  = { slides: 'chart', template: 'template', reading: 'book', video: 'video', other: 'folder' };
 const TYPE_LABEL = { slides: 'Slides', template: 'Template', reading: 'Reading', video: 'Video', other: 'Other' };
 const TYPE_COLOR = { slides: '#000066', template: '#D9B650', reading: '#1a5276', video: '#dc2626', other: '#6b7280' };
 const SCOPE_LABEL = { national: 'National', chapter: 'Chapter', yqsf: 'YQSF', waqsn: 'WAQSN' };
@@ -139,7 +140,7 @@ export default function WorkshopMaterials() {
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>Loading materials…</div>
           ) : filtered.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '.8rem' }}>📁</div>
+              <div style={{ marginBottom: '.8rem' }}><Icon name="folder" size="xl" /></div>
               <div style={{ fontWeight: 700, color: 'var(--color-navy)' }}>No materials found.</div>
             </div>
           ) : (
@@ -182,7 +183,7 @@ function MaterialCard({ m, fmtDate, isPlaceholder }) {
         <img src={m.thumbnailUrl || 'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=500&q=70'} alt={m.title}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 102,.5)' }} />
-        <span style={{ position: 'absolute', top: 10, left: 10, fontSize: '1.4rem' }}>{TYPE_ICON[m.type] || '📁'}</span>
+        <span style={{ position: 'absolute', top: 10, left: 10, color: 'var(--color-gold)' }}><Icon name={TYPE_ICON[m.type] || 'folder'} size="lg" /></span>
         <span style={{ position: 'absolute', top: 10, right: 10, fontSize: '.58rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', padding: '2px 8px', borderRadius: 10, background: tColor, color: '#fff' }}>
           {TYPE_LABEL[m.type] || m.type}
         </span>
@@ -205,7 +206,7 @@ function MaterialCard({ m, fmtDate, isPlaceholder }) {
         </div>
         <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '.9rem', color: 'var(--color-navy)', lineHeight: 1.3, marginBottom: '.5rem' }}>{m.title}</div>
         {m.workshopTitle && (
-          <div style={{ fontSize: '.7rem', color: 'var(--color-gold)', fontWeight: 600, marginBottom: '.4rem' }}>📌 {m.workshopTitle}</div>
+          <div style={{ fontSize: '.7rem', color: 'var(--color-gold)', fontWeight: 600, marginBottom: '.4rem' }}><Icon name="pin" size="sm" /> {m.workshopTitle}</div>
         )}
         <p style={{ fontSize: '.78rem', color: 'var(--color-txt-2)', lineHeight: 1.6, margin: '0 0 .9rem',
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>

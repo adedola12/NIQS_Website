@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdArticle, MdEvent, MdPeople, MdMail, MdAdminPanelSettings, MdAdd, MdPictureAsPdf } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import { canManageAdmins } from '../../utils/roleHelpers';
 import AdminHeader from '../../components/admin/AdminHeader';
 import StatsCard from '../../components/admin/StatsCard';
+import Icon from '../../components/common/Icon';
 
 export default function Dashboard() {
   const { admin } = useAuth();
@@ -35,10 +35,10 @@ export default function Dashboard() {
   };
 
   const quickActions = [
-    { label: 'Add News', icon: MdArticle, path: '/admin/news', color: '#2563EB' },
-    { label: 'Add Event', icon: MdEvent, path: '/admin/events', color: '#059669' },
-    { label: 'View Members', icon: MdPeople, path: '/admin/members', color: '#7c3aed' },
-    { label: 'Messages', icon: MdMail, path: '/admin/messages', color: '#D9B650' },
+    { label: 'Add News', icon: 'news', path: '/admin/news', color: '#2563EB' },
+    { label: 'Add Event', icon: 'event', path: '/admin/events', color: '#059669' },
+    { label: 'View Members', icon: 'group', path: '/admin/members', color: '#7c3aed' },
+    { label: 'Messages', icon: 'email', path: '/admin/messages', color: '#D9B650' },
   ];
 
   return (
@@ -119,7 +119,7 @@ export default function Dashboard() {
                 fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap',
               }}
             >
-              <MdPictureAsPdf size={17} />
+              <Icon name="pdf" size={17} />
               Outstanding Portraits PDF
             </a>
           </div>

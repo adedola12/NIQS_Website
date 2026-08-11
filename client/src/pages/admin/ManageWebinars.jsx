@@ -87,7 +87,7 @@ export default function ManageWebinars() {
     { key: 'speaker', label: 'Speaker', render: v => v || '—' },
     { key: 'scope', label: 'Scope', render: v => <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: '#000066', color: '#fff', textTransform: 'capitalize' }}>{v}</span> },
     { key: 'category', label: 'Category', render: v => v || '—' },
-    { key: 'isUpcoming', label: 'Status', render: v => <span style={{ color: v ? '#dc2626' : '#6b7280', fontWeight: 700, fontSize: 12 }}>{v ? '🔴 Upcoming' : '⏺ Past'}</span> },
+    { key: 'isUpcoming', label: 'Status', render: v => <span style={{ color: v ? '#dc2626' : '#6b7280', fontWeight: 700, fontSize: 12 }}>{v ? <><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'currentColor', marginRight: 6, verticalAlign: 'middle' }} /> Upcoming</> : <><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'currentColor', marginRight: 6, verticalAlign: 'middle' }} /> Past</>}</span> },
   ];
 
   return (

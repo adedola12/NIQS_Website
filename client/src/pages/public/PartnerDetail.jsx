@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
+import Icon from '../../components/common/Icon';
 
 const tierColors = {
   platinum: '#6b7280',
@@ -98,7 +99,7 @@ export default function PartnerDetail() {
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {partner.benefits.map((b, i) => (
                       <li key={i} style={{ display: 'flex', gap: '.6rem', alignItems: 'flex-start', fontSize: '.88rem', color: 'var(--color-txt-2)', lineHeight: 1.6 }}>
-                        <span style={{ color: 'var(--color-gold)', fontWeight: 800, flexShrink: 0, marginTop: 1 }}>✓</span>
+                        <span style={{ color: 'var(--color-gold)', fontWeight: 800, flexShrink: 0, marginTop: 1 }}><Icon name="check" size="sm" /></span>
                         {b}
                       </li>
                     ))}
@@ -130,15 +131,15 @@ export default function PartnerDetail() {
               <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', fontWeight: 700, color: 'var(--color-navy)', marginTop: 0, marginBottom: '1rem' }}>Contact & Details</h3>
 
               {[
-                partner.address && { icon: '📍', label: 'Address', value: [partner.address, partner.city, partner.state, partner.country].filter(Boolean).join(', ') },
-                partner.phone && { icon: '📞', label: 'Phone', value: partner.phone, href: `tel:${partner.phone}` },
-                partner.contactEmail && { icon: '✉️', label: 'Email', value: partner.contactEmail, href: `mailto:${partner.contactEmail}` },
-                partner.website && { icon: '🌐', label: 'Website', value: partner.website.replace(/^https?:\/\//, ''), href: partner.website, external: true },
-                partner.industry && { icon: '🏭', label: 'Industry', value: partner.industry },
-                partner.founded && { icon: '📅', label: 'Founded', value: partner.founded },
+                partner.address && { icon: 'location', label: 'Address', value: [partner.address, partner.city, partner.state, partner.country].filter(Boolean).join(', ') },
+                partner.phone && { icon: 'phone', label: 'Phone', value: partner.phone, href: `tel:${partner.phone}` },
+                partner.contactEmail && { icon: 'email', label: 'Email', value: partner.contactEmail, href: `mailto:${partner.contactEmail}` },
+                partner.website && { icon: 'web', label: 'Website', value: partner.website.replace(/^https?:\/\//, ''), href: partner.website, external: true },
+                partner.industry && { icon: 'industry', label: 'Industry', value: partner.industry },
+                partner.founded && { icon: 'calendar', label: 'Founded', value: partner.founded },
               ].filter(Boolean).map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: '.7rem', marginBottom: '1rem', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '1rem', flexShrink: 0, marginTop: 1 }}>{item.icon}</span>
+                  <span style={{ flexShrink: 0, marginTop: 1 }}><Icon name={item.icon} size="md" /></span>
                   <div>
                     <div style={{ fontSize: '.72rem', color: 'var(--color-txt-3, #9ca3af)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.04em' }}>{item.label}</div>
                     {item.href ? (

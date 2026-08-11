@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
 const NIGERIAN_STATES = [
   'Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue',
@@ -86,7 +87,7 @@ function FirmCard({ firm }) {
         </div>
 
         <div style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', lineHeight: 1.5 }}>
-          📍 {[firm.city, firm.address].filter(Boolean).join(', ')}
+          <Icon name="location" size="sm" /> {[firm.city, firm.address].filter(Boolean).join(', ')}
         </div>
 
         {firm.description && (
@@ -100,19 +101,19 @@ function FirmCard({ firm }) {
           {firm.phone && (
             <a href={`tel:${firm.phone.replace(/\s/g, '')}`}
               style={{ fontSize: '.72rem', color: 'var(--color-gold)', fontWeight: 600, textDecoration: 'none' }}>
-              📞 {firm.phone}
+              <Icon name="phone" size="sm" /> {firm.phone}
             </a>
           )}
           {firm.email && (
             <a href={`mailto:${firm.email}`}
               style={{ fontSize: '.72rem', color: 'var(--color-navy)', fontWeight: 600, textDecoration: 'none' }}>
-              ✉ {firm.email}
+              <Icon name="email" size="sm" /> {firm.email}
             </a>
           )}
           {firm.website && (
             <a href={firm.website} target="_blank" rel="noopener noreferrer"
               style={{ fontSize: '.72rem', color: 'var(--color-gold)', fontWeight: 600, textDecoration: 'none' }}>
-              🌐 Website ↗
+              <Icon name="web" size="sm" /> Website ↗
             </a>
           )}
         </div>
@@ -229,7 +230,7 @@ export default function SearchQSFirms() {
                 onClick={() => { setSearch(''); setStateFilter(''); }}
                 style={{ fontSize: '.72rem', color: 'var(--color-gold)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}
               >
-                Clear filters ✕
+                Clear filters <Icon name="close" size="sm" />
               </button>
             )}
           </div>
@@ -243,7 +244,7 @@ export default function SearchQSFirms() {
                found", which would tell a visitor a firm is unregistered when in
                fact we simply could not check. */
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '.8rem' }}>⚠️</div>
+              <div style={{ marginBottom: '.8rem' }}><Icon name="warning" size="xl" /></div>
               <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-navy)', marginBottom: '.4rem' }}>
                 The directory could not be loaded
               </div>
@@ -254,7 +255,7 @@ export default function SearchQSFirms() {
             </div>
           ) : filtered.length === 0 && hasFilters ? (
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '.8rem' }}>🔍</div>
+              <div style={{ marginBottom: '.8rem' }}><Icon name="search" size="xl" /></div>
               <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-navy)', marginBottom: '.4rem' }}>No firms found</div>
               <div style={{ fontSize: '.82rem' }}>Try adjusting your search or clearing the filters.</div>
             </div>
@@ -264,7 +265,7 @@ export default function SearchQSFirms() {
                check that a practice is real, and a specimen listing is the one
                thing it must never show. */
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '.8rem' }}>🗂️</div>
+              <div style={{ marginBottom: '.8rem' }}><Icon name="folder" size="xl" /></div>
               <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-navy)', marginBottom: '.4rem' }}>
                 The firm directory is not published yet
               </div>

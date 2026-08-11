@@ -4,6 +4,7 @@ import API from '../../api/axios';
 import useMembershipStats, { formatCount, formatApprox, MEMBERS_FALLBACK } from '../../hooks/useMembershipStats';
 import { AGREEMENT_COUNT } from '../../data/reciprocity';
 import useChapterCount, { CHAPTERS_FALLBACK } from '../../hooks/useChapterCount';
+import Icon from '../../components/common/Icon';
 
 /* Founding year, for the "years of excellence" tile — computed rather than typed
    so it does not quietly go stale each January. */
@@ -38,12 +39,12 @@ const fallbackEvents = [
 ];
 
 const services = [
-  { icon: '\u{1F3D7}\uFE0F', title: 'Cost Management', desc: 'Comprehensive building economics and cost planning for capital projects of all scales, from pre-design through to final account.', tag: 'Core' },
-  { icon: '\u{1F4CB}', title: 'Procurement Advice', desc: 'Strategic procurement route selection and contract administration that aligns client objectives with project risk profiles.', tag: 'Core' },
-  { icon: '\u2696\uFE0F', title: 'Contract Administration', desc: 'Professional oversight of valuations, variations, claims, and final accounts — ensuring fair dealing for all parties.', tag: 'Core' },
-  { icon: '\u{1F4CA}', title: 'Project Monitoring', desc: 'Independent assessment of project progress and expenditure — providing clients with objective reporting and early warning of overruns.' },
-  { icon: '\u{1F393}', title: 'Professional Examinations', desc: 'NIQS administers rigorous entry and upgrade examinations that uphold the standard expected of all corporate members.' },
-  { icon: '\u{1F30D}', title: 'International Engagement', desc: 'Through reciprocity agreements with leading QS bodies worldwide, NIQS members enjoy access to global recognition.' },
+  { icon: 'costManagement', title: 'Cost Management', desc: 'Comprehensive building economics and cost planning for capital projects of all scales, from pre-design through to final account.', tag: 'Core' },
+  { icon: 'procurement', title: 'Procurement Advice', desc: 'Strategic procurement route selection and contract administration that aligns client objectives with project risk profiles.', tag: 'Core' },
+  { icon: 'contract', title: 'Contract Administration', desc: 'Professional oversight of valuations, variations, claims, and final accounts — ensuring fair dealing for all parties.', tag: 'Core' },
+  { icon: 'chart', title: 'Project Monitoring', desc: 'Independent assessment of project progress and expenditure — providing clients with objective reporting and early warning of overruns.' },
+  { icon: 'education', title: 'Professional Examinations', desc: 'NIQS administers rigorous entry and upgrade examinations that uphold the standard expected of all corporate members.' },
+  { icon: 'web', title: 'International Engagement', desc: 'Through reciprocity agreements with leading QS bodies worldwide, NIQS members enjoy access to global recognition.' },
 ];
 
 const defaultTickerItems = [
@@ -76,19 +77,19 @@ function monthYear(d) {
 
 const principles = [
   {
-    icon: '👁️',
+    icon: 'eye',
     label: 'Our Vision',
     title: 'Total Cost & Procurement Management',
     body: "To be the profession in Nigeria responsible for total cost and procurement management, for the achievement of client's objectives in all types of capital projects and developments, in all sectors of the economy.",
   },
   {
-    icon: '🎯',
+    icon: 'target',
     label: 'Our Mission',
     title: 'Advancing the Profession',
     body: 'Contributing to sustainable development of Nigeria by promoting the patronage of our world-class construction cost services and procurement management experts that meet client needs and expectations.',
   },
   {
-    icon: '⚖️',
+    icon: 'advocacy',
     label: 'Our Values',
     title: 'Integrity & Excellence',
     body: 'Integrity, professionalism, innovation, inclusiveness, and service. These are the values that guide every NIQS member and every programme we deliver.',
@@ -223,7 +224,7 @@ export default function Home() {
                 alt={img.alt}
                 loading={i < 3 ? 'eager' : 'lazy'}
               />
-              {i === 2 && <div className="hstrip-badge">&#128202; Quantity Surveyors</div>}
+              {i === 2 && <div className="hstrip-badge"><Icon name="chart" size="sm" /> Quantity Surveyors</div>}
             </div>
           ))}
         </div>
@@ -290,7 +291,7 @@ export default function Home() {
                 )}
                 {/* gold accent line on top */}
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--color-gold), var(--color-gold-2, #E5C56A))', borderRadius: '18px 18px 0 0' }} />
-                <div style={{ fontSize: '2.4rem', marginBottom: '1.2rem', position: 'relative' }}>{p.icon}</div>
+                <div style={{ marginBottom: '1.2rem', position: 'relative', color: 'var(--color-gold)' }}><Icon name={p.icon} size="xl" /></div>
                 <div style={{ fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--color-gold)', marginBottom: '.5rem', position: 'relative' }}>{p.label}</div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.35rem', color: i === 1 ? '#fff' : 'var(--color-navy)', marginBottom: '1rem', letterSpacing: '-.025em', lineHeight: 1.2, position: 'relative' }}>{p.title}</div>
                 <p style={{ fontSize: '1rem', color: i === 1 ? 'rgba(255,255,255,.82)' : 'var(--color-txt-2)', lineHeight: 1.8, margin: 0, position: 'relative' }}>{p.body}</p>
@@ -312,7 +313,7 @@ export default function Home() {
             {services.map((s, i) => (
               <div className={`svc reveal${i > 0 ? ` d${i}` : ''}`} key={i}>
                 {s.tag && <span className="svc-tag">{s.tag}</span>}
-                <div className="svc-ico">{s.icon}</div>
+                <div className="svc-ico"><Icon name={s.icon} size="xl" /></div>
                 <div className="svc-t">{s.title}</div>
                 <div className="svc-d">{s.desc}</div>
               </div>
@@ -390,7 +391,7 @@ export default function Home() {
                 </div>
                 <div className="einfo">
                   <h4>{e.title}</h4>
-                  <p>&#128205; {e.location}{e.time ? ` \u00A0\u00B7\u00A0 ${e.time}` : ''}</p>
+                  <p><Icon name="location" size="sm" /> {e.location}{e.time ? ` \u00A0\u00B7\u00A0 ${e.time}` : ''}</p>
                 </div>
                 <span className="epill">{e.type}</span>
               </Link>

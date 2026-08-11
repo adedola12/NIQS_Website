@@ -13,6 +13,7 @@
  */
 
 import { useState, useRef } from 'react';
+import Icon from './Icon';
 
 const STORAGE_BADGE = {
   cloudinary: { label: 'Cloudinary', color: '#2563eb' },
@@ -148,10 +149,10 @@ export default function FileUpload({
         {uploading ? (
           <span style={{ fontSize: 13, color: '#6b7280' }}>Uploading {fileName}…</span>
         ) : done ? (
-          <span style={{ fontSize: 13, color: '#059669', fontWeight: 600 }}>✓ {fileName} uploaded</span>
+          <span style={{ fontSize: 13, color: '#059669', fontWeight: 600 }}><Icon name="check" size="sm" /> {fileName} uploaded</span>
         ) : (
           <>
-            <div style={{ fontSize: '1.4rem', marginBottom: 4 }}>📁</div>
+            <div style={{ marginBottom: 4 }}><Icon name="folder" size="lg" /></div>
             <div style={{ fontSize: 13, color: '#6b7280', fontWeight: 500 }}>{label}</div>
             <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
               {accept !== '*' ? `Accepted: ${accept} · ` : ''}Max {maxMB} MB

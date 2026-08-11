@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getPublicEvent, registerForEvent } from '../../api/registrationApi';
+import Icon from '../../components/common/Icon';
 
 const NAVY = '#000066';
 const GOLD = '#D9B650';
@@ -74,9 +75,9 @@ export default function EventRegister() {
             {event.title}
           </h1>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 18px', fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>
-            {when && <span>📅 {when}{event.time ? ` · ${event.time}` : ''}</span>}
-            {event.location && <span>📍 {event.location}</span>}
-            {event.cpdPoints > 0 && <span style={{ color: GOLD, fontWeight: 700 }}>★ {event.cpdPoints} CPD points</span>}
+            {when && <span><Icon name="calendar" size="sm" /> {when}{event.time ? ` · ${event.time}` : ''}</span>}
+            {event.location && <span><Icon name="location" size="sm" /> {event.location}</span>}
+            {event.cpdPoints > 0 && <span style={{ color: GOLD, fontWeight: 700 }}><Icon name="star" size="sm" /> {event.cpdPoints} CPD points</span>}
           </div>
         </div>
 
@@ -165,7 +166,7 @@ export default function EventRegister() {
           {/* ── Step: success ── */}
           {step === 'success' && result && (
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#DCFCE7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 14px' }}>✓</div>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#DCFCE7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 14px' }}><Icon name="check" size="sm" /></div>
               <h2 style={{ fontFamily: FD, fontSize: 22, color: NAVY, margin: '0 0 8px' }}>You're registered!</h2>
               <p style={{ fontSize: 14, color: '#5A6485', margin: '0 0 18px' }}>
                 {result.emailSent

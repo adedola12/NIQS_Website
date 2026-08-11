@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { recordAttendance } from '../../api/registrationApi';
+import Icon from '../../components/common/Icon';
 
 const NAVY = '#000066';
 const GOLD = '#D9B650';
@@ -24,34 +25,34 @@ export default function EventAttend() {
     return () => { alive = false; };
   }, [token]);
 
-  let icon = '⏳', color = '#5A6485', title = 'Checking…', body = '';
+  let icon = 'clock', color = '#5A6485', title = 'Checking…', body = '';
 
   if (!data.loading) {
     switch (data.status) {
       case 'recorded':
-        icon = '✓'; color = '#166534';
+        icon = 'check'; color = '#166534';
         title = data.alreadyRecorded ? 'Already recorded' : 'Attendance recorded!';
         body = data.cpdPoints > 0
           ? `${data.cpdPoints} CPD point${data.cpdPoints === 1 ? '' : 's'} ${data.alreadyRecorded ? 'are' : 'have been'} banked to your record for "${data.eventTitle}".`
           : `Your attendance for "${data.eventTitle}" is confirmed.`;
         break;
       case 'too-early':
-        icon = '🗓'; color = NAVY;
+        icon = 'calendar'; color = NAVY;
         title = "Event hasn't started yet";
         body = `Come back from ${fmtDate(data.startsOn)} and open this link to claim your ${data.cpdPoints || ''} CPD point${data.cpdPoints === 1 ? '' : 's'} for "${data.eventTitle}".`;
         break;
       case 'closed':
-        icon = '⌛'; color = '#92600F';
+        icon = 'clock'; color = '#92600F';
         title = 'Attendance window closed';
         body = `The attendance window for "${data.eventTitle}" has closed. Please contact the organisers if you attended.`;
         break;
       case 'invalid':
-        icon = '✕'; color = '#991B1B';
+        icon = 'close'; color = '#991B1B';
         title = 'Invalid link';
         body = 'This attendance link is invalid or has expired.';
         break;
       default:
-        icon = '⚠'; color = '#991B1B';
+        icon = 'warning'; color = '#991B1B';
         title = 'Something went wrong';
         body = 'We could not record your attendance. Please try again later.';
     }
@@ -60,8 +61,8 @@ export default function EventAttend() {
   return (
     <div style={{ background: '#ECEEF5', minHeight: '70vh', padding: '48px 16px', fontFamily: FB }}>
       <div style={{ maxWidth: 480, margin: '0 auto', background: '#fff', borderRadius: 16, boxShadow: '0 10px 40px rgba(0, 0, 102,0.14)', padding: '36px 30px', textAlign: 'center' }}>
-        <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#F6F7FB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, color, margin: '0 auto 16px' }}>
-          {data.loading ? '⏳' : icon}
+        <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#F6F7FB', display: 'flex', alignItems: 'center', justifyContent: 'center', color, margin: '0 auto 16px' }}>
+          <Icon name={data.loading ? 'clock' : icon} size={30} />
         </div>
         <h1 style={{ fontFamily: FD, fontSize: 22, color: NAVY, margin: '0 0 10px' }}>
           {data.loading ? 'Recording attendance…' : title}

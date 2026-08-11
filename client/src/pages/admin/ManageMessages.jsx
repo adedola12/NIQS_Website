@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { MdMail, MdMarkEmailRead, MdDelete, MdRefresh, MdSearch } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import API from '../../api/axios';
 import AdminHeader from '../../components/admin/AdminHeader';
+import Icon from '../../components/common/Icon';
 
 export default function ManageMessages() {
   const [messages, setMessages] = useState([]);
@@ -104,7 +104,7 @@ export default function ManageMessages() {
               minWidth: 200,
             }}
           >
-            <MdSearch size={18} color="#9ca3af" />
+            <Icon name="search" size={18} color="#9ca3af" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -155,7 +155,7 @@ export default function ManageMessages() {
               alignItems: 'center',
             }}
           >
-            <MdRefresh size={18} color="#6b7280" />
+            <Icon name="refresh" size={18} color="#6b7280" />
           </button>
         </div>
 
@@ -307,7 +307,7 @@ export default function ManageMessages() {
                         fontWeight: 500,
                       }}
                     >
-                      <MdMarkEmailRead size={16} />
+                      <Icon name="inbox" size={16} />
                       Mark Read
                     </button>
                   )}
@@ -328,7 +328,7 @@ export default function ManageMessages() {
                       fontWeight: 500,
                     }}
                   >
-                    <MdDelete size={16} />
+                    <Icon name="delete" size={16} />
                     Delete
                   </button>
                   <button

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { MdLogout, MdMenu, MdClose, MdManageAccounts, MdHome } from 'react-icons/md';
 import { useAuth } from '../../context/AuthContext';
 import { getAdminSidebarItems, getAdminLabel } from '../../utils/roleHelpers';
+import Icon from '../common/Icon';
 
 export default function AdminSidebar() {
   const { admin, logout } = useAuth();
@@ -37,7 +37,7 @@ export default function AdminSidebar() {
         }}
         className="sidebar-toggle"
       >
-        {collapsed ? <MdClose size={22} /> : <MdMenu size={22} />}
+        {collapsed ? <Icon name="close" size={22} /> : <Icon name="menu" size={22} />}
       </button>
 
       {/* Overlay for mobile */}
@@ -110,15 +110,17 @@ export default function AdminSidebar() {
               onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(217, 182, 80,0.2)'; e.currentTarget.style.color = '#D9B650'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
             >
-              <MdHome size={18} />
+              <Icon name="home" size={18} />
             </Link>
           </div>
         </div>
 
         {/* Nav items — scrollable, fills space between header and footer */}
         <nav style={{ flex: 1, padding: '12px 0', overflowY: 'auto', minHeight: 0 }}>
+          {/* item.icon is now a name from the Icon registry rather than a
+              component, so there is nothing to unpack here — it used to read
+              `const Icon = item.icon`, which would now shadow the import. */}
           {sidebarItems.map((item) => {
-            const Icon = item.icon;
             return (
               <NavLink
                 key={item.path}
@@ -138,7 +140,7 @@ export default function AdminSidebar() {
                   transition: 'all 0.15s ease',
                 })}
               >
-                <Icon size={20} />
+                <Icon name={item.icon} size={22} />
                 <span>{item.label}</span>
               </NavLink>
             );
@@ -203,7 +205,7 @@ export default function AdminSidebar() {
               boxSizing: 'border-box',
             })}
           >
-            <MdManageAccounts size={18} />
+            <Icon name="userSettings" size={18} />
             My Profile
           </NavLink>
 
@@ -227,7 +229,7 @@ export default function AdminSidebar() {
             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
           >
-            <MdLogout size={18} />
+            <Icon name="logout" size={18} />
             Logout
           </button>
         </div>

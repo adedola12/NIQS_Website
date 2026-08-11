@@ -4,6 +4,7 @@ import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 import { useAuth } from '../../context/AuthContext';
 import { useMemberCopy } from '../../hooks/useMembershipStats';
+import Icon from '../../components/common/Icon';
 
 const TYPE_COLORS = {
   'Full-time':       { bg: '#fff7ed', color: '#D9B650', border: '#f5d49b' },
@@ -141,16 +142,16 @@ function JobDetail({ job, onClose, isLoggedIn }) {
             gap: 10, marginBottom: 20,
           }}>
             {[
-              { icon: '📍', label: 'Location', value: job.location },
-              { icon: '💰', label: 'Salary', value: job.salary || 'Not specified' },
-              { icon: '📅', label: 'Deadline', value: job.deadline ? new Date(job.deadline).toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Open' },
+              { icon: 'location', label: 'Location', value: job.location },
+              { icon: 'money', label: 'Salary', value: job.salary || 'Not specified' },
+              { icon: 'calendar', label: 'Deadline', value: job.deadline ? new Date(job.deadline).toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Open' },
               { icon: '⏱️', label: 'Type', value: job.type },
             ].map(m => (
               <div key={m.label} style={{
                 background: '#f9fafb', border: '1px solid #f3f4f6',
                 borderRadius: 8, padding: '10px 12px',
               }}>
-                <div style={{ fontSize: '.67rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 3 }}>{m.icon} {m.label}</div>
+                <div style={{ fontSize: '.67rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 3 }}><Icon name={m.icon} size="sm" /> {m.label}</div>
                 <div style={{ fontSize: '.8rem', fontWeight: 600, color: '#111827' }}>{m.value}</div>
               </div>
             ))}
@@ -182,7 +183,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
           {job.location && (
             <section style={{ marginBottom: 22 }}>
               <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: '#000066', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.05em' }}>
-                📍 Location
+                <Icon name="location" size="sm" /> Location
               </h3>
               <MapEmbed location={job.location} />
               <p style={{ fontSize: '.75rem', color: '#9ca3af', marginTop: 6 }}>{job.location}</p>
@@ -218,7 +219,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
                         border: 'none', cursor: 'pointer',
                       }}
                     >
-                      📤 Apply via Company Site
+                      <Icon name="upload" size="sm" /> Apply via Company Site
                     </a>
                   ) : (
                     <Link
@@ -230,7 +231,7 @@ function JobDetail({ job, onClose, isLoggedIn }) {
                         background: '#000066', color: '#fff',
                       }}
                     >
-                      📤 Submit CV via Portal
+                      <Icon name="upload" size="sm" /> Submit CV via Portal
                     </Link>
                   )}
                   <button style={{
@@ -243,14 +244,14 @@ function JobDetail({ job, onClose, isLoggedIn }) {
                       alert('Link copied!');
                     }}
                   >
-                    🔗 Copy Link
+                    <Icon name="link" size="sm" /> Copy Link
                   </button>
                 </div>
               </>
             ) : (
               <>
                 <h3 style={{ margin: '0 0 6px', fontSize: '.9rem', fontWeight: 700, color: '#D9B650' }}>
-                  🔒 Members Only
+                  <Icon name="lock" size="sm" /> Members Only
                 </h3>
                 <p style={{ margin: '0 0 14px', fontSize: '.8rem', color: '#374151', lineHeight: 1.6 }}>
                   Sign in to your NIQS member account to submit your CV and apply for this position.
@@ -348,7 +349,7 @@ export default function Jobs() {
               background: '#f9fafb', border: '1px solid #e5e7eb',
               borderRadius: 8, padding: '9px 14px', flex: 1, minWidth: 220,
             }}>
-              <span style={{ fontSize: '.9rem', color: '#9ca3af' }}>🔍</span>
+              <span style={{ fontSize: '.9rem', color: '#9ca3af' }}><Icon name="search" size="sm" /></span>
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -416,9 +417,9 @@ export default function Jobs() {
                       {job.title}
                     </div>
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '.76rem', color: 'var(--color-txt-3)' }}>
-                      <span>🏢 {job.company}</span>
-                      <span>📍 {job.location}</span>
-                      {job.salary && <span>💰 {job.salary}</span>}
+                      <span><Icon name="office" size="sm" /> {job.company}</span>
+                      <span><Icon name="location" size="sm" /> {job.location}</span>
+                      {job.salary && <span><Icon name="money" size="sm" /> {job.salary}</span>}
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '.4rem', flexShrink: 0 }}>

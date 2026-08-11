@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import {
-  MdAdminPanelSettings, MdEdit, MdDelete, MdPersonAdd,
-  MdToggleOn, MdToggleOff, MdShield, MdSearch,
-} from 'react-icons/md';
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import AdminHeader from '../../components/admin/AdminHeader';
+import Icon from '../../components/common/Icon';
 
 /* ── Role config ──────────────────────────────────────── */
 const ROLES = [
@@ -151,7 +148,7 @@ export default function ManageAdmins() {
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
           {summary.map(r => (
             <div key={r.value} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: r.bg, border: `1.5px solid ${r.color}22`, borderRadius: 10 }}>
-              <MdShield size={16} color={r.color} />
+              <Icon name="shield" size={16} color={r.color} />
               <span style={{ fontSize: 13, fontWeight: 700, color: r.color }}>{r.count}</span>
               <span style={{ fontSize: 12, color: '#6b7280' }}>{r.label}</span>
             </div>
@@ -161,7 +158,7 @@ export default function ManageAdmins() {
         {/* Toolbar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, gap: 10, flexWrap: 'wrap' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
-            <MdSearch size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
+            <Icon name="search" size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
             <input
               type="text" placeholder="Search admins…" value={search}
               onChange={e => setSearch(e.target.value)}
@@ -170,7 +167,7 @@ export default function ManageAdmins() {
           </div>
           {isMain && (
             <button onClick={openAdd} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#000066', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-              <MdPersonAdd size={18} /> Add New Admin
+              <Icon name="userAdd" size={18} /> Add New Admin
             </button>
           )}
         </div>
@@ -217,7 +214,7 @@ export default function ManageAdmins() {
                       {/* Role badge */}
                       <td style={{ padding: '10px 14px' }}>
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 6, background: ri.bg, color: ri.color, fontWeight: 700, fontSize: 11, border: `1px solid ${ri.color}33` }}>
-                          <MdAdminPanelSettings size={13} />{ri.label}
+                          <Icon name="shield" size={13} />{ri.label}
                         </span>
                       </td>
 
@@ -231,7 +228,7 @@ export default function ManageAdmins() {
                         {isMain && !isSelf && a.role !== 'main_admin' ? (
                           <button onClick={() => toggleActive(a)} title={a.isActive ? 'Click to deactivate' : 'Click to activate'}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: a.isActive ? '#059669' : '#dc2626' }}>
-                            {a.isActive ? <MdToggleOn size={22} /> : <MdToggleOff size={22} />}
+                            {a.isActive ? <Icon name="toggleOn" size={22} /> : <Icon name="toggleOff" size={22} />}
                             <span style={{ fontSize: 12, fontWeight: 600 }}>{a.isActive ? 'Active' : 'Inactive'}</span>
                           </button>
                         ) : (
@@ -254,19 +251,19 @@ export default function ManageAdmins() {
                             {!isSelf && a.role !== 'main_admin' && (
                               <button onClick={() => openRolePanel(a)} title="Change Role"
                                 style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', background: '#f0f9ff', border: '1px solid #0891b2', borderRadius: 6, color: '#0891b2', fontWeight: 600, fontSize: 11, cursor: 'pointer' }}>
-                                <MdShield size={13} /> Role
+                                <Icon name="shield" size={13} /> Role
                               </button>
                             )}
                             {/* Edit */}
                             <button onClick={() => openEdit(a)} title="Edit"
                               style={{ padding: 6, background: '#f3f4f6', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#374151', display: 'flex' }}>
-                              <MdEdit size={15} />
+                              <Icon name="edit" size={15} />
                             </button>
                             {/* Delete — never shown for main_admin or self */}
                             {!isSelf && a.role !== 'main_admin' && (
                               <button onClick={() => setConfirmDelete(a)} title="Delete"
                                 style={{ padding: 6, background: '#fef2f2', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#dc2626', display: 'flex' }}>
-                                <MdDelete size={15} />
+                                <Icon name="delete" size={15} />
                               </button>
                             )}
                           </div>
@@ -357,7 +354,7 @@ export default function ManageAdmins() {
                 <label key={r.value} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', border: `2px solid ${quickRole === r.value ? r.color : '#e5e7eb'}`, borderRadius: 8, cursor: 'pointer', background: quickRole === r.value ? r.bg : '#fff', transition: 'all .15s' }}>
                   <input type="radio" name="role" value={r.value} checked={quickRole === r.value}
                     onChange={() => setQuickRole(r.value)} style={{ accentColor: r.color }} />
-                  <MdAdminPanelSettings size={16} color={r.color} />
+                  <Icon name="shield" size={16} color={r.color} />
                   <span style={{ fontSize: 13, fontWeight: 600, color: r.color }}>{r.label}</span>
                 </label>
               ))}
@@ -365,7 +362,7 @@ export default function ManageAdmins() {
           </Field>
           {quickRole === 'state_admin' && (
             <div style={{ margin: '12px 0', padding: '10px 14px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fbbf24', fontSize: 12, color: '#92400e' }}>
-              ⚠️ Please use the Edit modal to assign a chapter after changing the role.
+              <Icon name="warning" size="sm" /> Please use the Edit modal to assign a chapter after changing the role.
             </div>
           )}
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>

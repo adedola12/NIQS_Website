@@ -6,6 +6,7 @@ import { canDelete } from '../../utils/roleHelpers';
 import AdminHeader from '../../components/admin/AdminHeader';
 import DataTable from '../../components/admin/DataTable';
 import FileUpload from '../../components/common/FileUpload';
+import Icon from '../../components/common/Icon';
 
 const emptyForm = {
   title: '', volume: '', issueDate: '', description: '',
@@ -63,7 +64,7 @@ export default function ManageQSConnect() {
       key: 'coverImage', label: 'Cover',
       render: (val, row) => val
         ? <img src={val} alt={row.title} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }} />
-        : <div style={{ width: 48, height: 48, borderRadius: 6, background: '#000066', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>📰</div>,
+        : <div style={{ width: 48, height: 48, borderRadius: 6, background: '#000066', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}><Icon name="news" size="sm" /></div>,
     },
     { key: 'title', label: 'Title', render: v => <strong style={{ color: '#000066', fontSize: 13 }}>{v}</strong> },
     { key: 'issueDate', label: 'Issue Date' },

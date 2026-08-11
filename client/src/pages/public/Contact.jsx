@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
+import Icon from '../../components/common/Icon';
 
 /* ── Fallback contact block ──────────────────────────────────────────────
    Defaults only, overlaid by /contact-info. No phone numbers here: the two
@@ -36,17 +37,17 @@ function ContactBlock({ info }) {
   if (!info) return null;
   const rows = [
     info.phone1 || info.phone2 ? {
-      icon: '📞', title: 'Phone',
+      icon: 'phone', title: 'Phone',
       lines: [info.phone1, info.phone2].filter(Boolean),
       hrefs: [`tel:${(info.phone1||'').replace(/\s/g,'')}`, `tel:${(info.phone2||'').replace(/\s/g,'')}`],
     } : null,
     info.email1 || info.email2 ? {
-      icon: '✉️', title: 'Email',
+      icon: 'email', title: 'Email',
       lines: [info.email1, info.email2].filter(Boolean),
       hrefs: [`mailto:${info.email1}`, `mailto:${info.email2}`],
     } : null,
-    info.address ? { icon: '📍', title: 'Address', lines: [info.address], plain: true } : null,
-    info.officeHours ? { icon: '🕐', title: 'Office Hours', lines: [info.officeHours], plain: true } : null,
+    info.address ? { icon: 'location', title: 'Address', lines: [info.address], plain: true } : null,
+    info.officeHours ? { icon: 'clock', title: 'Office Hours', lines: [info.officeHours], plain: true } : null,
   ].filter(Boolean);
 
   const socials = [
@@ -60,7 +61,7 @@ function ContactBlock({ info }) {
     <>
       {rows.map((row, i) => (
         <div className="cii" key={i}>
-          <h4>{row.icon} {row.title}</h4>
+          <h4><Icon name={row.icon} size="md" /> {row.title}</h4>
           {row.plain ? (
             <p style={{ whiteSpace: 'pre-line' }}>{row.lines[0]}</p>
           ) : (
@@ -72,7 +73,7 @@ function ContactBlock({ info }) {
       ))}
       {socials.length > 0 && (
         <div className="cii">
-          <h4>🌐 Follow Us</h4>
+          <h4><Icon name="web" size="sm" /> Follow Us</h4>
           <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap', marginTop: '.4rem' }}>
             {socials.map(s => (
               <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
@@ -157,12 +158,12 @@ export default function Contact() {
 
               {status === 'success' && (
                 <div style={{ background: 'rgba(46,125,50,.1)', border: '1px solid rgba(46,125,50,.3)', color: '#2e7d32', borderRadius: 10, padding: '1rem', marginBottom: '1.2rem', fontSize: '.82rem' }}>
-                  ✓ Your message has been sent. We will get back to you shortly.
+                  <Icon name="check" size="sm" /> Your message has been sent. We will get back to you shortly.
                 </div>
               )}
               {status === 'error' && (
                 <div style={{ background: 'rgba(198,40,40,.08)', border: '1px solid rgba(198,40,40,.2)', color: '#c62828', borderRadius: 10, padding: '1rem', marginBottom: '1.2rem', fontSize: '.82rem' }}>
-                  ✗ Failed to send. Please try again or contact us directly.
+                  <Icon name="close" size="sm" /> Failed to send. Please try again or contact us directly.
                 </div>
               )}
 

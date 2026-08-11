@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import useIsMobile from '../../hooks/useIsMobile';
 import AdminHeader from '../../components/admin/AdminHeader';
 import { getCalendarEvents } from '../../flyer/flyerApi';
+import Icon from '../../components/common/Icon';
 
 const HQ_ROLES = ['main_admin', 'national_admin'];
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -132,7 +133,7 @@ export default function EventCalendar() {
                   <span style={{ fontSize: isMobile ? 11 : 12.5, fontWeight: isToday ? 800 : 600, color: isToday ? '#000066' : '#374151' }}>
                     {d.getUTCDate()}
                   </span>
-                  {lockedForMe && <span style={{ fontSize: 11 }} title="Reserved by HQ">🔒</span>}
+                  {lockedForMe && <span style={{ fontSize: 11 }} title="Reserved by HQ"><Icon name="lock" size="sm" /></span>}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {dayEvents.slice(0, maxChips).map((ev) => (
@@ -143,7 +144,7 @@ export default function EventCalendar() {
                       color: ev.scope === 'national' ? '#92600F' : '#04603A',
                       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                     }} title={`${ev.title}${ev.chapter?.name ? ' — ' + ev.chapter.name : ''}`}>
-                      {ev.hasFlyer ? '🖼 ' : ''}{ev.title}
+                      {ev.hasFlyer ? 'image' : ''}{ev.title}
                     </div>
                   ))}
                   {dayEvents.length > maxChips && (

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
 const SCOPE_LABEL = { national: 'National', chapter: 'Chapter', yqsf: 'YQSF', waqsn: 'WAQSN' };
 const SCOPE_COLOR = { national: '#000066', chapter: '#1a5276', yqsf: '#117a65', waqsn: '#6d3a9c' };
@@ -123,7 +124,7 @@ export default function Webinars() {
                 border: '1.5px solid var(--color-bdr)', cursor: 'pointer', textTransform: 'capitalize',
                 background: tab === t ? 'var(--color-navy)' : '#fff',
                 color:      tab === t ? '#fff' : 'var(--color-txt-3)',
-              }}>{t === 'all' ? 'All Webinars' : t === 'upcoming' ? '🔴 Upcoming' : '⏺ Past Recordings'}</button>
+              }}>{t === 'all' ? 'All Webinars' : t === 'upcoming' ? <><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'currentColor', marginRight: 6, verticalAlign: 'middle' }} /> Upcoming</> : <><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'currentColor', marginRight: 6, verticalAlign: 'middle' }} /> Past Recordings</>}</button>
             ))}
             <span style={{ flex: 1 }} />
             <select value={scope} onChange={e => setScope(e.target.value)} style={selStyle}>
@@ -212,7 +213,7 @@ function WebinarCard({ w, fmt, fmtTime }) {
             </span>
           )}
           <span style={{ fontSize: '.65rem', fontWeight: 700, color: w.isUpcoming ? '#dc2626' : '#6b7280', marginLeft: 'auto' }}>
-            {w.isUpcoming ? '🔴 Upcoming' : '⏺ Past'}
+            {w.isUpcoming ? <><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'currentColor', marginRight: 6, verticalAlign: 'middle' }} /> Upcoming</> : <><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'currentColor', marginRight: 6, verticalAlign: 'middle' }} /> Past</>}
           </span>
         </div>
 
@@ -228,8 +229,8 @@ function WebinarCard({ w, fmt, fmtTime }) {
         )}
 
         <div style={{ fontSize: '.74rem', color: 'var(--color-txt-3)', display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '.2rem' }}>
-          {w.speaker && <span>🎤 {w.speaker}{w.speakerTitle ? ` · ${w.speakerTitle}` : ''}</span>}
-          {w.date    && <span>📅 {fmt(w.date)} at {fmtTime(w.date)}</span>}
+          {w.speaker && <span><Icon name="speaker" size="sm" /> {w.speaker}{w.speakerTitle ? ` · ${w.speakerTitle}` : ''}</span>}
+          {w.date    && <span><Icon name="calendar" size="sm" /> {fmt(w.date)} at {fmtTime(w.date)}</span>}
         </div>
 
         <div style={{ marginTop: '.4rem', display: 'flex', gap: '.6rem' }}>
@@ -257,7 +258,7 @@ function WebinarCard({ w, fmt, fmtTime }) {
 function EmptyState({ label }) {
   return (
     <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-txt-3)' }}>
-      <div style={{ fontSize: '2rem', marginBottom: '.8rem' }}>🎥</div>
+      <div style={{ marginBottom: '.8rem' }}><Icon name="video" size="xl" /></div>
       <div style={{ fontWeight: 700, color: 'var(--color-navy)' }}>{label}</div>
     </div>
   );

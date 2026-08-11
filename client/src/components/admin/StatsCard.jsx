@@ -1,4 +1,5 @@
-export default function StatsCard({ icon: Icon, value, label, color = '#000066' }) {
+
+import Icon from '../common/Icon';export default function StatsCard({ icon: Icon, value, label, color = '#000066' }) {
   return (
     <div
       style={{

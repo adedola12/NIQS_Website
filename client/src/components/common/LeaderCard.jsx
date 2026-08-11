@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Icon from './Icon';
 
 /* Derive a chapter page link from a chapter-chairman title, e.g.
    "Nasarawa State Chapter Chairman" / "Lagos Chapter Chairman" / "FCT Chapter
@@ -95,12 +96,12 @@ export default function LeaderCard({ member, linkTo }) {
           <div style={{ marginTop: '.5rem', display: 'flex', flexDirection: 'column', gap: 2 }}>
             {m.email && (
               <a href={`mailto:${m.email}`} style={{ fontSize: '.7rem', color: 'var(--color-navy)', fontWeight: 600, textDecoration: 'none' }}>
-                ✉️ {m.email}
+                <Icon name="email" size="sm" /> {m.email}
               </a>
             )}
             {m.phone && (
               <a href={`tel:${m.phone.split(',')[0].trim()}`} style={{ fontSize: '.7rem', color: 'var(--color-txt-2)', fontWeight: 600, textDecoration: 'none' }}>
-                📞 {m.phone}
+                <Icon name="phone" size="sm" /> {m.phone}
               </a>
             )}
           </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
 /* ── Exam card definitions — matches HTML exactly (4 cards) ── */
 const EXAM_CARDS = [
@@ -12,7 +13,7 @@ const EXAM_CARDS = [
     title: 'TPC — Technician Professional Competence',
     desc: 'Entry-level professional examination for associates progressing toward corporate membership. Covers core QS theory and practice.',
     heroBg: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=700&q=80&fit=crop',
-    icon: '📝',
+    icon: 'note',
     action: { label: 'Registration Info', to: '/contact', locked: false },
   },
   {
@@ -26,7 +27,7 @@ const EXAM_CARDS = [
     // hotlinks, but it was on a card, not a background, so it showed as a
     // broken image rather than a blank panel. Replacement checked live.
     heroBg: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=700&q=80&fit=crop',
-    icon: '🎓',
+    icon: 'education',
     action: { label: 'Registration Info', to: '/contact', locked: false },
   },
   {
@@ -36,7 +37,7 @@ const EXAM_CARDS = [
     title: 'Professional Interview',
     desc: 'Final stage of the corporate membership pathway — a structured interview assessing competency across key QS practice areas.',
     heroBg: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=700&q=80&fit=crop',
-    icon: '🤝',
+    icon: 'handshake',
     action: { label: 'View My Results', to: '/login', locked: true },
   },
   {
@@ -46,7 +47,7 @@ const EXAM_CARDS = [
     title: 'Logbook Assessment',
     desc: 'Work-based assessment requiring candidates to document professional experience across a range of QS activities over a minimum period.',
     heroBg: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=700&q=80&fit=crop',
-    icon: '📒',
+    icon: 'journal',
     action: { label: 'My Logbook', to: '/login', locked: true },
   },
 ];
@@ -95,7 +96,7 @@ function ExamCard({ card }) {
           background: card.tagBg, color: '#fff', border: '1px solid rgba(255,255,255,.22)',
         }}>{card.tag}</span>
         {/* Icon */}
-        <span style={{ position: 'absolute', bottom: 12, left: 16, fontSize: '1.55rem' }}>{card.icon}</span>
+        <span style={{ position: 'absolute', bottom: 12, left: 16, color: 'var(--color-gold)' }}><Icon name={card.icon} size="lg" /></span>
       </div>
 
       {/* ── Body ── */}
@@ -109,7 +110,7 @@ function ExamCard({ card }) {
         </p>
         <Link to={card.action.to} className="btn bp"
           style={{ fontSize: '.78rem', padding: '.6rem 1.4rem', display: 'inline-flex', alignItems: 'center', gap: '.4rem' }}>
-          {card.action.label} {card.action.locked && '🔒'}
+          {card.action.label} {card.action.locked && 'lock'}
         </Link>
       </div>
     </div>

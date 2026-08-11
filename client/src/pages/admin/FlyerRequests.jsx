@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import AdminHeader from '../../components/admin/AdminHeader';
 import { listFlyerRequests, setFlyerRequestStatus, deleteFlyerRequest } from '../../api/flyerRequestApi';
+import Icon from '../../components/common/Icon';
 
 const NAVY = '#000066';
 const GOLD = '#D9B650';
@@ -143,7 +144,7 @@ function RequestCard({ r, onStatus, onDelete }) {
               {r.title || 'Untitled event'}
             </h3>
             <p style={{ fontSize: 12.5, color: '#5A6485', margin: 0 }}>
-              {when && <>📅 {when} &nbsp;·&nbsp; </>}
+              {when && <><Icon name="calendar" size="sm" /> {when} &nbsp;·&nbsp; </>}
               Requested by <strong>{r.requesterName}</strong>
               {r.requesterOrg ? ` (${r.requesterOrg})` : ''}
             </p>
@@ -158,7 +159,7 @@ function RequestCard({ r, onStatus, onDelete }) {
             {r.status === 'completed' && r.createdEvent && (
               <Link to={`/admin/flyer-studio`}
                 style={{ background: '#F0F0FF', color: NAVY, textDecoration: 'none', fontSize: 12.5, fontWeight: 700, padding: '8px 14px', borderRadius: 7, textAlign: 'center', border: `1.5px solid ${NAVY}`, whiteSpace: 'nowrap' }}>
-                ✓ Built
+                <Icon name="check" size="sm" /> Built
               </Link>
             )}
             <button onClick={() => setOpen((o) => !o)} style={linkBtn}>{open ? 'Hide details' : 'View details'}</button>

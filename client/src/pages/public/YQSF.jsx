@@ -5,14 +5,15 @@ import LeaderCard from '../../components/common/LeaderCard';
 import BodyContact from '../../components/common/BodyContact';
 import API from '../../api/axios';
 import useChapterCount, { CHAPTERS_FALLBACK } from '../../hooks/useChapterCount';
+import Icon from '../../components/common/Icon';
 
 const offerings = [
-  { icon: '🧑‍🏫', title: 'Mentorship Programme',  desc: 'Pairing young QS professionals with experienced Fellows for career guidance, knowledge transfer, and professional development.',                        tag: 'Mentorship'  },
-  { icon: '💻', title: 'Tech & Innovation',       desc: 'Workshops on BIM, cost estimation software, AI in construction, and digital tools transforming the QS profession.',                                  tag: 'Technology'  },
-  { icon: '🏆', title: 'Young QS Awards',          desc: 'Annual awards recognising outstanding contributions by young quantity surveyors to the profession and community.',                                    tag: 'Awards'      },
-  { icon: '🌐', title: 'Networking Events',        desc: 'Regular meetups, social events, and conferences designed to build connections among young professionals nationwide.',                                 tag: 'Networking'  },
-  { icon: '📖', title: 'Exam Preparation',         desc: 'Study groups, mock exams, and revision workshops to help aspiring QS professionals pass the TPC and professional exams.',                           tag: 'Exams'       },
-  { icon: '✈️', title: 'International Exposure',  desc: 'Opportunities to participate in international QS conferences, exchange programmes, and collaborative projects.',                                      tag: 'Global'      },
+  { icon: 'mentorship', title: 'Mentorship Programme',  desc: 'Pairing young QS professionals with experienced Fellows for career guidance, knowledge transfer, and professional development.',                        tag: 'Mentorship'  },
+  { icon: 'technology', title: 'Tech & Innovation',       desc: 'Workshops on BIM, cost estimation software, AI in construction, and digital tools transforming the QS profession.',                                  tag: 'Technology'  },
+  { icon: 'trophy', title: 'Young QS Awards',          desc: 'Annual awards recognising outstanding contributions by young quantity surveyors to the profession and community.',                                    tag: 'Awards'      },
+  { icon: 'web', title: 'Networking Events',        desc: 'Regular meetups, social events, and conferences designed to build connections among young professionals nationwide.',                                 tag: 'Networking'  },
+  { icon: 'book', title: 'Exam Preparation',         desc: 'Study groups, mock exams, and revision workshops to help aspiring QS professionals pass the TPC and professional exams.',                           tag: 'Exams'       },
+  { icon: 'international', title: 'International Exposure',  desc: 'Opportunities to participate in international QS conferences, exchange programmes, and collaborative projects.',                                      tag: 'Global'      },
 ];
 
 /* Placeholder defaults — replaced by admin-set values once loaded */
@@ -198,7 +199,7 @@ export default function YQSF() {
             {offerings.map((o, i) => (
               <div className="svc" key={i}>
                 <span className="svc-tag">{o.tag}</span>
-                <div className="svc-ico">{o.icon}</div>
+                <div className="svc-ico"><Icon name={o.icon} size="xl" /></div>
                 <div className="svc-t">{o.title}</div>
                 <p className="svc-d">{o.desc}</p>
               </div>

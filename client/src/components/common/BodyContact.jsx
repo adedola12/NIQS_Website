@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../../api/axios';
+import Icon from './Icon';
 
 /**
  * Contact details for one national body, rendered on that body's own landing page.
@@ -32,7 +33,7 @@ export default function BodyContact({ bodyKey, heading, fallback }) {
   const rows = [
     info.phone1 || info.phone2
       ? {
-        icon: '📞',
+        icon: 'phone',
         title: 'Phone',
         lines: [info.phone1, info.phone2].filter(Boolean),
         hrefs: [info.phone1, info.phone2].filter(Boolean).map(p => `tel:${p.replace(/\s/g, '')}`),
@@ -40,14 +41,14 @@ export default function BodyContact({ bodyKey, heading, fallback }) {
       : null,
     info.email1 || info.email2
       ? {
-        icon: '✉️',
+        icon: 'email',
         title: 'Email',
         lines: [info.email1, info.email2].filter(Boolean),
         hrefs: [info.email1, info.email2].filter(Boolean).map(e => `mailto:${e}`),
       }
       : null,
-    info.address     ? { icon: '📍', title: 'Address',      lines: [info.address],     plain: true } : null,
-    info.officeHours ? { icon: '🕐', title: 'Office Hours', lines: [info.officeHours], plain: true } : null,
+    info.address     ? { icon: 'location', title: 'Address',      lines: [info.address],     plain: true } : null,
+    info.officeHours ? { icon: 'clock', title: 'Office Hours', lines: [info.officeHours], plain: true } : null,
   ].filter(Boolean);
 
   const socials = [
@@ -64,7 +65,7 @@ export default function BodyContact({ bodyKey, heading, fallback }) {
       {heading && <h2 className="sh" style={{ marginBottom: '1.8rem' }}>{heading}</h2>}
       {rows.map((row, i) => (
         <div className="cii" key={i}>
-          <h4>{row.icon} {row.title}</h4>
+          <h4><Icon name={row.icon} size="md" /> {row.title}</h4>
           {row.plain
             ? <p style={{ whiteSpace: 'pre-line' }}>{row.lines[0]}</p>
             : row.lines.map((l, j) => <p key={j}><a href={row.hrefs[j]}>{l}</a></p>)}
@@ -72,7 +73,7 @@ export default function BodyContact({ bodyKey, heading, fallback }) {
       ))}
       {socials.length > 0 && (
         <div className="cii">
-          <h4>🌐 Follow Us</h4>
+          <h4><Icon name="web" size="sm" /> Follow Us</h4>
           <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap', marginTop: '.4rem' }}>
             {socials.map(s => (
               <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"

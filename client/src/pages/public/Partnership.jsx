@@ -4,6 +4,7 @@ import API from '../../api/axios';
 import PageHero from '../../components/common/PageHero';
 import { SkeletonGrid, SkeletonText } from '../../components/common/Skeleton';
 import { useMemberCopy } from '../../hooks/useMembershipStats';
+import Icon from '../../components/common/Icon';
 
 const tierColors = {
   platinum: '#6b7280',
@@ -58,7 +59,7 @@ const tiers = [
     price: '₦10,000,000+',
     period: 'per annum',
     platinum: true,
-    icon: '💎',
+    icon: 'diamond',
     benefits: [
       'Premier branding at all NIQS national events',
       'Exclusive naming rights for one major NIQS programme',
@@ -75,7 +76,7 @@ const tiers = [
     price: '₦5,000,000+',
     period: 'per annum',
     platinum: false,
-    icon: '🥇',
+    icon: 'trophy',
     benefits: [
       'Prominent branding at NIQS national events',
       'Half-page advertisement in NIQS publications',
@@ -91,7 +92,7 @@ const tiers = [
     price: '₦2,000,000+',
     period: 'per annum',
     platinum: false,
-    icon: '🥈',
+    icon: 'award',
     benefits: [
       'Branding at selected NIQS events',
       'Quarter-page advertisement in NIQS Journal',
@@ -241,7 +242,7 @@ export default function Partnership() {
                   )}
                   {/* Content */}
                   <div>
-                    <span className="gpbadge">💎 Platinum Partner</span>
+                    <span className="gpbadge"><Icon name="diamond" size="sm" /> Platinum Partner</span>
                     <h4>{p.name}</h4>
                     {p.industry && (
                       <div style={{ fontSize: '.78rem', color: 'var(--color-txt-3)', fontWeight: 600, marginBottom: '.6rem', letterSpacing: '.02em' }}>{p.industry}</div>
@@ -309,7 +310,7 @@ export default function Partnership() {
                     {/* Body */}
                     <div style={{ padding: '1.25rem 1.4rem' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 20, fontSize: '.68rem', fontWeight: 700, background: `${tc}15`, color: tc, border: `1px solid ${tc}30`, marginBottom: '.7rem' }}>
-                        🥇 Gold Partner
+                        <Icon name="trophy" size="sm" /> Gold Partner
                       </span>
                       <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.05rem', color: 'var(--color-navy)', marginBottom: '.3rem', letterSpacing: '-.02em' }}>
                         {p.name}
@@ -409,7 +410,7 @@ export default function Partnership() {
               <div className={`ptcard${tier.platinum ? ' ptplat' : ''} reveal`} key={i} style={{ animationDelay: `${i * .08}s` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.2rem' }}>
                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <div style={{ fontSize: '2rem' }}>{tier.icon}</div>
+                    <div style={{ color: 'var(--color-gold)' }}><Icon name={tier.icon} size="xl" /></div>
                     <div>
                       <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.15rem', color: 'var(--color-navy)', letterSpacing: '-.03em' }}>{tier.name} Partner</div>
                       <div style={{ fontSize: '.72rem', color: 'var(--color-txt-3)' }}>{tier.period}</div>
@@ -423,7 +424,7 @@ export default function Partnership() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '.35rem' }}>
                   {tier.benefits.map((b, j) => (
                     <div key={j} style={{ display: 'flex', gap: '.5rem', alignItems: 'flex-start', fontSize: '.8rem', color: 'var(--color-txt-2)', lineHeight: 1.5 }}>
-                      <span style={{ color: 'var(--color-gold)', fontWeight: 800, flexShrink: 0 }}>✓</span>
+                      <span style={{ color: 'var(--color-gold)', fontWeight: 800, flexShrink: 0 }}><Icon name="check" size="sm" /></span>
                       {b}
                     </div>
                   ))}

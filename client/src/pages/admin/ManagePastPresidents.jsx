@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { canDelete, canManageNational } from '../../utils/roleHelpers';
 import AdminHeader from '../../components/admin/AdminHeader';
 import DataTable from '../../components/admin/DataTable';
+import Icon from '../../components/common/Icon';
 
 const emptyForm = {
   name:     '',
@@ -106,7 +107,7 @@ export default function ManagePastPresidents() {
       render: (val) => val ? (
         <img src={val} alt="" style={{ width: 36, height: 36, objectFit: 'cover', objectPosition: 'top', borderRadius: '50%', border: '2px solid #e5e7eb', display: 'block' }} />
       ) : (
-        <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>👤</div>
+        <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}><Icon name="user" size="sm" /></div>
       ),
     },
     { key: 'name', label: 'Name' },

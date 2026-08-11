@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PageHero from '../../components/common/PageHero';
 import LeaderCard from '../../components/common/LeaderCard';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
 export default function NPC() {
   const [members, setMembers] = useState([]);
@@ -50,7 +51,7 @@ export default function NPC() {
               padding: '3.5rem 2rem', textAlign: 'center', background: 'var(--color-off)',
               borderRadius: 14, border: '1px dashed var(--color-bdr)',
             }}>
-              <div style={{ fontSize: '2rem', marginBottom: '.6rem' }}>🏛️</div>
+              <div style={{ marginBottom: '.6rem' }}><Icon name="institution" size="xl" /></div>
               <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, color: 'var(--color-navy)', marginBottom: '.4rem' }}>
                 Committee roster being finalised
               </h4>

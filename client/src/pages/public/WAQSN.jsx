@@ -3,14 +3,15 @@ import PageHero from '../../components/common/PageHero';
 import LeaderCard from '../../components/common/LeaderCard';
 import BodyContact from '../../components/common/BodyContact';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
 const roles = [
-  { icon: '👩‍💼', title: 'Professional Advocacy',    desc: 'WAQSN advocates for the increased participation and recognition of women in quantity surveying, construction, and the broader built environment in Nigeria.',                   tag: 'Advocacy'     },
-  { icon: '🎓', title: 'Mentorship & Training',     desc: 'Structured mentorship programmes pair emerging female QS professionals with experienced Fellows, providing career guidance and knowledge transfer.',                              tag: 'Mentorship'   },
-  { icon: '🤝', title: 'Networking',                desc: 'Regular forums, seminars, and social events create a strong community where women QS professionals can connect, collaborate, and grow together.',                               tag: 'Community'    },
-  { icon: '📚', title: 'Capacity Building',         desc: 'Workshops on leadership, entrepreneurship, BIM, contract management, and other skills equip members to excel and advance in their careers.',                                   tag: 'Development'  },
-  { icon: '🏆', title: 'Women in QS Awards',        desc: 'Annual awards recognising outstanding female quantity surveyors who have made exceptional contributions to the profession and to society.',                                      tag: 'Recognition'  },
-  { icon: '🌍', title: 'International Engagement',  desc: 'WAQSN engages with global women-in-construction networks, facilitating international exposure and collaboration opportunities for Nigerian female QS professionals.',           tag: 'Global'       },
+  { icon: 'jobs', title: 'Professional Advocacy',    desc: 'WAQSN advocates for the increased participation and recognition of women in quantity surveying, construction, and the broader built environment in Nigeria.',                   tag: 'Advocacy'     },
+  { icon: 'education', title: 'Mentorship & Training',     desc: 'Structured mentorship programmes pair emerging female QS professionals with experienced Fellows, providing career guidance and knowledge transfer.',                              tag: 'Mentorship'   },
+  { icon: 'handshake', title: 'Networking',                desc: 'Regular forums, seminars, and social events create a strong community where women QS professionals can connect, collaborate, and grow together.',                               tag: 'Community'    },
+  { icon: 'library', title: 'Capacity Building',         desc: 'Workshops on leadership, entrepreneurship, BIM, contract management, and other skills equip members to excel and advance in their careers.',                                   tag: 'Development'  },
+  { icon: 'trophy', title: 'Women in QS Awards',        desc: 'Annual awards recognising outstanding female quantity surveyors who have made exceptional contributions to the profession and to society.',                                      tag: 'Recognition'  },
+  { icon: 'web', title: 'International Engagement',  desc: 'WAQSN engages with global women-in-construction networks, facilitating international exposure and collaboration opportunities for Nigerian female QS professionals.',           tag: 'Global'       },
 ];
 
 export default function WAQSN() {
@@ -238,7 +239,7 @@ export default function WAQSN() {
             {roles.map((r, i) => (
               <div className="svc" key={i}>
                 <span className="svc-tag">{r.tag}</span>
-                <div className="svc-ico">{r.icon}</div>
+                <div className="svc-ico"><Icon name={r.icon} size="xl" /></div>
                 <div className="svc-t">{r.title}</div>
                 <p className="svc-d">{r.desc}</p>
               </div>

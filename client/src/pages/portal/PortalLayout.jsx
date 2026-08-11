@@ -1,6 +1,7 @@
 import { useState, Suspense } from 'react';
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Icon from '../../components/common/Icon';
 
 const PortalLayout = () => {
   const { user, logout } = useAuth();
@@ -20,11 +21,11 @@ const PortalLayout = () => {
 
   const navItems = [
     { to: '/portal', label: 'Dashboard', icon: '\u2302', end: true },
-    { to: '/portal/profile', label: 'My Profile', icon: '\u263A' },
-    { label: 'My Results', icon: '\u2606', comingSoon: true },
-    { label: 'ID Card', icon: '\u2750', comingSoon: true },
+    { to: '/portal/profile', label: 'My Profile', icon: 'account' },
+    { label: 'My Results', icon: 'award', comingSoon: true },
+    { label: 'ID Card', icon: 'idCard', comingSoon: true },
     { label: 'Payments', icon: '\u20A6', comingSoon: true },
-    { label: 'CPD Records', icon: '\u270E', comingSoon: true },
+    { label: 'CPD Records', icon: 'certificate', comingSoon: true },
   ];
 
   return (
@@ -40,7 +41,7 @@ const PortalLayout = () => {
         </button>
         <h2 className="portal-topbar-title">Member Portal</h2>
         <div className="portal-topbar-bell" title="Notifications coming soon">
-          &#128276;
+          <Icon name="notification" size="sm" />
         </div>
       </div>
 
@@ -62,7 +63,7 @@ const PortalLayout = () => {
             <span className="portal-brand-sub" style={{ marginTop: 4 }}>Member Portal</span>
           </div>
           <Link to="/" className="portal-home-link" title="Back to main website">
-            🏠
+            <Icon name="home" size="md" />
           </Link>
         </div>
 
@@ -80,7 +81,7 @@ const PortalLayout = () => {
           {navItems.map((item, idx) =>
             item.comingSoon ? (
               <div key={idx} className="portal-nav-item disabled" title="Coming Soon">
-                <span className="portal-nav-icon">{item.icon}</span>
+                <span className="portal-nav-icon"><Icon name={item.icon} size="md" /></span>
                 <span>{item.label}</span>
                 <span className="portal-soon-badge">Soon</span>
               </div>
@@ -94,7 +95,7 @@ const PortalLayout = () => {
                 }
                 onClick={() => setSidebarOpen(false)}
               >
-                <span className="portal-nav-icon">{item.icon}</span>
+                <span className="portal-nav-icon"><Icon name={item.icon} size="md" /></span>
                 <span>{item.label}</span>
               </NavLink>
             )

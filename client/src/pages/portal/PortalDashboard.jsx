@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Icon from '../../components/common/Icon';
 
 const PortalDashboard = () => {
   const { user } = useAuth();
@@ -69,16 +70,16 @@ const PortalDashboard = () => {
         <h2 className="pdash-section-title">Quick Actions</h2>
         <div className="pdash-actions">
           <Link to="/portal/profile" className="pdash-action">
-            <span className="pdash-action-icon">&#9998;</span>
+            <span className="pdash-action-icon"><Icon name="edit" size="sm" /></span>
             <span>Update Profile</span>
           </Link>
           <div className="pdash-action disabled" title="Coming Soon">
-            <span className="pdash-action-icon">&#9733;</span>
+            <span className="pdash-action-icon"><Icon name="star" size="sm" /></span>
             <span>View Results</span>
             <span className="pdash-action-badge">Soon</span>
           </div>
           <div className="pdash-action disabled" title="Coming Soon">
-            <span className="pdash-action-icon">&#9745;</span>
+            <span className="pdash-action-icon"><Icon name="check" size="sm" /></span>
             <span>Download ID Card</span>
             <span className="pdash-action-badge">Soon</span>
           </div>
@@ -115,7 +116,7 @@ const PortalDashboard = () => {
 
       {/* Coming Soon Banner */}
       <div className="pdash-banner">
-        <span className="pdash-banner-icon">&#128640;</span>
+        <span className="pdash-banner-icon"><Icon name="rocket" size="sm" /></span>
         <div>
           <h3>Full Portal Features Coming Soon</h3>
           <p>

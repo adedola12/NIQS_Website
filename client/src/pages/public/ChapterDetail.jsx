@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import LeaderCard from '../../components/common/LeaderCard';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
 const ZONE_MAP = {
   'abia':'South East','adamawa':'North East','akwa-ibom':'South South','anambra':'South East',
@@ -142,25 +143,25 @@ export default function ChapterDetail() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '.7rem' }}>
                 {chapter?.address && (
                   <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: '.85rem', color: 'var(--color-txt-2)' }}>
-                    <span style={{ fontSize: '1rem', marginTop: 1 }}>📍</span>
+                    <span style={{ fontSize: '1rem', marginTop: 1 }}><Icon name="location" size="sm" /></span>
                     <span>{chapter.address}</span>
                   </div>
                 )}
                 {chapter?.email && (
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: '.85rem' }}>
-                    <span>✉️</span>
+                    <span><Icon name="email" size="sm" /></span>
                     <a href={`mailto:${chapter.email}`} style={{ color: 'var(--color-navy)', fontWeight: 600, textDecoration: 'none' }}>{chapter.email}</a>
                   </div>
                 )}
                 {chapter?.phone && (
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: '.85rem' }}>
-                    <span>📞</span>
+                    <span><Icon name="phone" size="sm" /></span>
                     <a href={`tel:${chapter.phone}`} style={{ color: 'var(--color-navy)', fontWeight: 600, textDecoration: 'none' }}>{chapter.phone}</a>
                   </div>
                 )}
                 {chapter?.website && (
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: '.85rem' }}>
-                    <span>🌐</span>
+                    <span><Icon name="web" size="sm" /></span>
                     <a href={chapter.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-gold)', fontWeight: 600, textDecoration: 'none' }}>{chapter.website}</a>
                   </div>
                 )}
@@ -220,7 +221,7 @@ export default function ChapterDetail() {
                     <div className="eday">{new Date(e.date).getDate()}</div>
                     <div className="emon">{new Date(e.date).toLocaleString('default', { month: 'short' }).toUpperCase()} {new Date(e.date).getFullYear()}</div>
                   </div>
-                  <div className="einfo"><h4>{e.title}</h4><p>📍 {e.location || 'Venue TBC'}</p></div>
+                  <div className="einfo"><h4>{e.title}</h4><p><Icon name="location" size="sm" /> {e.location || 'Venue TBC'}</p></div>
                   {e.type && <span className="epill">{e.type}</span>}
                 </div>
               ))}

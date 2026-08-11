@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getLinkContext, submitFlyerRequest, uploadFlyerRequestImage } from '../../api/flyerRequestApi';
 import { CATEGORIES, getCategoryConfig, hasItinerary } from '../../flyer/categories.js';
+import Icon from '../../components/common/Icon';
 
 const NAVY = '#000066';
 const GOLD = '#D9B650';
@@ -129,7 +130,7 @@ export default function FlyerRequest() {
     return (
       <div style={{ background: '#ECEEF5', minHeight: '70vh', padding: '40px 16px', fontFamily: FB }}>
         <div style={{ maxWidth: 560, margin: '0 auto', background: '#fff', borderRadius: 16, padding: '40px 28px', textAlign: 'center', boxShadow: '0 10px 40px rgba(0, 0, 102,0.14)' }}>
-          <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#DCFCE7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 14px' }}>✓</div>
+          <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#DCFCE7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 14px' }}><Icon name="check" size="sm" /></div>
           <h2 style={{ fontFamily: FD, fontSize: 24, color: NAVY, margin: '0 0 8px' }}>Request received!</h2>
           <p style={{ fontSize: 14.5, color: '#5A6485', margin: '0 0 6px', lineHeight: 1.55 }}>
             Thank you, {form.requesterName.split(' ')[0]}. The NIQS team will design the flyer for{' '}

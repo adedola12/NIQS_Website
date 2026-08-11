@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { MdPerson, MdLock, MdEdit, MdSave, MdClose } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import AdminHeader from '../../components/admin/AdminHeader';
 import { getAdminLabel } from '../../utils/roleHelpers';
+import Icon from '../../components/common/Icon';
 
 const ROLE_COLORS = {
   main_admin:     '#D9B650',
@@ -198,7 +198,7 @@ export default function ManageProfile() {
                     cursor: 'pointer',
                   }}
                 >
-                  <MdEdit size={16} />
+                  <Icon name="edit" size={16} />
                   Edit Profile
                 </button>
               )}
@@ -299,7 +299,7 @@ export default function ManageProfile() {
                       opacity: saving ? 0.7 : 1,
                     }}
                   >
-                    <MdSave size={16} />
+                    <Icon name="save" size={16} />
                     {saving ? 'Saving…' : 'Save Changes'}
                   </button>
                   <button
@@ -318,7 +318,7 @@ export default function ManageProfile() {
                       cursor: 'pointer',
                     }}
                   >
-                    <MdClose size={16} />
+                    <Icon name="close" size={16} />
                     Cancel
                   </button>
                 </div>
@@ -348,7 +348,7 @@ export default function ManageProfile() {
             onClick={() => setPwSection(!pwSection)}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <MdLock size={20} color="#6b7280" />
+              <Icon name="lock" size={20} color="#6b7280" />
               <span style={{ fontSize: 15, fontWeight: 600, color: '#111827' }}>Change Password</span>
             </div>
             <span style={{ fontSize: 20, color: '#9ca3af', lineHeight: 1 }}>{pwSection ? '−' : '+'}</span>
@@ -408,7 +408,7 @@ export default function ManageProfile() {
                   opacity: pwSaving ? 0.7 : 1,
                 }}
               >
-                <MdLock size={16} />
+                <Icon name="lock" size={16} />
                 {pwSaving ? 'Updating…' : 'Update Password'}
               </button>
             </div>

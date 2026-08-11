@@ -5,6 +5,7 @@ import PageHero from '../../components/common/PageHero';
 import MembershipStats from '../../components/stats/MembershipStats';
 import { useMemberCopy } from '../../hooks/useMembershipStats';
 import { AGREEMENT_COUNT } from '../../data/reciprocity';
+import Icon from '../../components/common/Icon';
 
 export default function About() {
   const memberCopy = useMemberCopy();
@@ -86,17 +87,17 @@ export default function About() {
           <h2 className="sh">Vision, Mission &amp; <em>Values</em></h2>
           <div className="valg">
             <div className="val">
-              <div className="vali">🎯</div>
+              <div className="vali"><Icon name="target" size="xl" /></div>
               <h4>Our Vision</h4>
               <p>To be the profession in Nigeria responsible for total cost and procurement management, for the achievement of client's objectives in all types of capital projects and developments, from conception to commissioning and maintenance, in all sectors of the economy, for the attainment of sustainable National development.</p>
             </div>
             <div className="val">
-              <div className="vali">🚀</div>
+              <div className="vali"><Icon name="rocket" size="xl" /></div>
               <h4>Our Mission</h4>
               <p>Contributing to sustainable development of Nigeria by promoting the patronage of our world-class construction cost services and procurement management experts that meet client needs and expectations through the development of unique and distinctive competencies of the profession.</p>
             </div>
             <div className="val">
-              <div className="vali">💎</div>
+              <div className="vali"><Icon name="diamond" size="xl" /></div>
               <h4>Our Value</h4>
               <p>Value for money is our watchword. NIQS members deliver comprehensive cost management services that create demonstrable financial benefit for every client in public and private sectors.</p>
             </div>
@@ -120,23 +121,23 @@ export default function About() {
               <h2 className="sh">A Professional Body You Can <em>Trust</em></h2>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '.8rem', marginBottom: '1.5rem' }}>
                 <li style={{ display: 'flex', gap: '.8rem', fontSize: '.86rem', color: 'var(--text2)' }}>
-                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}>✓</span>
+                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}><Icon name="check" size="sm" /></span>
                   Internationally recognised qualifications and credentials
                 </li>
                 <li style={{ display: 'flex', gap: '.8rem', fontSize: '.86rem', color: 'var(--text2)' }}>
-                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}>✓</span>
+                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}><Icon name="check" size="sm" /></span>
                   Access to Nigeria's largest QS professional network
                 </li>
                 <li style={{ display: 'flex', gap: '.8rem', fontSize: '.86rem', color: 'var(--text2)' }}>
-                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}>✓</span>
+                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}><Icon name="check" size="sm" /></span>
                   Structured CPD programmes and webinar series
                 </li>
                 <li style={{ display: 'flex', gap: '.8rem', fontSize: '.86rem', color: 'var(--text2)' }}>
-                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}>✓</span>
+                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}><Icon name="check" size="sm" /></span>
                   Strong advocacy with government and industry stakeholders
                 </li>
                 <li style={{ display: 'flex', gap: '.8rem', fontSize: '.86rem', color: 'var(--text2)' }}>
-                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}>✓</span>
+                  <span style={{ color: 'var(--gold)', fontWeight: 800, flexShrink: 0 }}><Icon name="check" size="sm" /></span>
                   {AGREEMENT_COUNT} international reciprocity agreements
                 </li>
               </ul>
@@ -182,7 +183,13 @@ export default function About() {
           ) : (
             featured.map(p => {
               const tierLabel = p.tier ? p.tier.charAt(0).toUpperCase() + p.tier.slice(1) + ' Partner' : 'Partner';
-              const badgeLabel = p.tier === 'platinum' ? '💎 Platinum Partner' : p.tier === 'gold' ? '🥇 Gold Partner' : tierLabel;
+              /* A label rendered as JSX rather than a string, so the icon is an icon.
+                 It was a plain string when the marker was an emoji. */
+              const badgeLabel = p.tier === 'platinum'
+                ? <><Icon name="diamond" size="sm" /> Platinum Partner</>
+                : p.tier === 'gold'
+                  ? <><Icon name="trophy" size="sm" /> Gold Partner</>
+                  : tierLabel;
 
               const cardInner = (
                 <div className="gpc" style={{ position: 'relative', cursor: 'pointer' }}>

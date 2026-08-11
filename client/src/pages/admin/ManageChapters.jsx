@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { canDelete, canManageNational } from '../../utils/roleHelpers';
 import AdminHeader from '../../components/admin/AdminHeader';
 import DataTable from '../../components/admin/DataTable';
+import Icon from '../../components/common/Icon';
 
 const ZONES = ['South West','South East','South South','North West','North East','North Central'];
 
@@ -201,7 +202,7 @@ export default function ManageChapters() {
               <div />
             </div>
             <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 14, marginTop: -6 }}>
-              💡 Leave a count at 0 and that statistic is simply hidden on the public chapter page — no placeholder dash is shown.
+              <Icon name="idea" size="sm" /> Leave a count at 0 and that statistic is simply hidden on the public chapter page — no placeholder dash is shown.
             </p>
 
             {/* CONTACT */}
@@ -232,7 +233,7 @@ export default function ManageChapters() {
               </FormField>
             </div>
             <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 14, marginTop: -6 }}>
-              💡 For full leadership profiles with photos, use <strong>Exco Members</strong> → scope: Chapter Exco.
+              <Icon name="idea" size="sm" /> For full leadership profiles with photos, use <strong>Exco Members</strong> → scope: Chapter Exco.
             </p>
 
             {/* ABOUT + IMAGE */}

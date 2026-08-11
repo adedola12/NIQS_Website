@@ -5,6 +5,7 @@ import API from '../../api/axios';
 import { listRegistrations, setAttendance } from '../../api/registrationApi';
 import AdminHeader from '../../components/admin/AdminHeader';
 import DataTable from '../../components/admin/DataTable';
+import Icon from '../../components/common/Icon';
 
 function fmtDate(d) {
   if (!d) return '';
@@ -104,7 +105,7 @@ export default function ManageRegistrations() {
           }}
           title="Toggle attendance (admin override)"
         >
-          {row.attended ? '✓ Attended' : 'Mark'}
+          {row.attended ? <><Icon name="check" size="sm" /> Attended</> : 'Mark'}
         </button>
       ),
     },

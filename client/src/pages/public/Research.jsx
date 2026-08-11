@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHero from '../../components/common/PageHero';
 import API from '../../api/axios';
+import Icon from '../../components/common/Icon';
 
 const MAGAZINE_IMG = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&q=80&fit=crop';
 
@@ -23,7 +24,7 @@ const RES_CARDS = [
     img: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=700&q=80&fit=crop',
     h4: 'Workshop Certificates',
     p: 'Download your certificates for NIQS-accredited workshops. Login required for personal records.',
-    btnLabel: 'Access Certificates 🔒', btnCls: 'bo',
+    btnLabel: 'Access Certificates', btnCls: 'bo',
   },
   {
     to: '/webinars', locked: false,
@@ -180,7 +181,7 @@ export default function Research() {
                 { vol: 'Vol. 11, Issue 2', year: 2023, title: 'Sustainable Quantity Surveying: Trends and Future Outlook' },
               ].map((j, i) => (
                 <div key={i} style={{ background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 12, overflow: 'hidden' }}>
-                  <div style={{ height: 100, background: 'linear-gradient(135deg, var(--color-navy) 60%, #1a3a7a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>📰</div>
+                  <div style={{ height: 100, background: 'linear-gradient(135deg, var(--color-navy) 60%, #1a3a7a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="news" size="xl" /></div>
                   <div style={{ padding: '1rem 1.2rem' }}>
                     <div style={{ fontSize: '.62rem', color: 'var(--color-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '.4rem' }}>{j.vol} · {j.year}</div>
                     <div style={{ fontSize: '.82rem', fontWeight: 700, color: 'var(--color-navy)', lineHeight: 1.4 }}>{j.title}</div>
@@ -195,7 +196,7 @@ export default function Research() {
                 <div key={j._id} style={{ background: '#fff', border: '1px solid var(--color-bdr)', borderRadius: 12, overflow: 'hidden' }}>
                   {j.coverImage
                     ? <img src={j.coverImage} alt={j.title} style={{ width: '100%', height: 110, objectFit: 'cover' }} />
-                    : <div style={{ height: 110, background: 'linear-gradient(135deg, var(--color-navy) 60%, #1a3a7a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>📰</div>
+                    : <div style={{ height: 110, background: 'linear-gradient(135deg, var(--color-navy) 60%, #1a3a7a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="news" size="xl" /></div>
                   }
                   <div style={{ padding: '1rem 1.2rem' }}>
                     {(j.volume || j.year) && (
