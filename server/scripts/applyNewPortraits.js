@@ -48,6 +48,45 @@ const ITEMS = [
     model: 'PastPresident',
     filter: { name: 'QS Obafemi O. Onashile, FNIQS' },
   },
+  /* Re-framed, not re-supplied — the chapter's original file was fine and this is
+     built from it. normalizePortraits.py mis-scaled this one badly: it published
+     at face height 0.164 of the canvas with the eye line at 0.049, against the
+     0.328 / 0.363 every other portrait on the site sits at. On the card that read
+     as a small full-length figure with the top of his head clipped by the frame
+     and a smear of backdrop below him, next to thirteen head-and-shoulders
+     colleagues.
+
+     The source has only 322px above the eye line where that framing needs 411, so
+     it cannot simply be cropped tighter — the studio backdrop is a flat grey and
+     was extended upward to make the headroom, then the crop was cut to the
+     president's own face geometry before matting. Re-measured after: 0.320 / 0.359.
+     Worth knowing if another portrait comes back the same way. */
+  {
+    file: 'lagos-adewumi-samuel.jpg',
+    label: 'QS Adewumi Samuel, MNIQS — Lagos Co-opted Member III (re-framed to a headshot)',
+    model: 'Exco',
+    filter: { scope: 'chapter', title: 'Co-opted Member III', name: 'QS Adewumi Samuel, MNIQS' },
+  },
+  /* Plateau sent its chairman alone rather than a roster, so this chapter stays a
+     chairman-only stub and gets no block in seedChapterProfiles.js — only a
+     better photograph than the one it already carried.
+
+     His name is left as the committee's Chapter Chairmen List has it. The file is
+     captioned "QS NUHU MACHUNGA" and the record reads "QS Nuhu Zawa Machunga",
+     and everywhere else on this site the chapter's own material has won that
+     disagreement — but everywhere else that material was a full pack with a
+     roster behind it. A single filename is thinner evidence than the list it
+     would be overturning, so the name stands and the difference is recorded here
+     for Plateau to settle. */
+  {
+    file: 'plateau-nuhu-machunga.jpg',
+    label: 'QS Nuhu Zawa Machunga, MNIQS — Plateau Chapter Chairman (replacement photo)',
+    model: 'Exco',
+    // "Plateau State", not "Plateau" — chapter-scope Exco records carry the full
+    // state label. The FCT entry above matches on "FCT" only because that chapter
+    // has no "State" in its name, which makes this an easy one to copy wrongly.
+    filter: { scope: 'chapter', title: 'Chapter Chairman', state: 'Plateau State' },
+  },
 ];
 
 (async () => {

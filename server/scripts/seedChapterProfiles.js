@@ -1053,6 +1053,199 @@ const CHAPTERS = [
       ['sanmi-ademuyiwa', 'QS Sanmi Ademuyiwa, MNIQS', 'Co-opted Member V', 14],
     ],
   },
+  {
+    key: 'enugu',
+    chapterName: 'Enugu Chapter',
+    state: 'Enugu',
+    stateLabel: 'Enugu State',
+    chairperson: 'QS Uchenna A. Nwajagu, FNIQS',
+    secretary: 'QS Ifeanyi Nwogu, MNIQS',
+    about:
+      'The Enugu State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Enugu State in the '
+      + 'South East geopolitical zone. A nine-member executive committee leads the '
+      + 'chapter across administration, finance, research and development, public '
+      + 'relations and member welfare, working with the National Secretariat to '
+      + 'deliver continuing professional development, uphold professional standards '
+      + 'in construction cost management, and represent the profession before '
+      + 'government and industry in the state.',
+    heroPortrait: 'uchenna-a-nwajagu',
+    /* Nine executives. The chairman arrives under a shorter name than the
+       committee's Chapter Chairmen List carries — "QS Uchenna A. Nwajagu" against
+       the list's "QS Anderson Uchenna Nwajagu" — and the chapter's own caption
+       wins, as it has every time the two have disagreed. The Deputy Chairman
+       gains a "Dr" the list omits, from the same source.
+
+       The Public Relations Secretary's file arrived with his forename and surname
+       run together as one word ("IFEANYICHUKWUOKOLOMIKE"). Published split, which
+       is the only reading that produces two names — but it is an inference from a
+       missing space rather than something the chapter wrote, so CONFIRM IT.
+
+       "PRS" is expanded to Public Relations Secretary to match every other
+       chapter. "Assistant Secretary" and "Welfare Director of Socials" are left as
+       the chapter styles them: neither is a typo, they are simply this chapter's
+       own offices.
+
+       Eight portraits published of nine. The Deputy Chairman carries the
+       placeholder: his is the only 600x600 file in the pack, five times softer at
+       the face than anything else in it, and the matte comes back with a dark
+       halo around the jacket and a ragged bite out of both shoulders that no crop
+       or model change reached. That is the secretariat's instruction of
+       2026-08-05 — use the placeholder wherever the quality is poor — rather than
+       a judgement call. Worth asking Enugu for his original file. */
+    roster: [
+      ['uchenna-a-nwajagu', 'QS Uchenna A. Nwajagu, FNIQS', 'Chairman', 1],
+      ['okechukwu-ekwelem', 'QS Dr Okechukwu Ekwelem, FNIQS', 'Deputy Chairman', 2],
+      ['ifeanyi-nwogu', 'QS Ifeanyi Nwogu, MNIQS', 'General Secretary', 3],
+      ['chibuzor-s-ogbuka', 'QS Chibuzor S. Ogbuka, MNIQS', 'Assistant Secretary', 4],
+      ['obinna-g-ugwu', 'QS Obinna G. Ugwu, MNIQS', 'Treasurer', 5],
+      ['ikechi-festus', 'QS Ikechi Festus, MNIQS', 'Financial Secretary', 6],
+      ['henry-ajaelu', 'QS Dr. Henry Ajaelu, FNIQS', 'Research & Development Secretary', 7],
+      ['ifeanyichukwuokolomike', 'QS Ifeanyichukwu Okolomike, MNIQS', 'Public Relations Secretary', 8],
+      ['alloysius-ogbuagu', 'QS Alloysius Ogbuagu, MNIQS', 'Welfare Director of Socials', 9],
+    ],
+  },
+  {
+    key: 'gombe',
+    chapterName: 'Gombe Chapter',
+    state: 'Gombe',
+    stateLabel: 'Gombe State',
+    chairperson: 'QS Maryamu Arab, FNIQS',
+    secretary: "QS Sa'ad Sambo Talba, MNIQS",
+    about:
+      'The Gombe State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Gombe State in the '
+      + 'North East geopolitical zone. A nine-member executive committee leads the '
+      + 'chapter across administration, finance, professional development and public '
+      + 'relations, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction '
+      + 'cost management, and represent the profession before government and '
+      + 'industry in the state. The chapter also carries its own West African '
+      + 'Quantity Surveyors Network representation.',
+    heroPortrait: 'maryamu-arab',
+    /* Nine executives, led by one of the chapter chairmen who is a woman.
+
+       The Deputy Chairman is a substitution, not a spelling: the stub seeded from
+       the committee's list names QS Yusuf Ibrahim, and this pack names QS Yusuf
+       Adamu. That is a different person, and the seed overwrites silently, so it
+       is recorded here. CONFIRM WITH THE CHAPTER before this is treated as settled.
+
+       Two names mirror each other — QS Yusuf Adamu is Deputy Chairman and QS Adamu
+       Yusuf is Treasurer. Both are as captioned; neither is a transposition of the
+       other, and they are easy to "correct" into a single person by mistake.
+
+       The Assistant General Secretary is captioned bare, with no QS and no
+       post-nominal, where every other member of this roster carries both. Under
+       the convention settled on 2026-08-04 that reads as a probationer, and it
+       publishes exactly as supplied rather than being tidied into the house style.
+
+       "PUBLIC RELATION OFFICER" is corrected to Public Relations Officer, and the
+       Financial Secretary's missing comma before his post-nominal restored. */
+    roster: [
+      ['maryamu-arab', 'QS Maryamu Arab, FNIQS', 'Chairman', 1],
+      ['yusuf-adamu', 'QS Yusuf Adamu, MNIQS', 'Deputy Chairman', 2],
+      ['sa-ad-sambo-talba', "QS Sa'ad Sambo Talba, MNIQS", 'General Secretary', 3],
+      ['abubakar-sadiq-ahmad', 'Abubakar Sadiq Ahmad', 'Assistant General Secretary', 4],
+      ['adamu-yusuf', 'QS Adamu Yusuf, MNIQS', 'Treasurer', 5],
+      ['musa-ibrahim-deba', 'QS Musa Ibrahim Deba, MNIQS', 'Financial Secretary', 6],
+      ['aliyu-usman', 'QS Aliyu Usman, MNIQS', 'Professional Development Secretary', 7],
+      ['hassan-mustapha', 'QS Hassan Mustapha, MNIQS', 'Public Relations Officer', 8],
+      ['asmau-umar-ahmed', 'QS Asmau Umar Ahmed, MNIQS', 'WAQSN Representative', 9],
+    ],
+  },
+  {
+    key: 'jigawa',
+    chapterName: 'Jigawa Chapter',
+    state: 'Jigawa',
+    stateLabel: 'Jigawa State',
+    chairperson: 'QS Dr. Usman Musa, MNIQS',
+    secretary: 'QS Kabiru Usman Kiyawa, MNIQS',
+    about:
+      'The Jigawa State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Jigawa State in the '
+      + 'North West geopolitical zone. A seven-member executive committee leads the '
+      + 'chapter across administration, finance and public relations, working with '
+      + 'the National Secretariat to deliver continuing professional development, '
+      + 'uphold professional standards in construction cost management, and '
+      + 'represent the profession before government and industry in the state.',
+    heroPortrait: 'usman-musa',
+    /* Seven executives, the smallest roster published so far, and the only pack in
+       this batch whose chairman's name matches the committee list exactly.
+
+       The chairman also holds a seat on the National Executive Council, so his
+       card exists twice — run reconcileChapterChairmen.js after this seed. Note
+       the caveat in the portrait notes: the NEC and chapter-page portraits were
+       composited on different backdrop fits and will not match pixel for pixel.
+
+       "PRO" is expanded to Public Relations Officer. */
+    roster: [
+      ['usman-musa', 'QS Dr. Usman Musa, MNIQS', 'Chairman', 1],
+      ['gali-mu-azu', "QS Gali Mu'azu, MNIQS", 'Deputy Chairman', 2],
+      ['kabiru-usman-kiyawa', 'QS Kabiru Usman Kiyawa, MNIQS', 'General Secretary', 3],
+      ['aminu-garba', 'QS Aminu Garba, MNIQS', 'Assistant General Secretary', 4],
+      ['suleiman-aminu', 'QS Suleiman Aminu, MNIQS', 'Treasurer', 5],
+      ['bala-habu-garki', 'QS Bala Habu Garki, MNIQS', 'Financial Secretary', 6],
+      ['auwalu-usman', 'QS Auwalu Usman, MNIQS', 'Public Relations Officer', 7],
+    ],
+  },
+  {
+    key: 'kano',
+    chapterName: 'Kano Chapter',
+    state: 'Kano',
+    stateLabel: 'Kano State',
+    chairperson: "QS Sai'du Musa Gyadi-Gyadi, MNIQS",
+    secretary: 'QS Dr. Garba Mai Unguwa Umar, FNIQS',
+    about:
+      'The Kano State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Kano State in the '
+      + 'North West geopolitical zone. A thirteen-member executive committee leads '
+      + 'the chapter across administration, finance, research and product '
+      + 'development and public relations, with three co-opted members carrying '
+      + 'young-member and West African Quantity Surveyors Network representation, '
+      + 'working with the National Secretariat to deliver continuing professional '
+      + 'development, uphold professional standards in construction cost '
+      + 'management, and represent the profession before government and industry '
+      + 'in the state.',
+    heroPortrait: 'sai-du-musa-gyadi-gyadi',
+    /* Thirteen executives, the second largest roster on the site after Lagos.
+
+       The chairman's name runs the other way round from the committee list, which
+       has "QS Gyadi-Gyadi Sa'idu Musa" where the chapter writes "QS Sai'du Musa
+       Gyadi-Gyadi" — a reordering *and* a different apostrophe placement in the
+       forename. The chapter's own spelling is published, as with Bauchi and Kogi
+       before it.
+
+       Four captions carry the same misspelling of "Secretary" as SECRETERY and are
+       corrected; "ASST." and "PROD. DEV." are expanded.
+
+       Two titles are recorded as close to the source as they can be without
+       inventing meaning. "E.C.O(TECH.)" and "E.C.O (Prof.)" are published as
+       E.C.O. (Technical) and E.C.O. (Professional) — the abbreviation is not one
+       any other chapter on the site uses and nothing in the pack expands it.
+       "SECRETARY RESEARCH & PROD. DEV." is published as Secretary, Research &
+       Product Development; "Prod." could as easily be Production, and elsewhere on
+       the site the comparable office is Professional Development. ALL THREE NEED
+       THE CHAPTER TO CONFIRM.
+
+       The three co-opted seats are distinct in the source — plain, young-member and
+       WAQSN — so they do not collide on the (scope, chapter, title) key the way
+       Lagos's did. */
+    roster: [
+      ['sai-du-musa-gyadi-gyadi', "QS Sai'du Musa Gyadi-Gyadi, MNIQS", 'Chairman', 1],
+      ['bashir-m-t-hotoro', 'QS Bashir M.T Hotoro, FNIQS', 'Deputy Chairman', 2],
+      ['garba-mai-unguwa-umar', 'QS Dr. Garba Mai Unguwa Umar, FNIQS', 'General Secretary', 3],
+      ['gambo-yayu-idris', 'QS Gambo Yayu Idris, MNIQS', 'Assistant General Secretary', 4],
+      ['baffa-yahaya-sabi-u', "QS Dr Baffa Yahaya Sabi'u, MNIQS", 'Treasurer', 5],
+      ['bello-abdu-gaya', 'QS Bello Abdu Gaya, MNIQS', 'Financial Secretary', 6],
+      ['aminu-wada-hussain', 'QS Aminu Wada Hussain, MNIQS', 'Secretary, Research & Product Development', 7],
+      ['yusuf-abdussalam-dano', 'QS Yusuf Abdussalam Dano, MNIQS', 'Public Relations Secretary', 8],
+      ['auwal-abdu-dankano', 'QS Auwal Abdu Dankano, MNIQS', 'E.C.O. (Technical)', 9],
+      ['rabi-u-hamza', "QS Rabi'u Hamza, MNIQS", 'E.C.O. (Professional)', 10],
+      ['salisu-ahmad-baba', 'QS Salisu Ahmad Baba, MNIQS', 'Co-opted Member', 11],
+      ['emmanuel-ishaku-bature', 'QS Emmanuel Ishaku Bature, MNIQS', 'Co-opted Member (Young Member)', 12],
+      ['nabiyan-hamdu-zailani', 'QS Nabiyan Hamdu Zailani, MNIQS', 'Co-opted Member (WAQSN)', 13],
+    ],
+  },
 ];
 
 (async () => {
