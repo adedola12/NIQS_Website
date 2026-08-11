@@ -55,6 +55,20 @@ manual upload. That is worth a decision from the Committee: pointing the domain
 at the deployment platform would make every future correction go live by itself,
 within about a minute, with no upload step to forget.
 
+That move has now been worked out in full and written up as a runbook —
+`docs/DOMAIN_CUTOVER.md`. It also closes the 404 problem above outright: the
+deployment platform already serves every deep link correctly, which was tested
+rather than assumed, so no `.htaccess` is involved at all.
+
+**One warning belongs in front of the Committee before it approves anything.**
+The Institute's mail exchanger currently points at the domain itself, and the
+domain points at the web host. Repointing the domain the obvious way would
+therefore redirect every message sent to an `@niqs.org.ng` address — every
+chapter address and the Secretariat's own — to a service that does not handle
+mail, with no visible error anywhere. The runbook sequences around this in a
+single preparatory step that changes nothing observable today. The cutover is
+safe; it is simply not safe done casually.
+
 ---
 
 ## What is live
@@ -80,9 +94,9 @@ after today's fix none has a broken image.
 | | |
 |---|---|
 | Chapter records | **37** — every state and the FCT |
-| Chapters with a published executive roster | **23 of 37** |
-| Executive records across the site | **344** |
-| Portraits published | **316** (28 cards await a usable photograph) |
+| Chapters with a published executive roster | **28 of 37** |
+| Executive records across the site | **388** |
+| Portraits published | **363** (25 cards await a usable photograph) |
 | Past Presidents | 13 |
 | Events | 3 |
 
@@ -115,10 +129,10 @@ place of a dash.
 
 ### On the Secretariat and the chapters
 
-**3. Fourteen chapters have not sent their material.** They are listed and
+**3. Nine chapters have not sent their material.** They are listed and
 reachable on the site; each publishes within a day of its pack arriving.
 
-**4. Twenty-eight cards need a usable photograph.** Six in Katsina and one in
+**4. Twenty-five cards need a usable photograph.** Six in Katsina and one in
 Cross River carry the placeholder deliberately, under the Secretariat's own
 instruction of 5 August to use a placeholder wherever quality is poor. The
 Katsina six were cut from a printed group poster whose ink crushed the green
@@ -165,7 +179,7 @@ company. The integration points from the website's side are specified and ready.
 | | |
 |---|---|
 | ADLM's two actions | Same day |
-| Chapter rosters | Chapters went from 10 to 23 published between 30 July and 5 August. At that pace the remaining 14 land within 2–3 weeks — **but this depends entirely on chapters sending their packs.** |
+| Chapter rosters | Chapters went from 10 to 28 published between 30 July and 11 August. At that pace the remaining 9 land well within 2 weeks — **but this depends entirely on chapters sending their packs.** |
 | Photographs and name confirmations | Follow the same chapters |
 | Section content (news, jobs, etc.) | Secretariat's own pace, through the admin panel; the site does not wait on it |
 
@@ -182,7 +196,10 @@ nor the Secretariat can close alone.
 ## Recommendations to the Committee
 
 1. **Approve pointing the domain at automatic deployment.** It removes the manual
-   upload step and the class of problem that produced the 404 issue.
+   upload step and the class of problem that produced the 404 issue. The method
+   is written up in `docs/DOMAIN_CUTOVER.md`, including the mail-routing step
+   that has to come first — see the warning above. Worth doing several days
+   before the launch date rather than on it.
 2. **Set a deadline for the fourteen outstanding chapters**, and ask for
    photographs at the same time as names — the two arriving separately is what
    creates the placeholder cards.
