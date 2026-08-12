@@ -1198,6 +1198,30 @@
   .cmap-head { margin-bottom: 1rem; }
 }
 
+/* Event rows on a phone.
+   .erow is `64px 1fr auto` — a date block, the event, and a type pill. On a
+   375px screen that leaves the middle column around 180px wide, so a two-line
+   title becomes eight lines and the description a ribbon; adding the Register
+   action made a third column out of what was already too tight and pushed the
+   page into sideways scrolling. The date keeps its column, everything else gets
+   the full width beneath it. */
+@media (max-width: 640px) {
+  .erow {
+    grid-template-columns: 52px 1fr;
+    gap: .55rem .9rem;
+    @apply px-4 py-4;
+  }
+  .erow > :last-child {
+    grid-column: 1 / -1;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100%;
+  }
+  .erow .eday { @apply text-[1.4rem]; }
+  .erow:hover { transform: none; }   /* a 4px nudge on tap just reads as jitter */
+}
+
 @media (max-width: 480px) {
   .fg4, .pp-grid { grid-template-columns: 1fr; }
   .plogos { grid-template-columns: 1fr 1fr; }
