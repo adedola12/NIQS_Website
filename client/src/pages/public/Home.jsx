@@ -214,10 +214,6 @@ export default function Home() {
       <div className={`hero${heroOpen ? ' is-open' : ''}`} id="heroWrap">
         {/* Centred content */}
         <div className="hc">
-          <div className="hc-eyebrow">
-            <div className="hc-eyebrow-dot"></div>
-            Est. 1969 &nbsp;&middot;&nbsp; Chartered Professional Body
-          </div>
           {/* The Institute named itself here in type, directly above the
               headline. Richard asked for the mark instead (2026-08-07) — the
               official lockup says the same thing and says it in the brand's
@@ -233,12 +229,16 @@ export default function Home() {
           <p className="hc-sub">
             The premier professional body for quantity surveying in Nigeria — setting the gold standard for construction cost management, procurement, and contract administration across {memberCopy} professionals in every state.
           </p>
+          {/* Order and emphasis are the mockup's, confirmed 2026-08-12: Learn More
+              leads and carries the filled treatment, membership follows as the
+              outlined one. Note this demotes the Institute's own conversion CTA —
+              a deliberate call, not an oversight. */}
           <div className="hc-btns">
-            <Link to="/membership" className="hc-btn-p">
-              Become a Member &nbsp;&rarr;
-            </Link>
-            <Link to="/about" className="hc-btn-s">
+            <Link to="/about" className="hc-btn-p">
               Learn More
+            </Link>
+            <Link to="/membership" className="hc-btn-s">
+              Become a Member
             </Link>
           </div>
         </div>

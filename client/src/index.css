@@ -527,12 +527,49 @@
   .td { @apply text-gold text-[.48rem]; }
 
   /* ── HERO ── */
+  /* `min-height` rather than a fixed `height: 100vh`. Shut, the content block is
+     well under one screen, so the hero is exactly one screen and centres it. Open,
+     the fan strip and the stat bar need roughly 430px more than that, and a fixed
+     100vh with `overflow: hidden` simply ate them: on a 1280x720 laptop the stat
+     bar sat 93px *below* the hero's own bottom edge and never appeared at all.
+     The hero now grows to hold what it opened. */
   .hero {
     @apply relative overflow-hidden flex flex-col justify-center items-center;
-    height: 100vh; min-height: 600px;
+    min-height: 100vh;
     background: var(--color-navy);
     padding-top: 2rem;
     padding-bottom: 0;
+  }
+  /* The crest backdrop, on its own layer rather than on `.hero` itself, because
+     the hero now grows when the fold opens and a `cover` background would rescale
+     mid-animation. Pinned to 100vh and anchored top-centre instead, so the crest
+     holds still while the content moves over it.
+
+     `center top` matters: the artwork's subject sits in the upper half, and
+     `cover` on a tall phone viewport crops from the bottom, which would otherwise
+     behead the eagle. */
+  .hero::before {
+    content: '';
+    @apply absolute inset-x-0 top-0 z-0 pointer-events-none;
+    height: 100vh;
+    background: url('/backgrounds/hero-crest.webp') center top / cover no-repeat;
+  }
+  /* Scrim, calibrated rather than eyeballed. Sampling the artwork under each
+     text region at 1512x860 gave, with no scrim at all: headline 11.2:1 (fine),
+     but the subtitle 4.14:1 and the lockup band 3.64:1, because the light burst
+     peaks at rgb(96,134,203) right where they sit. The subtitle is the binding
+     constraint — it paints at 72% white, not full white, so it fails AA first.
+
+     These stops put it at 4.66:1 and the headline at 15:1. Deliberately no
+     heavier: an earlier pass took the headline to 17:1 and flattened the crest
+     into a plate, which defeats the point of having artwork back there. If you
+     retune, the subtitle is the number to watch — 4.5:1 is the floor. */
+  .hero::after {
+    content: '';
+    @apply absolute inset-0 z-[1] pointer-events-none;
+    background:
+      radial-gradient(ellipse 72% 42% at 50% 24%, rgba(0, 0, 40,.52) 0%, rgba(0, 0, 40,.16) 60%, transparent 100%),
+      linear-gradient(to bottom, rgba(0, 0, 51,.34) 0%, rgba(0, 0, 51,.06) 38%, rgba(0, 0, 51,.06) 62%, rgba(0, 0, 51,.40) 100%);
   }
   .cs-track { @apply absolute inset-0; }
   .cs { @apply absolute inset-0 opacity-0 transition-opacity duration-[1100ms] ease-in-out; }
@@ -574,17 +611,12 @@
     @apply max-w-[780px] w-full mx-auto px-8 text-center relative z-[8] flex-shrink-0;
     padding-top: 0;
   }
-  .hc-eyebrow {
-    @apply inline-flex items-center gap-2.5 rounded-full px-4 py-1 mb-7
-           text-[.65rem] font-bold tracking-wider uppercase;
-    background: rgba(255,255,255,.1);
-    border: 1px solid rgba(255,255,255,.2);
-    color: rgba(255,255,255,.8);
-  }
-  .hc-eyebrow-dot {
-    @apply w-1.5 h-1.5 rounded-full shrink-0;
-    background: var(--color-gold);
-  }
+  /* The "Est. 1969 · Chartered Professional Body" pill that sat above the lockup
+     is gone (2026-08-12) — the mockup opens on the mark itself. Its .hc-eyebrow /
+     .hc-eyebrow-dot rules went with it rather than being left as dead weight in
+     the sheet; nothing else on the site used them. The founding year still appears
+     in the footer and on the About page, so the claim is not lost with the pill. */
+
   /* The official lockup stands where the Institute's name used to be set in
      type. Kept the gold rule beneath it — it separated the mark from the
      headline before and still has to. The artwork is 1222x381 with a real
@@ -592,14 +624,14 @@
      text-shadow so the glow follows the letterforms, not a box. */
   .hc-institute-logo {
     @apply block mb-4 mx-auto;
-    width: clamp(240px, 38vw, 430px);
+    width: clamp(200px, 26vw, 340px);
     height: auto;
     padding-bottom: 1.1rem;
     border-bottom: 2px solid rgba(217, 182, 80,.55);
     filter: drop-shadow(0 2px 6px rgba(0,0,0,.45));
   }
   @media (max-width: 480px) {
-    .hc-institute-logo { width: min(78vw, 300px); padding-bottom: .8rem; }
+    .hc-institute-logo { width: min(68vw, 250px); padding-bottom: .8rem; }
   }
   .hc-title {
     @apply font-heading text-[clamp(2.6rem,5vw,4rem)] font-extrabold leading-[1.1] text-white mb-4;
@@ -613,16 +645,20 @@
   .hc-btns {
     @apply flex gap-3 justify-center flex-wrap mb-14;
   }
+  /* White fill, navy text. It was navy-on-navy, which only read as a button at
+     all because of the shadow; against the crest backdrop it would have sunk into
+     the plate entirely. */
   .hc-btn-p {
     @apply text-[.85rem] font-bold px-8 py-3.5 rounded-lg cursor-pointer border-none
-           transition-all duration-200 flex items-center gap-2 text-white;
+           transition-all duration-200 flex items-center gap-2;
     font-family: var(--font-body);
-    background: var(--color-navy);
+    background: #fff;
+    color: var(--color-navy);
   }
   .hc-btn-p:hover {
-    background: var(--color-navy-3);
+    background: rgba(255,255,255,.88);
     transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(0, 0, 102,.28);
+    box-shadow: 0 8px 22px rgba(0, 0, 0,.32);
   }
   .hc-btn-s {
     @apply text-[.85rem] font-semibold px-8 py-3.5 rounded-lg cursor-pointer
