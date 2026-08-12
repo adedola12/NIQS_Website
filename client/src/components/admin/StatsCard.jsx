@@ -1,5 +1,16 @@
+import Icon from '../common/Icon';
 
-import Icon from '../common/Icon';export default function StatsCard({ icon: Icon, value, label, color = '#000066' }) {
+/**
+ * A dashboard figure with its icon.
+ *
+ * `icon` is a name from the Icon registry ('group', 'news'), not a component.
+ * It used to be a component and was destructured as `{ icon: Icon }`, which
+ * shadowed the import added when the site moved to one icon library — the
+ * rename made `<Icon>` refer to the prop rather than to the component, and the
+ * card silently rendered nothing at all. Kept as a plain string for that reason:
+ * there is nothing here left to shadow.
+ */
+export default function StatsCard({ icon, value, label, color = '#000066' }) {
   return (
     <div
       style={{
@@ -28,7 +39,7 @@ import Icon from '../common/Icon';export default function StatsCard({ icon: Icon
           flexShrink: 0,
         }}
       >
-        {Icon && <Icon size={24} />}
+        {icon && <Icon name={icon} size={26} />}
       </div>
       <div>
         <p

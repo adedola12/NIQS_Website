@@ -56,32 +56,32 @@ export default function Dashboard() {
           }}
         >
           <StatsCard
-            icon={MdArticle}
+            icon="news"
             value={loading ? '...' : stats?.totalNews ?? 0}
             label="Total News"
             color="#2563EB"
           />
           <StatsCard
-            icon={MdEvent}
+            icon="event"
             value={loading ? '...' : stats?.upcomingEvents ?? 0}
             label="Upcoming Events"
             color="#059669"
           />
           <StatsCard
-            icon={MdPeople}
+            icon="group"
             value={loading ? '...' : stats?.totalMembers ?? 0}
             label="Members"
             color="#7c3aed"
           />
           <StatsCard
-            icon={MdMail}
+            icon="email"
             value={loading ? '...' : stats?.unreadMessages ?? 0}
             label="Unread Messages"
             color="#D9B650"
           />
           {canManageAdmins(role) && (
             <StatsCard
-              icon={MdAdminPanelSettings}
+              icon="shield"
               value={loading ? '...' : stats?.totalAdmins ?? 0}
               label="Admins"
               color="#000066"
