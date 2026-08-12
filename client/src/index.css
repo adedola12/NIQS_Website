@@ -637,6 +637,35 @@
     transform: translateY(-2px);
   }
 
+  /* ── HERO FOLD ──
+     Holds the fan strip and the stat bar, and carries the whole open/shut
+     interaction. `grid-template-rows: 0fr → 1fr` is the one collapse that
+     animates to the content's *own* height without a magic number in the
+     stylesheet — the inner track needs `min-height: 0` and `overflow: hidden`
+     for it to work, which is why the inner wrapper exists at all.
+
+     Because this grows real layout height inside a `justify-center` column,
+     the content block above is pushed up by exactly as much as the fold gains,
+     in step, frame for frame. That coupling is the effect; nothing translates
+     `.hc` directly. */
+  .hero-fold {
+    @apply grid w-full relative z-[8] shrink-0;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .9s cubic-bezier(.16, 1, .3, 1);
+  }
+  .hero.is-open .hero-fold { grid-template-rows: 1fr; }
+  .hero-fold-inner {
+    @apply flex flex-col items-center w-full overflow-hidden;
+    min-height: 0;
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .7s ease-out, transform .9s cubic-bezier(.16, 1, .3, 1);
+  }
+  .hero.is-open .hero-fold-inner {
+    opacity: 1;
+    transform: none;
+  }
+
   /* ── IMAGE STRIP ── */
   .hstrip {
     @apply flex flex-row gap-4 px-8 justify-center items-end overflow-hidden w-full relative z-[8] flex-shrink-0;
@@ -699,7 +728,7 @@
   .svc::after { content: ''; @apply absolute inset-0 rounded-[14px] opacity-0 transition-opacity duration-300; background: linear-gradient(135deg, rgba(217, 182, 80,.06), rgba(0, 0, 102,.03)); }
   .svc:hover { @apply -translate-y-1; box-shadow: var(--shadow-lg); border-color: var(--color-bdr-gold); }
   .svc:hover::after { @apply opacity-100; }
-  .svc-ico { @apply w-[46px] h-[46px] rounded-[11px] flex items-center justify-center text-xl mb-4 transition-colors duration-200; background: var(--color-off-2); border: 1px solid var(--color-bdr); }
+  .svc-ico { @apply w-[68px] h-[68px] rounded-[14px] flex items-center justify-center mb-4 transition-colors duration-200; background: var(--color-off-2); border: 1px solid var(--color-bdr); }
   .svc:hover .svc-ico { background: var(--color-gold-xl); border-color: var(--color-bdr-gold); }
   .svc-t { @apply font-heading text-[1.05rem] font-bold text-navy mb-2; letter-spacing: -.02em; }
   .svc-d { @apply text-[.8rem] leading-relaxed text-txt-2; }
@@ -982,7 +1011,7 @@
   .grid-4 { @apply grid grid-cols-4 gap-4; }
   .card-accent { @apply bg-white border border-bdr rounded-[14px] p-8 transition-all duration-300 relative overflow-hidden; }
   .card-accent:hover { @apply -translate-y-1; box-shadow: var(--shadow-lg); border-color: var(--color-bdr-gold); }
-  .card-icon { @apply w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-4; background: var(--color-gold-xl); }
+  .card-icon { @apply w-[68px] h-[68px] rounded-2xl flex items-center justify-center mb-4; background: var(--color-gold-xl); }
   .card-accent h3 { @apply font-heading text-lg font-bold text-navy mb-2; }
   .card-accent p { @apply text-[.82rem] text-txt-2 leading-relaxed; }
   .rounded-img { @apply w-full rounded-[14px] object-cover border border-bdr; }
@@ -1236,6 +1265,13 @@
 
   .page-transition { animation: none !important; opacity: 1 !important; transform: none !important; }
   .ph .phimg      { animation: none !important; transform: none !important; }
+
+  /* The hero fold is a scroll-driven reveal, and a reveal stripped of its
+     motion is just content that pops in and out as the reader moves. Held
+     open instead, which is the hero this stylesheet drew before the
+     interaction existed. */
+  .hero-fold       { grid-template-rows: 1fr !important; }
+  .hero-fold-inner { opacity: 1 !important; transform: none !important; }
 
   /* A frozen gradient reads as a rendering bug. Flat fill instead. */
   .sk { animation: none !important; background: var(--color-off, #F6F7FB) !important; }

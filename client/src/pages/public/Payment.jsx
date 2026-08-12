@@ -67,7 +67,7 @@ export default function Payment() {
                 onClick={() => { setSelectedCategory(i); setSelectedItem(''); }}
                 style={{ cursor: 'pointer' }}
               >
-                <div className="card-icon"><Icon name={cat.icon} size="xl" /></div>
+                <div className="card-icon"><Icon name={cat.icon} size="lg" /></div>
                 <h3>{cat.title}</h3>
                 <p>{cat.description}</p>
                 <div style={{ marginTop: '1rem' }}>

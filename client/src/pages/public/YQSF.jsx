@@ -199,7 +199,7 @@ export default function YQSF() {
             {offerings.map((o, i) => (
               <div className="svc" key={i}>
                 <span className="svc-tag">{o.tag}</span>
-                <div className="svc-ico"><Icon name={o.icon} size="xl" /></div>
+                <div className="svc-ico"><Icon name={o.icon} size="lg" /></div>
                 <div className="svc-t">{o.title}</div>
                 <p className="svc-d">{o.desc}</p>
               </div>

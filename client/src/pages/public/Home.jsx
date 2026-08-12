@@ -97,6 +97,19 @@ const principles = [
 ];
 
 export default function Home() {
+  /* The hero opens on the content block alone — logo, headline, subtitle,
+     buttons — centred in the viewport. The first scroll of the session eases
+     the fan strip up into the hero, and the growing strip pushes the content
+     block up as flex redistributes the space. Scrolling back to the very top
+     folds it away again.
+
+     Hysteresis on purpose: it opens at 24px so a stray wheel tick does not
+     trigger it, and only closes back at 4px so the reader has to actually
+     return to the top rather than hover near it and watch it flicker. */
+  const [heroOpen, setHeroOpen] = useState(
+    () => window.scrollY > 24 || window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+
   const [news, setNews] = useState(fallbackNews);
   const [events, setEvents] = useState(fallbackEvents);
   const [hasUpcoming, setHasUpcoming] = useState(true);
@@ -110,6 +123,21 @@ export default function Home() {
   const chapterCount = useChapterCount();
   const fellows = stats?.by_grade?.find(g => g.grade === 'Fellow')?.count ?? null;
   const memberCopy = stats ? formatApprox(stats.total_members) : MEMBERS_FALLBACK;
+
+  useEffect(() => {
+    /* Reduced motion holds the fold open in the stylesheet, so leave the state
+       open too — otherwise `inert` would hide visible content from a screen
+       reader until the reader happened to scroll. */
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      setHeroOpen(open => (open ? y > 4 : y > 24));
+    };
+    onScroll();   // catch a scroll that landed between first render and mount
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     API.get('/news?limit=3').then(res => {
@@ -183,7 +211,7 @@ export default function Home() {
       </div>
 
       {/* ── HERO ── */}
-      <div className="hero" id="heroWrap">
+      <div className={`hero${heroOpen ? ' is-open' : ''}`} id="heroWrap">
         {/* Centred content */}
         <div className="hc">
           <div className="hc-eyebrow">
@@ -215,48 +243,57 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Image strip */}
-        <div className="hstrip">
-          {heroImages.map((img, i) => (
-            <div className="hstrip-img" key={i}>
-              <img
-                src={img.src}
-                alt={img.alt}
-                loading={i < 3 ? 'eager' : 'lazy'}
-              />
-              {i === 2 && <div className="hstrip-badge"><Icon name="chart" size="sm" /> Quantity Surveyors</div>}
+        {/* The fold. Zero-height until the first scroll, so the content block
+            above sits centred in an uncluttered hero on arrival; opening it
+            grows real layout height, which is what lifts that block. Marked
+            inert while shut — it is not merely transparent, it is not there
+            yet, and neither a screen reader nor a Tab press should find it. */}
+        <div className="hero-fold" aria-hidden={!heroOpen}>
+          <div className="hero-fold-inner" {...(heroOpen ? {} : { inert: '' })}>
+            {/* Image strip */}
+            <div className="hstrip">
+              {heroImages.map((img, i) => (
+                <div className="hstrip-img" key={i}>
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    loading={i < 3 ? 'eager' : 'lazy'}
+                  />
+                  {i === 2 && <div className="hstrip-badge"><Icon name="chart" size="sm" /> Quantity Surveyors</div>}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Stat bar. Every tile is now derived — from the membership register, the
-            chapter records, the reciprocity list, or the founding year. Nothing
-            here is a number typed into the markup. */}
-        <div className="hstat-row">
-          <div className="hstat">
-            <div className="hstat-n">{stats ? formatCount(stats.total_members) : MEMBERS_FALLBACK}</div>
-            <div className="hstat-l">Total Members</div>
-          </div>
-          {/* Grade labels are the Institute's to change, so this tile is only drawn
-              when the register actually returns a Fellow grade — it is never
-              approximated from a hard-coded figure. */}
-          {fellows !== null && (
-            <div className="hstat">
-              <div className="hstat-n">{formatCount(fellows)}</div>
-              <div className="hstat-l">Fellows</div>
+            {/* Stat bar. Every tile is now derived — from the membership register, the
+                chapter records, the reciprocity list, or the founding year. Nothing
+                here is a number typed into the markup. */}
+            <div className="hstat-row">
+              <div className="hstat">
+                <div className="hstat-n">{stats ? formatCount(stats.total_members) : MEMBERS_FALLBACK}</div>
+                <div className="hstat-l">Total Members</div>
+              </div>
+              {/* Grade labels are the Institute's to change, so this tile is only drawn
+                  when the register actually returns a Fellow grade — it is never
+                  approximated from a hard-coded figure. */}
+              {fellows !== null && (
+                <div className="hstat">
+                  <div className="hstat-n">{formatCount(fellows)}</div>
+                  <div className="hstat-l">Fellows</div>
+                </div>
+              )}
+              <div className="hstat">
+                <div className="hstat-n">{chapterCount ?? CHAPTERS_FALLBACK}</div>
+                <div className="hstat-l">State Chapters</div>
+              </div>
+              <div className="hstat">
+                <div className="hstat-n">{new Date().getFullYear() - FOUNDED}</div>
+                <div className="hstat-l">Years of Excellence</div>
+              </div>
+              <div className="hstat">
+                <div className="hstat-n">{AGREEMENT_COUNT}</div>
+                <div className="hstat-l">International Agreements</div>
+              </div>
             </div>
-          )}
-          <div className="hstat">
-            <div className="hstat-n">{chapterCount ?? CHAPTERS_FALLBACK}</div>
-            <div className="hstat-l">State Chapters</div>
-          </div>
-          <div className="hstat">
-            <div className="hstat-n">{new Date().getFullYear() - FOUNDED}</div>
-            <div className="hstat-l">Years of Excellence</div>
-          </div>
-          <div className="hstat">
-            <div className="hstat-n">{AGREEMENT_COUNT}</div>
-            <div className="hstat-l">International Agreements</div>
           </div>
         </div>
       </div>
@@ -313,7 +350,7 @@ export default function Home() {
             {services.map((s, i) => (
               <div className={`svc reveal${i > 0 ? ` d${i}` : ''}`} key={i}>
                 {s.tag && <span className="svc-tag">{s.tag}</span>}
-                <div className="svc-ico"><Icon name={s.icon} size="xl" /></div>
+                <div className="svc-ico"><Icon name={s.icon} size="lg" /></div>
                 <div className="svc-t">{s.title}</div>
                 <div className="svc-d">{s.desc}</div>
               </div>

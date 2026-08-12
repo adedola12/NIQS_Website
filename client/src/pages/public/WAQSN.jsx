@@ -239,7 +239,7 @@ export default function WAQSN() {
             {roles.map((r, i) => (
               <div className="svc" key={i}>
                 <span className="svc-tag">{r.tag}</span>
-                <div className="svc-ico"><Icon name={r.icon} size="xl" /></div>
+                <div className="svc-ico"><Icon name={r.icon} size="lg" /></div>
                 <div className="svc-t">{r.title}</div>
                 <p className="svc-d">{r.desc}</p>
               </div>
