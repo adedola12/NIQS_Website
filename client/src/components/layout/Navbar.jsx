@@ -239,8 +239,12 @@ const menuItemStyle = {
   transition: "background 0.1s",
 };
 
+/* Height of the fixed bar, matching #nav in the stylesheet. */
+const NAV_HEIGHT = 68;
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [overHero, setOverHero] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -250,11 +254,38 @@ const Navbar = () => {
   // "Request a Flyer" is an admin-facing entry point — only surface it to admins.
   const isAdminUser = !!admin;
 
+  /* The bar rides transparent over the landing hero and takes its navy plate the
+     moment the hero's bottom edge clears it. Measured off the hero element rather
+     than a fixed offset, because the hero is not a fixed height any more — it
+     grows when the fan strip opens — and a hard-coded threshold would go stale
+     the first time that layout changed.
+
+     Pages with no hero (`#heroWrap` absent) keep the old always-solid bar: the
+     content there starts immediately under the nav and would read straight
+     through it. */
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => {
+      const hero = document.getElementById("heroWrap");
+      const isOver = hero ? hero.getBoundingClientRect().bottom > NAV_HEIGHT : false;
+      setOverHero(isOver);
+      setScrolled(window.scrollY > 10);
+      /* Published on the root element as well as held in state, because the
+         announcement ticker is a sibling rendered by the page, not by this bar,
+         and it has to drop its own navy plate at exactly the same moment. A
+         transparent bar sitting on a solid navy strip reads as a broken header. */
+      document.documentElement.toggleAttribute("data-nav-over-hero", isOver);
+    };
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("resize", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      document.documentElement.removeAttribute("data-nav-over-hero");
+    };
+    /* Re-run on navigation: whether a hero exists at all is a per-route fact, and
+       the listener alone would not fire until the reader next scrolled. */
+  }, [location.pathname]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -265,7 +296,13 @@ const Navbar = () => {
 
   return (
     <>
-      <nav id="nav" className={scrolled ? "sc" : ""}>
+      {/* An open mobile menu drops a white panel straight below the bar, so the
+          bar takes its plate back regardless of where the scroll is — otherwise
+          the panel hangs off a transparent strip. */}
+      <nav
+        id="nav"
+        className={`${scrolled ? "sc" : ""}${overHero && !menuOpen ? " over-hero" : ""}`}
+      >
         <div className="ninner">
           {/* Logo — the official horizontal lockup from the 2026 brand pack.
               It already carries the emblem, the Institute's name and the
@@ -425,13 +462,22 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* CTA — swaps to user chip when logged in */}
+          {/* CTA — swaps to user chip when logged in. Two pills rather than the
+              single "Member Portal" link, per the mockups (2026-08-12): signing in
+              and joining are different errands and the old link only named one of
+              them. Both still land where "Member Portal" did — /login is the
+              portal entrance. */}
           {isLoggedIn ? (
             <UserChip />
           ) : (
-            <Link to="/login" className="ncta">
-              Member Portal
-            </Link>
+            <div className="ncta-pair">
+              <Link to="/login" className="ncta-in">
+                Log In
+              </Link>
+              <Link to="/membership" className="ncta">
+                Become a Member
+              </Link>
+            </div>
           )}
 
           {/* Hamburger */}

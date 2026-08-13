@@ -409,6 +409,16 @@
   /* ── NAVBAR ── */
   #nav { @apply fixed top-0 left-0 right-0 z-[1000] h-[68px] transition-all duration-300; background: var(--color-navy); border-bottom: 1px solid rgba(255,255,255,.08); }
   #nav.sc { box-shadow: 0 2px 20px rgba(0, 0, 102,.3); }
+  /* Riding over the landing hero: no plate, no rule, no shadow. The links stay
+     white and stay legible because the hero's own scrim already sits under them —
+     the bar is not asking the artwork to be dark, it is reusing darkness that is
+     there for the headline anyway. `.sc` is still applied underneath, so the
+     shadow is suppressed here rather than only ordered around. */
+  #nav.over-hero {
+    background: transparent;
+    border-bottom-color: transparent;
+    box-shadow: none;
+  }
   .ninner { @apply max-w-[1240px] mx-auto px-8 h-full flex items-center justify-between gap-4; }
   .nlogo { @apply flex items-center gap-3 cursor-pointer; }
   .nlogo-sq { @apply w-[34px] h-[34px] rounded-lg flex items-center justify-center shrink-0; background: linear-gradient(135deg, var(--color-navy), var(--color-navy-3)); }
@@ -437,8 +447,15 @@
   .ddi:hover { @apply bg-off text-navy; }
   .ddi .lock { @apply text-[.62rem] opacity-40 ml-auto; }
   .ddi-div { @apply h-px bg-bdr mx-3 my-1; }
-  .ncta { @apply px-4 py-2 text-[.74rem] font-semibold rounded-lg cursor-pointer transition-all duration-200 whitespace-nowrap border-none; font-family: var(--font-body); background: var(--color-gold); color: #fff; }
-  .ncta:hover { background: var(--color-gold-2); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(217, 182, 80,.4); }
+  .ncta-pair { @apply flex items-center gap-2.5 shrink-0; }
+  /* Log in: the solid one. White rather than the old gold, because it now sits
+     over the hero artwork as often as over the navy plate, and gold-on-crest
+     lost its edge. */
+  .ncta-in { @apply px-5 py-2 text-[.74rem] font-semibold rounded-lg cursor-pointer transition-all duration-200 whitespace-nowrap border-none; font-family: var(--font-body); background: #fff; color: var(--color-navy); }
+  .ncta-in:hover { background: rgba(255,255,255,.88); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.28); }
+  /* Become a member: outlined, per the mockups. */
+  .ncta { @apply px-5 py-2 text-[.74rem] font-semibold rounded-lg cursor-pointer transition-all duration-200 whitespace-nowrap; font-family: var(--font-body); background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.45); }
+  .ncta:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.8); transform: translateY(-1px); }
   .ham { @apply hidden flex-col gap-[5px] cursor-pointer p-2 border-none bg-transparent; }
   .ham span { @apply block w-5 h-0.5 rounded-sm transition-all duration-300; background: #fff; }
   .ham.op span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -518,7 +535,18 @@
   }
 
   /* ── TICKER ── */
-  .tkbar { @apply sticky top-[68px] z-[990] py-1.5 overflow-hidden flex items-center gap-4; background: var(--color-navy); }
+  /* Fixed, not sticky. Sticky reserved a 40px slot in the flow above the hero,
+     which pushed the hero's top edge to y=40 and left a band of white page
+     background behind the top of the bar. That was invisible while the bar was
+     an opaque navy plate and became a white stripe the moment it went
+     transparent. Fixed pins it identically — its containing block ran the whole
+     page, so it never unstuck — while giving the slot back, so the hero starts
+     at the top of the page and the artwork runs behind the bar. */
+  .tkbar { @apply fixed top-[68px] left-0 right-0 z-[990] py-1.5 overflow-hidden flex items-center gap-4 transition-colors duration-300; background: var(--color-navy); }
+  /* Drops its plate in step with the nav — see the toggle in Navbar.jsx. The
+     gold "Live" chip keeps its own fill, so the bar still reads as a ticker
+     rather than as loose text floating on the artwork. */
+  :root[data-nav-over-hero] .tkbar { background: transparent; }
   .tklbl { @apply shrink-0 ml-4 text-[.56rem] font-bold px-2 py-0.5 rounded tracking-wider uppercase; font-family: var(--font-body); background: var(--color-gold); color: #fff; }
   .tkwrap { @apply flex-1 overflow-hidden; }
   .ticker { @apply flex gap-10 w-max; animation: var(--animate-tick); }
@@ -537,7 +565,10 @@
     @apply relative overflow-hidden flex flex-col justify-center items-center;
     min-height: 100vh;
     background: var(--color-navy);
-    padding-top: 2rem;
+    /* Clears the fixed bar (68px) and the ticker (30px) that now float over the
+       hero rather than sitting above it. Without this the centred content would
+       centre against the full screen and slide under both. */
+    padding-top: 6.5rem;
     padding-bottom: 0;
   }
   /* The crest backdrop, on its own layer rather than on `.hero` itself, because
@@ -607,8 +638,19 @@
   .hdot.on { @apply w-7 rounded-full; background: var(--color-gold); }
 
   /* ── HERO CENTRED CONTENT ── */
+  /* `my-auto` is load-bearing, not spacing. The content block's two auto margins
+     absorb the hero's spare vertical space between them, which puts the fold —
+     and so the stat bar — flush against the hero's bottom edge, while the block
+     itself stays centred in whatever room is left above it.
+
+     Shut, that is plain centring. Open, it closes the navy band that used to sit
+     under the stat bar: 61px on a 1200px-tall screen and worse on taller ones,
+     because `justify-content: center` split the spare space above *and below* the
+     whole stack. Auto margins also recompute continuously while the fold's height
+     animates, which `margin-top: auto` on the fold itself would not — that snaps
+     the block to the top the instant the class lands. */
   .hc {
-    @apply max-w-[780px] w-full mx-auto px-8 text-center relative z-[8] flex-shrink-0;
+    @apply max-w-[780px] w-full mx-auto my-auto px-8 text-center relative z-[8] flex-shrink-0;
     padding-top: 0;
   }
   /* The "Est. 1969 · Chartered Professional Body" pill that sat above the lockup
@@ -1181,7 +1223,7 @@
   .hstrip-img:nth-child(3) { width: 240px; height: 300px; }
 }
 @media (max-width: 768px) {
-  .nlinks, .ncta { display: none; }
+  .nlinks, .ncta, .ncta-pair { display: none; }
   .ham { display: flex; }
   .svc-grid, .tc3, .leader-grid, .memcat, .pp-grid, .chapters-grid, .recip-grid, .exam-grid, .res-grid, .pay-cats, .valg, .fg4, .grid-3, .values-grid, .offerings-grid { grid-template-columns: 1fr; }
   .brand-grid { grid-template-columns: 1fr; }

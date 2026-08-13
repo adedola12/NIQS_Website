@@ -1,5 +1,9 @@
 node_modules/
 .env
+# Per-developer overrides. client/.env.development.local points local dev at the
+# live API so the membership figures render while working; it is a local choice,
+# not a project setting, and must not be committed.
+.env*.local
 dist/
 build/
 uploads/*
