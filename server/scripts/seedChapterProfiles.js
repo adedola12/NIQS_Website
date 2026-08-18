@@ -1246,6 +1246,114 @@ const CHAPTERS = [
       ['nabiyan-hamdu-zailani', 'QS Nabiyan Hamdu Zailani, MNIQS', 'Co-opted Member (WAQSN)', 13],
     ],
   },
+  {
+    key: 'ekiti',
+    chapterName: 'Ekiti Chapter',
+    state: 'Ekiti',
+    stateLabel: 'Ekiti State',
+    chairperson: 'QS Dr Ade-Ojo Comfort Olubunmi, FNIQS',
+    secretary: 'QS Abe Adekunle, MNIQS',
+    about:
+      'The Ekiti State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Ekiti State in the '
+      + 'South West geopolitical zone. An eight-member executive committee leads the '
+      + 'chapter across administration, finance, research and professional '
+      + 'development, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction '
+      + 'cost management, and represent the profession before government and '
+      + 'industry in the state. The chapter is led by a Fellow of the Institute and '
+      + 'carries its own West African Quantity Surveyors Network representation.',
+    heroPortrait: 'ade-ojo-comfort-olubunmi',
+    /* Caption-only pack (eight JPEGs, no roster document), so the order below is
+       the conventional one — the captions do not rank the offices.
+
+       The chairman and the deputy already existed as a stub seeded from the
+       committee's Chapter Chairmen List, and both names differ from the chapter's
+       own captions in the way the packs always differ: the chapter runs
+       surname-first and carries post-nominals the list omits. The list has
+       "QS Dr. Comfort Olubunmi Ade-ojo, FNIQS" and "QS Adeife Oluyemi Ajayi";
+       the pack has "QS Dr Ade-Ojo Comfort Olubunmi, FNIQS" and "QS Ajayi Adeife
+       Oluyemi, MNIQS". Same two people, chapter's spelling wins. The offices
+       agree, which is the useful part — the list already had Ajayi as deputy.
+
+       Titles are kept as "Chapter Chairman" and "Deputy Chairman" to match those
+       stub records rather than the caption's bare "Chairman": the retire step
+       deletes any chapter-scope record whose title is off this roster, and those
+       two carry the phone numbers and e-mail addresses the secretariat supplied.
+       Renaming the title would have thrown the contacts away.
+
+       "Asst. General Secretary" is expanded and the R&D office takes the title
+       the rest of the site already uses. Names are verbatim: "Benjami" is left
+       exactly as the chapter captioned it (see QUERIES — it reads like a
+       truncated Benjamin, but that is theirs to confirm, not mine to correct),
+       and so are the bare initials in "Adebayo B. O". */
+    roster: [
+      ['ade-ojo-comfort-olubunmi', 'QS Dr Ade-Ojo Comfort Olubunmi, FNIQS', 'Chapter Chairman', 1],
+      ['ajayi-adeife-oluyemi', 'QS Ajayi Adeife Oluyemi, MNIQS', 'Deputy Chairman', 2],
+      ['abe-adekunle', 'QS Abe Adekunle, MNIQS', 'General Secretary', 3],
+      ['kolawole-sunday-benjami', 'QS Kolawole Sunday Benjami, MNIQS', 'Assistant General Secretary', 4],
+      ['lydia-opeyemi-oni', 'QS Lydia Opeyemi Oni, MNIQS', 'Treasurer', 5],
+      ['olanbiwonnu-olayide', 'QS Olanbiwonnu Olayide, MNIQS', 'Financial Secretary', 6],
+      ['adebayo-b-o', 'QS Adebayo B. O, MNIQS', 'Research & Development Secretary', 7],
+      ['oluwaseyi-olufadeji', 'QS Oluwaseyi Olufadeji, MNIQS', 'WAQSN Coordinator', 8],
+    ],
+  },
+  {
+    key: 'sokoto',
+    chapterName: 'Sokoto Chapter',
+    state: 'Sokoto',
+    stateLabel: 'Sokoto State',
+    chairperson: 'QS Umar Sule, FNIQS',
+    secretary: 'QS Muhammad-Jamil Abubakar, MNIQS',
+    about:
+      'The Sokoto State Chapter of the Nigerian Institute of Quantity Surveyors '
+      + 'serves registered quantity surveyors practising across Sokoto State in the '
+      + 'North West geopolitical zone. A ten-member executive committee leads the '
+      + 'chapter across administration, finance, research and professional '
+      + 'development, working with the National Secretariat to deliver continuing '
+      + 'professional development, uphold professional standards in construction '
+      + 'cost management, and represent the profession before government and '
+      + 'industry in the state. The chapter is led by a Fellow of the Institute and '
+      + 'carries two representatives to the West African Quantity Surveyors Network.',
+    heroPortrait: 'umar-sule',
+    /* The pack arrived captioned "KEBBI-SOKOTO CHAPTER" but is Sokoto's: its
+       Chairman and Deputy Chairman are the two people already on the Sokoto stub
+       (QS Sule Umar / QS Faruku Maliki), and the Kebbi record is empty with no
+       chairman of its own. Whether Kebbi is meant to share this roster is a
+       question for the secretariat — see QUERIES — and until it is answered
+       nothing is written to Kebbi.
+
+       The chairman's name is the chapter's own order, QS Umar Sule, against the
+       committee list's QS Sule Umar. Same person, and the chapter's spelling wins
+       as it always does.
+
+       The photograph published on this page as the Chairman was never the
+       Chairman: the secretariat confirmed on 2026-08-18 that it is the General
+       Secretary, and comparing it against this pack face by face agrees — it is
+       QS Muhammad-Jamil Abubakar. Both men have their own portrait here, so the
+       mislabelling is corrected by publishing rather than by moving the old file.
+
+       Rilwanu Bello is captioned with no QS where every other member carries one,
+       yet also carries FNIQS, which a probationer cannot hold. The two signals
+       contradict each other, so the name publishes exactly as supplied and the
+       contradiction goes to the chapter — see QUERIES.
+
+       "Ex - Officio" is closed up and the two WAQSN seats numbered, since Exco is
+       keyed on (scope, chapter, title) and two identical titles would overwrite
+       each other. The pack has no Financial Secretary. */
+    roster: [
+      ['umar-sule', 'QS Umar Sule, FNIQS', 'Chapter Chairman', 1],
+      ['faruku-maliki', 'QS Faruku Maliki, MNIQS', 'Deputy Chairman', 2],
+      ['muhammad-jamil-abubakar', 'QS Muhammad-Jamil Abubakar, MNIQS', 'General Secretary', 3],
+      ['isyaku-shagari-abdulhamid', 'QS Isyaku Shagari Abdulhamid, MNIQS', 'Assistant General Secretary', 4],
+      ['chika-dikko', 'QS Chika Dikko, MNIQS', 'Treasurer', 5],
+      ['abdullahi-nuhu-jega', 'QS Abdullahi Nuhu Jega, MNIQS', 'Research & Development Secretary', 6],
+      ['rilwanu-bello', 'Rilwanu Bello, FNIQS', 'Public Relations Officer', 7],
+      ['usman-shehu', 'QS Usman Shehu, MNIQS', 'Ex-Officio', 8],
+      ['ibrahim-maryam-namadina', 'QS Ibrahim Maryam Namadina, MNIQS', 'WAQSN Representative I', 9],
+      ['lydia-jonathan', 'QS Lydia Jonathan, MNIQS', 'WAQSN Representative II', 10],
+    ],
+  },
 ];
 
 (async () => {

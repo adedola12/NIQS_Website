@@ -38,6 +38,21 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
    Kept here rather than derived, because each one is a question someone asked
    and nobody has answered yet. Delete an entry once it is settled. */
 const QUERIES = [
+  ['Ekiti Chapter', 'The eight photographs in the chapter pack are between 204x286 and 386x386 '
+    + 'pixels, which is roughly a quarter of the resolution the cards need — every face would have '
+    + 'to be enlarged three to four times and would look soft beside the other chapters. The roster '
+    + 'is published; the portraits are held. Please resend the original photographs at full size.'],
+  ['Ekiti Chapter', 'Two names are published exactly as the chapter captioned them and both look '
+    + 'incomplete: the Assistant General Secretary as QS Kolawole Sunday Benjami (Benjamin?), and '
+    + 'the Research & Development Secretary as QS Adebayo B. O, with initials only. Please confirm '
+    + 'or send the full spellings.'],
+  ['Sokoto Chapter', 'The pack was sent captioned "KEBBI-SOKOTO CHAPTER" but the roster is the Sokoto one '
+    + '(the Chairman and Deputy Chairman are the two already on record for Sokoto), and it has been '
+    + 'published there. The Kebbi chapter page is still empty. Does Kebbi share this executive, or '
+    + 'is its own roster still to come?'],
+  ['Sokoto Chapter', 'The Public Relations Officer is captioned Rilwanu Bello, FNIQS — with the '
+    + 'post-nominal of a Fellow but without the QS every other member of the roster carries. '
+    + 'Published exactly as supplied. Please confirm whether the QS belongs there.'],
   ['FCT Chapter', 'Is Abdulrafiu Abdullahi, the chapter\'s YQSF Coordinator, the same person as '
     + 'Abdulrafiu Ibrahim on the YQSF Executive Council? No photograph came with the FCT pack for him.'],
   ['FCT Chapter', 'Three names differ between the senate roster document and the photo captions. '
