@@ -238,7 +238,7 @@ const CSS = `
   </div>
   <div class="cover-foot">
     <b>Send to:</b> the NIQS Portal &amp; Web Page Implementation team &nbsp;·&nbsp;
-    <b>Site:</b> niqs-website.vercel.app
+    <b>Site:</b> niqs.org.ng
   </div>
 </div>
 
