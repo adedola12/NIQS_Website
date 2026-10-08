@@ -125,15 +125,18 @@ exports.updateEmployerLinks = async (req, res) => {
       } else {
         const p = b.package;
         const months = Math.max(1, Number(p.months) || 12);
-        const startsAt = p.startsAt ? new Date(p.startsAt) : new Date();
         const prev = employer.package || {};
+        // Editing the same package keeps its term; `renew: true` starts a new one today.
+        const keepTerm = !p.renew && prev.name === p.name && prev.startsAt && !p.startsAt && !p.expiresAt;
+        const startsAt = keepTerm ? prev.startsAt : (p.startsAt ? new Date(p.startsAt) : new Date());
         employer.package = {
           name: String(p.name).trim(),
           listingsQuota: Math.max(0, Number(p.listingsQuota) || 0),
           featuredQuota: Math.max(0, Number(p.featuredQuota) || 0),
-          featuredUsed: prev.name === p.name ? prev.featuredUsed || 0 : 0,
+          featuredUsed: keepTerm ? prev.featuredUsed || 0 : 0,
           startsAt,
-          expiresAt: p.expiresAt ? new Date(p.expiresAt) : new Date(startsAt.getTime() + months * 30.44 * 86_400_000),
+          expiresAt: keepTerm ? prev.expiresAt
+            : p.expiresAt ? new Date(p.expiresAt) : new Date(new Date(startsAt).getTime() + months * 30.44 * 86_400_000),
           amountPaid: Math.max(0, Number(p.amountPaid) || 0),
           reference: String(p.reference || '').trim(),
           paidAt: Number(p.amountPaid) > 0 ? (prev.paidAt && prev.amountPaid === Number(p.amountPaid) ? prev.paidAt : new Date()) : undefined,

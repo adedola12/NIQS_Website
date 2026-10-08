@@ -270,7 +270,7 @@ exports.updateMyListing = async (req, res) => {
     if (['closed', 'filled'].includes(job.status)) {
       return res.status(400).json({ message: 'A closed listing cannot be edited. Post a new one instead.' });
     }
-    if (job.status === 'paused' && job.reviewedAt && job.moderationNote) {
+    if (job.status === 'paused' && !job.pausedByEmployer) {
       return res.status(403).json({ message: 'The Secretariat paused this listing. Please contact them about changes.' });
     }
     Object.assign(job, pickListing(req.body));
@@ -423,7 +423,7 @@ exports.adminList = async (req, res) => {
       filter.$or = [{ title: rx }, { company: rx }, { location: rx }];
     }
     const jobs = await Job.find(filter)
-      .populate('employer', 'companyName email status flagged qsFirm isPartner')
+      .populate('employer', 'companyName contactName email phone status flagged flagNote qsFirm isPartner')
       .populate('reviewedBy', 'firstName lastName')
       .sort(req.query.status === 'pending' ? 'submittedAt' : '-createdAt')
       .limit(500);
@@ -539,7 +539,8 @@ exports.moderate = async (req, res) => {
 
 /**
  * POST /api/jobs/:id/featured { active, days, amount, reference, inNewsletter }
- * The Secretariat confirms payment and switches placement on or off.
+ * The Secretariat confirms payment and switches placement on or off. Send
+ * only `inNewsletter` to change that flag without touching the placement.
  */
 exports.setFeatured = async (req, res) => {
   try {
@@ -549,7 +550,8 @@ exports.setFeatured = async (req, res) => {
     const s = await JobBoardSettings.get();
     const { active, days, amount, reference, inNewsletter } = req.body;
 
-    if (active) {
+    // `active` omitted = change only the newsletter flag, leave the placement alone.
+    if (active === true) {
       job.featured.requested = true;
       job.featured.paid = true;
       startFeatured(job, Math.max(1, Number(days) || s.featuredDays));
@@ -558,7 +560,7 @@ exports.setFeatured = async (req, res) => {
         job.featured.paidAt = new Date();
       }
       if (reference !== undefined) job.featured.reference = String(reference).trim();
-    } else {
+    } else if (active === false) {
       job.featured.active = false;
       job.featured.requested = false;
     }

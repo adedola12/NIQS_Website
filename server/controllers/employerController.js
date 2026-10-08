@@ -97,6 +97,7 @@ exports.updateMe = async (req, res) => {
     const employer = await Employer.findById(req.employer._id);
     Object.assign(employer, pick(req.body, SELF_FIELDS));
     await employer.save();
+    await employer.populate('qsFirm', 'name state regNumber');
     res.json({ employer });
   } catch (error) {
     if (error.name === 'ValidationError') return res.status(400).json({ message: error.message });
@@ -168,6 +169,7 @@ exports.publicInfo = async (req, res) => {
       approvalTargetHours: s.approvalTargetHours,
       packages: s.packages,
       nonMembersCanApply: s.nonMembersCanApply,
+      retentionDays: s.retentionDays,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
