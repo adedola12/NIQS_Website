@@ -276,86 +276,6 @@
         "scope": "national",
         "name": "QS Donatus Chidi Oduenyi, MNIQS"
       }
-    },
-    {
-      "file": "reedit/lagos-fausat-ajibade.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Fausat Ajibade, FNIQS"
-      }
-    },
-    {
-      "file": "reedit/zamfara-attahiru-m-maradun.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Attahiru Muhammad Maradun, FNIQS"
-      }
-    },
-    {
-      "file": "reedit/ebonyi-kalu-a-agha.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Agha Kalu Agwu, MNIQS"
-      }
-    },
-    {
-      "file": "reedit/ebonyi-nnaemeka-j-anikwe.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Anikwe Nnaemeka J., MNIQS"
-      }
-    },
-    {
-      "file": "reedit/fct-zemo-m-alexander.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Zemo Masha Alexander, FNIQS"
-      }
-    },
-    {
-      "file": "reedit/kano-salisu-a-baba.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Salisu Ahmad Baba, MNIQS"
-      }
-    },
-    {
-      "file": "reedit/plateau-samuel-dawam.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Samuel Dawam, MNIQS"
-      }
-    },
-    {
-      "file": "reedit/rivers-tochukwu-blessed.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Tochukwu Blessed, MNIQS"
-      }
-    },
-    {
-      "file": "reedit/sokoto-usman-shehu.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Usman Shehu, MNIQS"
-      }
-    },
-    {
-      "file": "reedit/yobe-adeniyi-s-olubummo.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "name": "QS Olubummo Adeniyi Sola, MNIQS"
-      }
     }
   ],
   "sources": {
@@ -369,7 +289,7 @@
     "nov6/bot-godson-o-moneke.jpg": "Drive file 16SHavxHHT_EyfdJ4FT5MwdDEKpHlQXIz",
     "nov6/nec-edo-chukwuemeka-p-ogbu.jpg": "same source as edo/chukwuemeka-patrick-ogbu",
     "nov6/nec-anambra-donatus-c-oduenyi.jpg": "Oct folder CHAPTERS/ANAMBRA STATE CHAPTER, 'QS ODUENYI DONATUS CHIDI, MNIQS - CHAIRMAN.png' (1CYl0ipfs-nRcJBljBl3e4Tuc2ek6ufKO)",
-    "reedit/*": "6 Nov item 10 'picture editing': re-normalise from each person's original upload in the chapter folders, not from the live image",
+    "reedit/*": "Re-normalised from the original uploads on 9 Nov: the results were the same as the published portraits (the originals are close-up phone photos), so they were not republished; fuller photographs were requested instead",
     "pending": "QS Dikko (BOT): Gloria will upload a single portrait to the same folder; not there yet",
     "nov6/katsina-*": "already published on 5 Nov from the same files (applyNov2026Pack.js, data/nov2026Pack.json); dropped here"
   }
