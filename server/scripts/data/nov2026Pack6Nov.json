@@ -68,11 +68,11 @@
     "Edo Chapter": {
       "state": "Edo State",
       "group": "edo",
-      "basis": "6 Nov: Edo pictures 'available in the folder now' (EDO STATE CHAPTER, 9 executives; only 2 were on the site)",
+      "basis": "6 Nov: Edo pictures 'available in the folder now' (EDO STATE CHAPTER, 9 executives; only 2 were on the site); 7 Nov: chairman's title is Prof. and the R&D Secretary reads QS Dr. Akinduro O. Oladiyun, FNIQS (Gloria Ifiorah)",
       "members": [
         [
           "chukwuemeka-patrick-ogbu",
-          "QS Dr. Chukwuemeka Patrick Ogbu, MNIQS",
+          "QS Prof. Chukwuemeka Patrick Ogbu, MNIQS",
           "Chapter Chairman",
           ""
         ],
@@ -110,7 +110,7 @@
           "oladiyun-akinduro-olakunle",
           "QS Dr. Oladiyun Akinduro Olakunle, FNIQS",
           "Research & Development Secretary",
-          ""
+          "QS Dr. Akinduro O. Oladiyun, FNIQS"
         ],
         [
           "adesuwa-jane-fregene",
@@ -129,7 +129,7 @@
     "Ekiti Chapter": {
       "state": "Ekiti State",
       "group": "ekiti",
-      "basis": "6 Nov: Ekiti pictures 'available in the folder now' (names and titles unchanged; 7 of 8 had no photo)",
+      "basis": "6 Nov: Ekiti pictures 'available in the folder now' (names and titles unchanged; 7 of 8 had no photo); 7 Nov: R&D Secretary reads QS Bosede O. Adebayo, MNIQS (Secretariat's name sheet)",
       "members": [
         [
           "comfort-olubunmi-ade-ojo",
@@ -171,7 +171,7 @@
           "b-o-adebayo",
           "QS Adebayo B. O, MNIQS",
           "Research & Development Secretary",
-          "QS B. O. Adebayo, MNIQS"
+          "QS Bosede O. Adebayo, MNIQS"
         ],
         [
           "oluwaseyi-olufadeji",
@@ -251,24 +251,6 @@
         "scope": "chapter",
         "state": "FCT",
         "title": "YQSF Coordinator"
-      }
-    },
-    {
-      "file": "nov6/katsina-sadiya-sani-yaradua.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "state": "Katsina State",
-        "name": "QS Sadiya Sani Yar'Adua, MNIQS"
-      }
-    },
-    {
-      "file": "nov6/katsina-maryam-muazu.jpg",
-      "model": "Exco",
-      "filter": {
-        "scope": "chapter",
-        "state": "Katsina State",
-        "name": "QS Maryam Mua'azu, MNIQS"
       }
     },
     {
@@ -388,6 +370,7 @@
     "nov6/nec-edo-chukwuemeka-p-ogbu.jpg": "same source as edo/chukwuemeka-patrick-ogbu",
     "nov6/nec-anambra-donatus-c-oduenyi.jpg": "Oct folder CHAPTERS/ANAMBRA STATE CHAPTER, 'QS ODUENYI DONATUS CHIDI, MNIQS - CHAIRMAN.png' (1CYl0ipfs-nRcJBljBl3e4Tuc2ek6ufKO)",
     "reedit/*": "6 Nov item 10 'picture editing': re-normalise from each person's original upload in the chapter folders, not from the live image",
-    "pending": "QS Dikko (BOT): Gloria will upload a single portrait to the same folder; not there yet"
+    "pending": "QS Dikko (BOT): Gloria will upload a single portrait to the same folder; not there yet",
+    "nov6/katsina-*": "already published on 5 Nov from the same files (applyNov2026Pack.js, data/nov2026Pack.json); dropped here"
   }
 }
